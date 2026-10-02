@@ -120,7 +120,7 @@
     </div>
   </div>
 
-  <header class="sticky top-0 z-40 w-full px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-3 border-b border-[#161d2b] bg-[#06080d]/95 backdrop-blur-md">
+  <header class="sticky top-0 z-40 w-full px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap md:flex-nowrap items-center justify-between gap-x-3 gap-y-2 border-b border-[#161d2b] bg-[#06080d]/95 backdrop-blur-md">
     <div class="flex items-center gap-6">
       <div class="flex items-center gap-3">
         <div id="app-header-logo-container" class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md shadow-amber-500/20 bg-gradient-to-br from-amber-500 to-amber-600">
@@ -143,15 +143,15 @@
       <button title="회로 편집" aria-label="회로 편집" onclick="openModal('circuit-editor-modal'); initCircuitEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-cyan-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i><span class="hidden lg:inline">회로 편집</span></button>
       <button onclick="openModal('admin-settings-modal'); initAdminSettingsModal();" class="admin-only p-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-slate-300 hover:text-amber-400 transition shadow-sm active:scale-95" title="사이트 설정"><i data-lucide="sliders" class="w-4 h-4"></i></button>
     </div>
-  </header>
-
-  <div class="w-full flex items-center justify-start gap-4 px-4 py-2 border-b border-slate-800 bg-[#06080d] md:hidden overflow-x-auto no-scrollbar whitespace-nowrap">
+  <div class="basis-full -mx-4 sm:-mx-6 -mb-3 sm:-mb-3.5 mt-0.5 flex items-center justify-start gap-4 px-4 py-2 border-t border-slate-800 md:hidden overflow-x-auto no-scrollbar whitespace-nowrap">
     <button onclick="switchMainView('party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
     <div class="w-px h-3 bg-slate-700"></div>
     <button onclick="switchMainView('growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 육성 현황표</button>
     <div class="w-px h-3 bg-slate-700"></div>
     <button onclick="switchMainView('weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</button>
   </div>
+  </header>
+
 
   <main id="view-party" class="w-full max-w-[1720px] px-6 py-5 flex-1 flex flex-col xl:flex-row items-start justify-center gap-6">
     <aside class="w-full xl:w-[530px] 2xl:w-[560px] flex-shrink-0 bg-[#0c1018] border border-[#1a2233] rounded-2xl p-4 sm:p-5 flex flex-col gap-3.5 shadow-xl">
@@ -1800,25 +1800,25 @@
         }).join('');
 
         const circuitBoxHtml = activeCircuit ? `
-          <div class="relative group aspect-square ml-auto md:ml-0 h-[72px] md:h-[105px] w-[72px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-cyan-500/70 bg-[#0c1829] shadow-md flex items-center justify-center p-2 cursor-pointer" onclick="openCircuitModal(${pIdx})">
+          <div class="relative group aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-cyan-500/70 bg-[#0c1829] shadow-md flex items-center justify-center p-2 cursor-pointer" onclick="openCircuitModal(${pIdx})">
             <div class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition z-10 hide-on-export"><button onclick="event.stopPropagation(); unsetCircuitDirect(${pIdx})" class="p-1 rounded bg-black/80 hover:bg-rose-900 text-slate-300 hover:text-white transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
             <div class="flex items-center justify-center w-full h-full filter drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]">${getCircuitIconHtml(activeCircuit)}</div>
           </div>` : `
-          <div class="aspect-square ml-auto md:ml-0 h-[72px] md:h-[105px] w-[72px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-dashed border-[#232c3f] bg-[#090c13] hover:border-cyan-500/50 hover:bg-[#0e1422] flex flex-col gap-1 items-center justify-center p-2 cursor-pointer text-slate-500" onclick="openCircuitModal(${pIdx})">
-            <i data-lucide="cpu" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-400">회로 선택</span>
+          <div class="aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-dashed border-[#232c3f] bg-[#090c13] hover:border-cyan-500/50 hover:bg-[#0e1422] flex flex-col gap-1 items-center justify-center p-2 cursor-pointer text-slate-500" onclick="openCircuitModal(${pIdx})">
+            <i data-lucide="cpu" class="w-5 h-5 sm:w-6 sm:h-6 text-slate-600"></i><span class="text-[9px] sm:text-[10px] font-bold text-slate-400 whitespace-nowrap">회로<span class="hidden sm:inline"> 선택</span></span>
           </div>`;
 
         return `
-          <div class="party-row bg-[#0d1017] border border-[#1a2130] rounded-2xl p-3 sm:p-3.5 flex flex-wrap md:flex-nowrap items-center gap-3 sm:gap-3.5 shadow-lg transition-all relative" data-pidx="${pIdx}">
+          <div class="party-row bg-[#0d1017] border border-[#1a2130] rounded-2xl p-2 sm:p-3.5 flex flex-nowrap items-center gap-1.5 sm:gap-3.5 shadow-lg transition-all relative" data-pidx="${pIdx}">
             <div class="flex items-center gap-3 sm:gap-3.5 flex-shrink-0 select-none">
-              <div class="party-handle w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#141b27] hover:bg-[#1c2538] border border-[#232f45] hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition cursor-grab active:cursor-grabbing" draggable="true">
+              <div class="party-handle hidden md:flex w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#141b27] hover:bg-[#1c2538] border border-[#232f45] hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition cursor-grab active:cursor-grabbing" draggable="true">
                 <svg viewBox="0 0 24 24" class="w-5 h-5 stroke-current fill-none stroke-[2.2] stroke-linecap-round stroke-linejoin-round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
               </div>
-              <span class="text-2xl sm:text-3xl font-black text-slate-200 tracking-tight">${String(pIdx + 1).padStart(2, '0')}</span>
+              <span class="text-base sm:text-3xl font-black text-slate-200 tracking-tight w-6 sm:w-auto text-center">${String(pIdx + 1).padStart(2, '0')}</span>
             </div>
-            <div class="order-last md:order-none basis-full md:basis-auto grid grid-cols-3 gap-2 sm:gap-2.5 flex-1 items-stretch min-w-0">${slotsHtml}</div>
+            <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5 flex-1 items-stretch min-w-0">${slotsHtml}</div>
             ${circuitBoxHtml}
-            <button onclick="removeParty(${pIdx})" class="p-2 text-slate-500 hover:text-rose-400 transition flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 hide-on-export"><i data-lucide="x" class="w-5 h-5 stroke-[2.4]"></i></button>
+            <button onclick="removeParty(${pIdx})" class="p-0.5 sm:p-2 text-slate-500 hover:text-rose-400 transition flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 hide-on-export"><i data-lucide="x" class="w-5 h-5 stroke-[2.4]"></i></button>
           </div>`;
       }).join('');
 
