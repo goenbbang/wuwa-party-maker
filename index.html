@@ -220,7 +220,7 @@
       </div>
       
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2 w-full pt-1">
-        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="growth-element-bars"></div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto sm:min-w-[540px]" id="growth-element-bars"></div>
         <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="growth-role-bars"></div>
       </div>
@@ -318,21 +318,17 @@
 
   <!-- 추천 무기 상세 정보 팝업 모달 -->
   <div id="weapon-detail-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
-    <div class="bg-[#0e121a] max-w-xl w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
+    <div class="bg-[#0e121a] max-w-[620px] w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
       <button onclick="closeModal('weapon-detail-modal')" class="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       
-      <div class="flex items-start gap-4 sm:gap-5">
-        <div id="wp-detail-img-box" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 relative shadow-inner"></div>
-        
-        <div class="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
-          <div>
-            <div class="flex items-center gap-2 flex-wrap pr-8">
-              <h4 class="font-black text-lg sm:text-xl text-white tracking-tight truncate mt-0.5" id="wp-detail-title">무기 이름</h4>
-              <div id="wp-detail-refine" class="flex items-center gap-1"></div>
-            </div>
-          </div>
-          
-          <div class="flex flex-col gap-2 mt-2">
+      <!-- 모바일: 이름·재련이 맨 위 한 줄 전체 폭 / PC: 이미지 옆 -->
+      <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 sm:gap-x-5 gap-y-3 sm:gap-y-2">
+        <div class="col-span-2 sm:col-span-1 sm:col-start-2 sm:row-start-1 pr-9 min-w-0 flex flex-col gap-1.5">
+          <h4 class="font-black text-lg sm:text-xl text-white tracking-tight whitespace-nowrap overflow-hidden text-ellipsis" id="wp-detail-title">무기 이름</h4>
+          <div id="wp-detail-refine" class="flex items-center gap-1"></div>
+        </div>
+        <div id="wp-detail-img-box" class="sm:row-span-2 sm:row-start-1 sm:col-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 relative shadow-inner"></div>
+          <div class="flex flex-col gap-2 justify-center sm:justify-end self-stretch min-w-0 sm:col-start-2">
             <div class="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-[#141926] border border-slate-700/80">
               <div class="flex items-center gap-2 text-slate-300 font-bold text-xs sm:text-sm">
                 <span id="wp-detail-atk-icon" class="w-4 h-4 flex items-center justify-center"></span>
@@ -348,7 +344,6 @@
               <span class="text-sm sm:text-base font-black text-white" id="wp-detail-stat-val">-</span>
             </div>
           </div>
-        </div>
       </div>
       
       <div class="bg-[#080b11] border border-slate-800 rounded-2xl p-4 sm:p-5">
@@ -1433,6 +1428,14 @@
             </div>
 
             <div>
+              <label class="block text-[11px] font-bold text-slate-300 mb-1">전무 캐릭터</label>
+              <select onchange="updateWeapon('${wp.id}', 'signatureOf', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-rose-400 cursor-pointer">
+                <option value="">없음 (전무 아님)</option>
+                ${[...RAW_RESONATORS].sort(byName).map(r => `<option value="${r.id}" ${wp.signatureOf === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}
+              </select>
+            </div>
+
+            <div>
               <label class="block text-[11px] font-bold text-slate-300 mb-1">주요 키워드</label>
               <input type="text" value="${esc(wp.buffSummary)}" onchange="updateWeapon('${wp.id}', 'buffSummary', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-rose-400" placeholder="">
             </div>
@@ -1471,6 +1474,7 @@
       const oldName = WEAPONS[idx].name;
       if (field === 'image') WEAPONS[idx].image = resolveImageUrl(value, 'weapon');
       else if (field === 'rank') WEAPONS[idx].rank = parseInt(value) || 5;
+      else if (field === 'signatureOf' && !value) delete WEAPONS[idx].signatureOf;
       else WEAPONS[idx][field] = value;
       saveGameData();
 
@@ -2064,7 +2068,8 @@
           <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
               <img src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
-              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
+              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
+              ${w.pct != null ? `<span class="absolute top-1 right-1 z-10 px-1 py-0.5 rounded bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums" title="Prydwen 효율 (기준 무기 = 100%)">${Number(w.pct).toFixed(1)}%</span>` : ''}
             </div>
             <div class="border-t ${borderClass} py-1 px-1 bg-[#0e121a] flex items-center justify-center flex-shrink-0 z-10 relative overflow-hidden">
               <span class="weapon-name-text font-extrabold text-[11px] sm:text-xs text-slate-200 block whitespace-nowrap text-center leading-tight">${esc(w.name)}</span>
@@ -2100,6 +2105,17 @@
       document.getElementById('wp-detail-effect').innerHTML = formatWeaponEffect(wp.effect, wp.refine, level);
     }
 
+    // 전무 무기: 이미지 하단에 주인 표시 (누르면 그 공명자 상세로 이동)
+    function ownerStripHtml(wp) {
+      const owner = wp.signatureOf && RAW_RESONATORS.find(r => r.id === wp.signatureOf);
+      if (!owner) return '';
+      return `<button onclick="closeModal('weapon-detail-modal'); openDetailModal('${owner.id}')" title="${esc(owner.name)} 상세 보기"
+        class="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 pt-4 pb-1 px-1 bg-gradient-to-t from-black/90 via-black/70 to-transparent hover:from-amber-950/90 transition">
+        <img src="${owner.avatar}" class="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover ring-1 ring-amber-400/70 flex-shrink-0" crossorigin="anonymous">
+        <span class="text-[10px] sm:text-[11px] font-black text-amber-300 whitespace-nowrap truncate">${esc(owner.name)} 전무</span>
+      </button>`;
+    }
+
     function openWeaponDetailModal(weaponName) {
       const wp = WEAPONS.find(w => w.name === weaponName);
       if (!wp) return;
@@ -2107,8 +2123,9 @@
       
       const imgBox = document.getElementById('wp-detail-img-box');
       if (imgBox) {
-        imgBox.className = `w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner`;
-        imgBox.innerHTML = wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`;
+        imgBox.className = `sm:row-span-2 sm:row-start-1 sm:col-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner`;
+        imgBox.innerHTML = (wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`)
+          + ownerStripHtml(wp);
       }
       
       const titleEl = document.getElementById('wp-detail-title');
@@ -2259,7 +2276,7 @@
     // 추천 무기 분류: 전무 → 대체 한정 5성 → 상시 5성 → 4성 → 특수
     const WEAPON_TAGS = {
       sig:      { label: '전무', cls: 'bg-amber-500/90 border-amber-300 text-black' },
-      alt:      { label: '대체', cls: 'bg-[#2a1f0c]/90 border-amber-500/50 text-amber-300' },
+      alt:      { label: '한정 5성', cls: '', hidden: true },
       standard: { label: '상시', cls: 'bg-[#1b2232]/90 border-sky-400/50 text-sky-300' },
       r4:       { label: '4성', cls: 'bg-[#221a33]/90 border-violet-400/50 text-violet-300' },
       special:  { label: '특수', cls: 'bg-[#0f2620]/90 border-emerald-400/50 text-emerald-300' }
@@ -2310,7 +2327,7 @@
         echoAlts,
         buffs: Array.isArray(r.buffs) ? r.buffs : [],
         // 무기는 이름만 참조 (예전 '기본 무기' 자리채움 항목은 제거)
-        weapons: (r.weapons || []).filter(w => w?.name?.trim() && !(w.name === '기본 무기' && !findWeapon(w.name))).map(w => (w.tag ? { name: w.name, tag: w.tag } : { name: w.name })),
+        weapons: (r.weapons || []).filter(w => w?.name?.trim() && !(w.name === '기본 무기' && !findWeapon(w.name))).map(w => ({ name: w.name, ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null && w.pct !== '' ? { pct: Number(w.pct) } : {}) })),
         // 동료는 id로만 참조 (예전 이름 형식 변환)
         teammates: (r.teammates || []).map(tm => ({ id: tm.id || nameToId.get(tm.name) || '' })).filter(tm => tm.id)
       };
@@ -2423,6 +2440,7 @@
               <option value="">자동${(() => { const t = WEAPON_TAGS[weaponTag({ name: curName }, document.getElementById('edit-char-id')?.value)]; return t ? '·' + t.label : ''; })()}</option>
               ${Object.entries(WEAPON_TAGS).map(([k, t]) => `<option value="${k}" ${w.tag === k ? 'selected' : ''}>${t.label}</option>`).join('')}
             </select>
+            <input type="number" step="0.1" value="${w.pct ?? ''}" placeholder="%" title="효율 % (비우면 표시 안 함)" oninput="if (this.value === '') delete currentEditWeapons[${i}].pct; else currentEditWeapons[${i}].pct = parseFloat(this.value)" class="w-14 flex-shrink-0 bg-[#10141f] border border-slate-700 rounded-lg px-1.5 py-1.5 text-[11px] text-slate-200 text-center outline-none">
             <button type="button" onclick="removeEditorWeapon(${i})" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>`;
       }).join('');
@@ -2444,7 +2462,7 @@
     function updateEditorWeaponSelection(idx, name) {
       if (!currentEditWeapons[idx]) return;
       const matched = findWeapon(name);
-      currentEditWeapons[idx] = { name: matched ? matched.name : name, ...(currentEditWeapons[idx].tag ? { tag: currentEditWeapons[idx].tag } : {}) };
+      currentEditWeapons[idx] = { name: matched ? matched.name : name, ...(currentEditWeapons[idx].tag ? { tag: currentEditWeapons[idx].tag } : {}) };  // 무기 바뀌면 효율(%)은 비움
       renderEditorWeapons();
     }
     function addEditorWeapon() {
@@ -2541,7 +2559,7 @@
       currentSkillPriority = [...char.skillPriority];
       renderSkillPriorityEditor();
       
-      currentEditWeapons = (char.weapons || []).map(w => ({ name: w.name || '', ...(w.tag ? { tag: w.tag } : {}) }));
+      currentEditWeapons = (char.weapons || []).map(w => ({ name: w.name || '', ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null ? { pct: w.pct } : {}) }));
       renderEditorWeapons();
 
       currentEditTeammates = (char.teammates || []).map(t => ({ id: t.id }));
@@ -2661,7 +2679,7 @@
         echoSet: currentEchoBuilds[0],
         echoAlts: currentEchoBuilds.slice(1),
         skillPriority: currentSkillPriority,
-        weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => (w.tag ? { name: w.name, tag: w.tag } : { name: w.name })),
+        weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => ({ name: w.name, ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null && w.pct !== '' ? { pct: Number(w.pct) } : {}) })),
         teammates: currentEditTeammates.filter(t => t?.id?.trim()).map(t => ({ id: t.id.trim() })),
         buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb, duration: (b.duration || '').trim() })),
         targetStats: {

@@ -39,7 +39,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "솟아오르는 화염"}, {"name": "날카로운 봄"}, {"name": "천년의 회류"}, {"name": "야귀의 신념"}],
+      "weapons": [
+        {"name": "솟아오르는 화염", "pct": 108.39},
+        {"name": "날카로운 봄", "pct": 103.32},
+        {"name": "천년의 회류", "pct": 100.0},
+        {"name": "야귀의 신념", "pct": 85.5},
+        {"name": "영원의 붕괴", "pct": 84.52}
+      ],
       "teammates": [{"id": "camellya"}, {"id": "encore"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 1800, "regen": 100, "cr": 60, "cd": 210}
     },
@@ -97,7 +103,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "변주 스킬", "공명 스킬", "기본 공격"],
-      "weapons": [{"name": "세상 만물의 진리"}, {"name": "불빛의 심판"}],
+      "weapons": [
+        {"name": "세상 만물의 진리", "pct": 106.2},
+        {"name": "불빛의 심판", "pct": 105.3},
+        {"name": "물결의 파동", "pct": 100.0},
+        {"name": "거침없는 비상", "pct": 88.9},
+        {"name": "천상의 나선", "pct": 86.5}
+      ],
       "teammates": [{"id": "lynae"}, {"id": "zhezhi"}, {"id": "sanhua"}],
       "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 65, "cd": 240}
     },
@@ -117,6 +129,7 @@
       "avatar": "Zhezhi/T_IconRoleHead256_27_UI",
       "sprite": "Zhezhi/T_IconRole_Pile_zhezhi_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "하늘의 합주곡", "count": 5}],
         "mainEcho": "악몽 · 반디의 군세",
         "image": "T_IconMonsterHead_34013_UI",
@@ -129,9 +142,24 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "옥수 비단"}, {"name": "바다의 속삭임"}, {"name": "잊혀진 피안의 슬픈 악장"}],
+      "weapons": [{"name": "옥수 비단", "pct": 100.0}, {"name": "바다의 속삭임", "pct": 95.8}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 94.6}, {"name": "청음", "pct": 80.7}],
       "teammates": [{"id": "carlotta"}, {"id": "jinhsi"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 130, "cr": 70, "cd": 290}
+      "targetStats": {"type": "atk", "base": 1800, "regen": 130, "cr": 70, "cd": 290},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "youhu",
@@ -158,7 +186,7 @@
         ]
       },
       "skillPriority": ["공명 스킬", "공명 회로", "공명 해방", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "바람의 악센트"}, {"name": "21형 권갑 · 아이언 팬텀"}, {"name": "천상의 나선"}],
+      "weapons": [{"name": "바람의 악센트"}, {"name": "21형 권갑 · 아이언 팬텀"}],
       "teammates": [{"id": "yinlin"}, {"id": "zhezhi"}, {"id": "mortefi"}],
       "targetStats": {"type": "atk", "base": 1300, "regen": 100, "cr": 60, "cd": 210}
     },
@@ -187,7 +215,14 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 스킬", "공명 회로", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "죽음과 춤"}, {"name": "위상의 파동"}, {"name": "숲속의 아리아"}],
+      "weapons": [
+        {"name": "죽음과 춤", "pct": 100.0},
+        {"name": "위상의 파동", "pct": 95.1},
+        {"name": "숲속의 아리아", "pct": 90.3},
+        {"name": "부동의 안개", "pct": 87.8},
+        {"name": "불멸의 성화", "pct": 76.2},
+        {"name": "역설의 격류", "pct": 75.8}
+      ],
       "teammates": [{"id": "lynae"}, {"id": "zhezhi"}, {"id": "brant"}],
       "targetStats": {"type": "atk", "base": 2350, "regen": 130, "cr": 70, "cd": 290}
     },
@@ -219,7 +254,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "기본 공격", "공명 회로", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "서린 불꽃"}, {"name": "솟아오르는 화염"}, {"name": "푸른 의지"}, {"name": "천년의 회류"}],
+      "weapons": [
+        {"name": "서린 불꽃", "pct": 100.0},
+        {"name": "솟아오르는 화염", "pct": 83.0},
+        {"name": "푸른 의지", "pct": 81.2},
+        {"name": "천년의 회류", "pct": 82.3},
+        {"name": "예리한 날개깃", "pct": 78.1}
+      ],
       "teammates": [{"id": "lucilla"}, {"id": "lynae"}, {"id": "suisui"}],
       "targetStats": {"type": "atk", "base": 2500, "regen": 120, "cr": 75, "cd": 260}
     },
@@ -253,7 +294,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 스킬", "공명 회로", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "프리즈 프레임"}, {"name": "바다의 속삭임"}, {"name": "꼭두각시의 손"}],
+      "weapons": [
+        {"name": "프리즈 프레임", "pct": 100.0},
+        {"name": "바다의 속삭임", "pct": 95.5},
+        {"name": "꼭두각시의 손", "pct": 95.4},
+        {"name": "눈부신 빛", "pct": 90.1},
+        {"name": "청음", "pct": 88.6}
+      ],
       "teammates": [{"id": "hiyuki"}, {"id": "sigrika"}, {"id": "phrolova"}],
       "targetStats": {"type": "atk", "base": 2400, "regen": 100, "cr": 75, "cd": 265}
     },
@@ -285,7 +332,7 @@
         ]
       },
       "skillPriority": ["변주 스킬", "공명 회로", "공명 스킬", "공명 해방", "기본 공격"],
-      "weapons": [{"name": "노을에 깃든 이슬"}, {"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "심해의 메아리"}],
+      "weapons": [{"name": "노을에 깃든 이슬", "pct": 100.0}, {"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "심해의 메아리"}],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "hiyuki"}, {"id": "hsin"}],
       "targetStats": {"type": "hp", "base": 40000, "regen": 260, "cr": 20, "cd": 150}
     },
@@ -314,7 +361,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "죽음과 춤"}, {"name": "부동의 안개"}, {"name": "뇌전"}, {"name": "역설의 격류"}],
+      "weapons": [{"name": "죽음과 춤", "pct": 108.35}, {"name": "부동의 안개", "pct": 100.0}, {"name": "뇌전", "pct": 84.49}, {"name": "역설의 격류", "pct": 82.43}],
       "teammates": [{"id": "brant"}, {"id": "changli"}, {"id": "lupa"}],
       "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 55, "cd": 210}
     },
@@ -343,7 +390,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "꼭두각시의 손"}, {"name": "옥수 비단"}],
+      "weapons": [{"name": "꼭두각시의 손", "pct": 110.0}, {"name": "옥수 비단", "pct": 104.4}, {"name": "눈부신 빛", "pct": 94.4}, {"name": "청음", "pct": 94.4}],
       "teammates": [{"id": "lupa"}, {"id": "sanhua"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 1900, "regen": 120, "cr": 70, "cd": 270}
     },
@@ -372,7 +419,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "죽음과 춤"}, {"name": "부동의 안개"}, {"name": "역설의 격류"}, {"name": "천공의 순간"}],
+      "weapons": [{"name": "죽음과 춤", "pct": 106.12}, {"name": "부동의 안개", "pct": 100.0}, {"name": "역설의 격류", "pct": 83.92}, {"name": "천공의 순간", "pct": 83.64}],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "galbrena"}, {"id": "jiyan"}],
       "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215}
     },
@@ -404,7 +451,13 @@
         ]
       },
       "skillPriority": ["공명 스킬", "공명 회로", "공명 해방", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "솟아오르는 화염"}, {"name": "푸른 의지"}, {"name": "서린 불꽃"}, {"name": "천년의 회류"}],
+      "weapons": [
+        {"name": "솟아오르는 화염", "pct": 100.0},
+        {"name": "푸른 의지", "pct": 90.4},
+        {"name": "서린 불꽃", "pct": 90.0},
+        {"name": "천년의 회류", "pct": 91.1},
+        {"name": "마음의 닻", "pct": 81.4}
+      ],
       "teammates": [{"id": "brant"}, {"id": "lupa"}, {"id": "aemeath"}],
       "targetStats": {"type": "atk", "base": 2500, "regen": 120, "cr": 70, "cd": 260}
     },
@@ -436,7 +489,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "기본 공격", "공명 해방", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "흔들리지 않는 용기"}, {"name": "레이저 변형"}, {"name": "혈맹의 약속"}],
+      "weapons": [{"name": "흔들리지 않는 용기", "pct": 100.0}, {"name": "레이저 변형", "pct": 77.2}, {"name": "혈맹의 약속", "pct": 75.1}, {"name": "천년의 회류", "pct": 71.3}],
       "teammates": [{"id": "lupa"}, {"id": "galbrena"}, {"id": "aemeath"}],
       "targetStats": {"type": "atk", "base": 1700, "regen": 270, "cr": 75, "cd": 220}
     },
@@ -468,7 +521,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "변주 스킬", "공명 회로", "기본 공격", "공명 스킬"],
-      "weapons": [{"name": "불길"}, {"name": "태평성대"}, {"name": "쿠모키리(曇斬)"}],
+      "weapons": [
+        {"name": "불길", "pct": 100.0},
+        {"name": "태평성대", "pct": 88.0},
+        {"name": "쿠모키리(曇斬)", "pct": 87.5},
+        {"name": "멸망의 주파수", "pct": 75.8},
+        {"name": "금빛 하늘", "pct": 74.9}
+      ],
       "teammates": [{"id": "jingran"}, {"id": "aemeath"}, {"id": "mornye"}],
       "targetStats": {"type": "atk", "base": 2300, "regen": 120, "cr": 70, "cd": 260}
     },
@@ -497,7 +556,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "얽혀진 빛과 그림자"}, {"name": "위상의 파동"}, {"name": "스펙트럼 블래스터"}],
+      "weapons": [
+        {"name": "얽혀진 빛과 그림자", "pct": 100.0},
+        {"name": "위상의 파동", "pct": 91.8},
+        {"name": "스펙트럼 블래스터", "pct": 85.7},
+        {"name": "부동의 안개", "pct": 83.0},
+        {"name": "태양 불꽃", "pct": 77.5}
+      ],
       "teammates": [{"id": "lupa"}, {"id": "mornye"}, {"id": "qiuyuan"}],
       "targetStats": {"type": "atk", "base": 2550, "regen": 120, "cr": 60, "cd": 285}
     },
@@ -558,7 +623,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "영원한 샛별"}, {"name": "날카로운 봄"}, {"name": "푸른 의지"}, {"name": "천년의 회류"}],
+      "weapons": [
+        {"name": "영원한 샛별", "pct": 100.0},
+        {"name": "날카로운 봄", "pct": 84.5},
+        {"name": "푸른 의지", "pct": 84.3},
+        {"name": "천년의 회류", "pct": 86.6},
+        {"name": "예리한 날개깃", "pct": 79.0}
+      ],
       "teammates": [{"id": "lynae"}, {"id": "mornye"}, {"id": "denia"}],
       "targetStats": {"type": "atk", "base": 2600, "regen": 120, "cr": 70, "cd": 270}
     },
@@ -590,7 +661,12 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "위조된 작은별"}, {"name": "꼭두각시의 손"}, {"name": "잊혀진 피안의 슬픈 악장"}],
+      "weapons": [
+        {"name": "위조된 작은별", "pct": 100.0},
+        {"name": "꼭두각시의 손", "pct": 91.02},
+        {"name": "잊혀진 피안의 슬픈 악장", "pct": 89.32},
+        {"name": "청음", "pct": 80.88}
+      ],
       "teammates": [{"id": "aemeath"}, {"id": "qingxiao"}, {"id": "luuk_herssen"}],
       "targetStats": {"type": "atk", "base": 2300, "regen": 120, "cr": 75, "cd": 275}
     },
@@ -619,7 +695,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "수많은 인도"}, {"name": "천둥벼락을 다스리는 권능"}, {"name": "청룡의 천장"}],
+      "weapons": [{"name": "수많은 인도", "pct": 100.0}, {"name": "천둥벼락을 다스리는 권능", "pct": 85.5}, {"name": "청룡의 천장", "pct": 82.3}, {"name": "금빛 하늘", "pct": 73.0}],
       "teammates": [{"id": "iuno"}, {"id": "shorekeeper"}, {"id": "lupa"}],
       "targetStats": {"type": "hp", "base": 50000, "regen": 120, "cr": 45.5, "cd": 300}
     },
@@ -648,7 +724,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "태평성대"}, {"name": "청룡의 천장"}, {"name": "가을의 무늬"}],
+      "weapons": [
+        {"name": "불길", "pct": 100.72},
+        {"name": "태평성대", "pct": 98.37},
+        {"name": "푸른물결의 빛", "pct": 100.0},
+        {"name": "가을의 무늬", "pct": 84.06},
+        {"name": "금빛 하늘", "pct": 83.29}
+      ],
       "teammates": [{"id": "lynae"}, {"id": "yinlin"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 2200, "regen": 130, "cr": 65, "cd": 260}
     },
@@ -680,7 +762,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "꼭두각시의 손"}, {"name": "바다의 속삭임"}, {"name": "옥수 비단"}],
+      "weapons": [{"name": "꼭두각시의 손", "pct": 100.0}, {"name": "바다의 속삭임", "pct": 96.9}, {"name": "옥수 비단", "pct": 96.6}, {"name": "청음", "pct": 87.9}],
       "teammates": [{"id": "iuno"}, {"id": "jinhsi"}, {"id": "xiangli_yao"}],
       "targetStats": {"type": "atk", "base": 1850, "regen": 120, "cr": 80, "cd": 270}
     },
@@ -709,7 +791,12 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 스킬", "공명 회로", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "팔방의 천추"}, {"name": "전우의 의리"}, {"name": "황금 권갑"}, {"name": "수호자의 권갑 · 강력"}],
+      "weapons": [
+        {"name": "팔방의 천추", "pct": 101.32},
+        {"name": "전우의 의리", "pct": 100.0},
+        {"name": "황금 권갑", "pct": 93.03},
+        {"name": "수호자의 권갑 · 강력", "pct": 90.36}
+      ],
       "teammates": [{"id": "jinhsi"}, {"id": "shorekeeper"}, {"id": "verina"}],
       "targetStats": {"type": "def", "base": 1200, "regen": 100, "cr": 60, "cd": 250}
     },
@@ -738,7 +825,14 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "태평성대"}, {"name": "쿠모키리(曇斬)"}, {"name": "불길"}],
+      "weapons": [
+        {"name": "태평성대", "pct": 100.0},
+        {"name": "쿠모키리(曇斬)", "pct": 89.3},
+        {"name": "불길", "pct": 87.9},
+        {"name": "푸른물결의 빛", "pct": 82.0},
+        {"name": "금빛 하늘", "pct": 73.9},
+        {"name": "멸망의 주파수", "pct": 72.2}
+      ],
       "teammates": [{"id": "hsin"}, {"id": "zhezhi"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 2000, "regen": 110, "cr": 72, "cd": 245}
     },
@@ -767,7 +861,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "변주 스킬", "공명 스킬", "기본 공격"],
-      "weapons": [{"name": "세상 만물의 진리"}, {"name": "팔방의 천추"}, {"name": "불빛의 심판"}],
+      "weapons": [
+        {"name": "세상 만물의 진리", "pct": 100.0},
+        {"name": "팔방의 천추", "pct": 97.6},
+        {"name": "불빛의 심판", "pct": 89.3},
+        {"name": "거침없는 비상", "pct": 81.4},
+        {"name": "황금 권갑", "pct": 79.7}
+      ],
       "teammates": [{"id": "lynae"}, {"id": "yinlin"}, {"id": "mornye"}],
       "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 65, "cd": 280}
     },
@@ -796,7 +896,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "천둥벼락을 다스리는 권능"}, {"name": "청룡의 천장"}, {"name": "태평성대"}],
+      "weapons": [{"name": "천둥벼락을 다스리는 권능", "pct": 100.0}, {"name": "청룡의 천장", "pct": 93.6}, {"name": "태평성대", "pct": 82.0}, {"name": "금빛 하늘", "pct": 75.4}],
       "teammates": [{"id": "iuno"}, {"id": "shorekeeper"}, {"id": "lynae"}],
       "targetStats": {"type": "atk", "base": 2750, "regen": 125, "cr": 73, "cd": 220}
     },
@@ -828,7 +928,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "기본 공격", "공명 스킬", "변주 스킬", "공명 해방"],
-      "weapons": [{"name": "꼭두각시의 손"}, {"name": "잊혀진 피안의 슬픈 악장"}],
+      "weapons": [{"name": "꼭두각시의 손"}, {"name": "잊혀진 피안의 슬픈 악장"}, {"name": "허위의 왈츠"}],
       "teammates": [{"id": "hsin"}, {"id": "rover_electro"}, {"id": "phrolova"}],
       "targetStats": {"type": "atk", "base": 1500, "regen": 125, "cr": 60, "cd": 215}
     },
@@ -860,7 +960,14 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "스컬 스래셔"}, {"name": "스펙트럼 블래스터"}, {"name": "위상의 파동"}, {"name": "부동의 안개"}],
+      "weapons": [
+        {"name": "스컬 스래셔", "pct": 100.0},
+        {"name": "스펙트럼 블래스터", "pct": 93.0},
+        {"name": "위상의 파동", "pct": 90.7},
+        {"name": "부동의 안개", "pct": 83.3},
+        {"name": "태양 불꽃", "pct": 77.7},
+        {"name": "26형 권총 · 맹렬한 돌격", "pct": 75.9}
+      ],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "lucy"}, {"id": "suisui"}],
       "targetStats": {"type": "atk", "base": 2300, "regen": 125, "cr": 70, "cd": 285}
     },
@@ -889,7 +996,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "솟아오르는 화염"}, {"name": "날카로운 봄"}],
+      "weapons": [{"name": "솟아오르는 화염", "pct": 100.0}, {"name": "날카로운 봄", "pct": 93.0}, {"name": "천년의 회류", "pct": 91.4}, {"name": "예리한 날개깃", "pct": 81.4}],
       "teammates": [{"id": "hsin"}, {"id": "suisui"}, {"id": "chisa"}],
       "targetStats": {"type": "atk", "base": 2100, "regen": 118, "cr": 72, "cd": 235}
     },
@@ -922,7 +1029,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "옥궐에 피는 꽃"}, {"name": "잊혀진 피안의 슬픈 악장"}, {"name": "꼭두각시의 손"}],
+      "weapons": [{"name": "옥궐에 피는 꽃", "pct": 100.0}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 79.7}, {"name": "꼭두각시의 손", "pct": 76.2}, {"name": "청음", "pct": 64.6}],
       "teammates": [{"id": "rover_electro"}, {"id": "suisui"}, {"id": "jinhsi"}],
       "targetStats": {"type": "atk", "base": 2100, "regen": 112, "cr": 65, "cd": 250}
     },
@@ -984,7 +1091,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 스킬", "공명 회로", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "솟아오르는 화염"}, {"name": "천년의 회류"}, {"name": "천공의 광경"}, {"name": "영원의 붕괴"}],
+      "weapons": [{"name": "솟아오르는 화염", "pct": 102.39}, {"name": "천년의 회류", "pct": 100.0}, {"name": "천공의 광경", "pct": 82.96}, {"name": "영원의 붕괴", "pct": 82.82}],
       "teammates": [{"id": "carlotta"}, {"id": "xiangli_yao"}, {"id": "changli"}],
       "targetStats": {"type": "atk", "base": 1800, "regen": 107, "cr": 60, "cd": 210}
     },
@@ -1013,7 +1120,7 @@
         ]
       },
       "skillPriority": ["기본 공격", "공명 스킬", "공명 해방", "공명 회로", "변주 스킬"],
-      "weapons": [{"name": "죽음과 춤"}, {"name": "숲속의 아리아"}, {"name": "부동의 안개"}, {"name": "역설의 격류"}],
+      "weapons": [{"name": "죽음과 춤", "pct": 102.6}, {"name": "숲속의 아리아", "pct": 101.0}, {"name": "부동의 안개", "pct": 100.0}, {"name": "역설의 격류", "pct": 85.5}],
       "teammates": [{"id": "ciaccona"}, {"id": "rover_aero"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 1600, "regen": 145, "cr": 60, "cd": 215}
     },
@@ -1042,7 +1149,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "청룡의 천장"}, {"name": "천둥벼락을 다스리는 권능"}, {"name": "태평성대"}],
+      "weapons": [{"name": "청룡의 천장", "pct": 100.0}, {"name": "천둥벼락을 다스리는 권능", "pct": 90.3}, {"name": "태평성대", "pct": 88.3}, {"name": "금빛 하늘", "pct": 83.2}],
       "teammates": [{"id": "iuno"}, {"id": "phrolova"}, {"id": "ciaccona"}],
       "targetStats": {"type": "atk", "base": 2250, "regen": 130, "cr": 70, "cd": 260}
     },
@@ -1071,7 +1178,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "팔방의 천추"}, {"name": "세상 만물의 진리"}],
+      "weapons": [
+        {"name": "팔방의 천추", "pct": 114.7},
+        {"name": "세상 만물의 진리", "pct": 108.3},
+        {"name": "물결의 파동", "pct": 100.0},
+        {"name": "거침없는 비상", "pct": 91.2},
+        {"name": "원능의 권갑 · 견습IV"}
+      ],
       "teammates": [{"id": "iuno"}, {"id": "xiangli_yao"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 1700, "regen": 160, "cr": 70, "cd": 245}
     },
@@ -1100,7 +1213,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "혈맹의 약속"}],
+      "weapons": [{"name": "혈맹의 약속", "pct": 121.12}],
       "teammates": [{"id": "cartethyia"}, {"id": "ciaccona"}, {"id": "iuno"}],
       "targetStats": {"type": "atk", "base": 1900, "regen": 150, "cr": 60, "cd": 200}
     },
@@ -1129,7 +1242,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "기본 공격", "공명 회로", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "숲속의 아리아"}, {"name": "위상의 파동"}, {"name": "스펙트럼 블래스터"}],
+      "weapons": [
+        {"name": "숲속의 아리아", "pct": 100.0},
+        {"name": "위상의 파동", "pct": 87.3},
+        {"name": "스펙트럼 블래스터", "pct": 84.2},
+        {"name": "부동의 안개", "pct": 79.3},
+        {"name": "작별의 로맨스", "pct": 72.7}
+      ],
       "teammates": [{"id": "cartethyia"}, {"id": "sigrika"}, {"id": "chisa"}],
       "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 75, "cd": 275}
     },
@@ -1158,7 +1277,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "숙명에 맞서는 관"}, {"name": "날카로운 봄"}, {"name": "솟아오르는 화염"}, {"name": "예리한 날개깃"}],
+      "weapons": [{"name": "숙명에 맞서는 관", "pct": 100.0}, {"name": "예리한 날개깃", "pct": 79.1}, {"name": "수호자의 직검 · 기민", "pct": 75.8}],
       "teammates": [{"id": "ciaccona"}, {"id": "chisa"}, {"id": "rover_aero"}],
       "targetStats": {"type": "hp", "base": 50000, "regen": 120, "cr": 70, "cd": 260}
     },
@@ -1187,7 +1306,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "세상 만물의 진리"}, {"name": "팔방의 천추"}, {"name": "거침없는 비상"}],
+      "weapons": [{"name": "세상 만물의 진리", "pct": 100.0}, {"name": "팔방의 천추", "pct": 98.7}, {"name": "거침없는 비상", "pct": 81.0}, {"name": "황금 권갑", "pct": 80.3}],
       "teammates": [{"id": "jingran"}, {"id": "augusta"}, {"id": "lynae"}],
       "targetStats": {"type": "atk", "base": 2300, "regen": 130, "cr": 80, "cd": 260}
     },
@@ -1219,7 +1338,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "변주 스킬", "공명 스킬", "기본 공격"],
-      "weapons": [{"name": "푸른 의지"}, {"name": "날카로운 봄"}, {"name": "솟아오르는 화염"}, {"name": "천년의 회류"}],
+      "weapons": [
+        {"name": "푸른 의지", "pct": 100.0},
+        {"name": "날카로운 봄", "pct": 85.2},
+        {"name": "솟아오르는 화염", "pct": 84.4},
+        {"name": "천년의 회류", "pct": 84.1},
+        {"name": "예리한 날개깃", "pct": 80.1}
+      ],
       "teammates": [{"id": "sigrika"}, {"id": "phrolova"}, {"id": "galbrena"}],
       "targetStats": {"type": "atk", "base": 2350, "regen": 130, "cr": 70, "cd": 260}
     },
@@ -1248,7 +1373,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "솔스원의 해석"}, {"name": "불빛의 심판"}, {"name": "격동의 조력"}],
+      "weapons": [{"name": "솔스원의 해석", "pct": 100.0}, {"name": "불빛의 심판", "pct": 85.2}, {"name": "격동의 조력", "pct": 82.0}, {"name": "거침없는 비상", "pct": 76.6}],
       "teammates": [{"id": "qiuyuan"}, {"id": "lucilla"}, {"id": "ciaccona"}],
       "targetStats": {"type": "atk", "base": 2600, "regen": 150, "cr": 70, "cd": 270}
     },
@@ -1277,7 +1402,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "옥빛 구름"}, {"name": "날카로운 봄"}, {"name": "아득히 푸른 하늘"}],
+      "weapons": [
+        {"name": "옥빛 구름", "pct": 100.0},
+        {"name": "날카로운 봄", "pct": 81.1},
+        {"name": "아득히 푸른 하늘", "pct": 79.7},
+        {"name": "천년의 회류", "pct": 78.5},
+        {"name": "예리한 날개깃", "pct": 70.3}
+      ],
       "teammates": [{"id": "denia"}, {"id": "mornye"}, {"id": "lynae"}],
       "targetStats": {"type": "atk", "base": 2400, "regen": 120, "cr": 100, "cd": 230}
     },
@@ -1306,7 +1437,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "솟아오르는 화염"}, {"name": "천년의 회류"}, {"name": "상승의 서녘"}, {"name": "영원의 붕괴"}],
+      "weapons": [{"name": "솟아오르는 화염", "pct": 107.85}, {"name": "천년의 회류", "pct": 100.0}, {"name": "상승의 서녘", "pct": 86.05}, {"name": "영원의 붕괴", "pct": 85.72}],
       "teammates": [{"id": "phoebe"}, {"id": "zani"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 1800, "regen": 120, "cr": 60, "cd": 210}
     },
@@ -1338,7 +1469,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}, {"name": "심해의 메아리"}],
+      "weapons": [{"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}],
       "teammates": [{"id": "jinhsi"}, {"id": "jiyan"}, {"id": "encore"}],
       "targetStats": {"type": "atk", "base": 1500, "regen": 225, "cr": 60, "cd": 210}
     },
@@ -1367,7 +1498,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "태평성대"}, {"name": "청룡의 천장"}, {"name": "가을의 무늬"}],
+      "weapons": [{"name": "태평성대", "pct": 108.33}, {"name": "청룡의 천장", "pct": 101.11}, {"name": "가을의 무늬", "pct": 94.03}],
       "teammates": [{"id": "jinhsi"}, {"id": "carlotta"}, {"id": "verina"}],
       "targetStats": {"type": "atk", "base": 2000, "regen": 142, "cr": 65, "cd": 210}
     },
@@ -1400,7 +1531,7 @@
         ]
       },
       "skillPriority": ["변주 스킬", "공명 스킬", "기본 공격", "공명 회로", "공명 해방"],
-      "weapons": [{"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}, {"name": "심해의 메아리"}],
+      "weapons": [{"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}],
       "teammates": [{"id": "augusta"}, {"id": "carlotta"}, {"id": "zani"}],
       "targetStats": {"type": "hp", "base": 20000, "regen": 230, "cr": 60, "cd": 220}
     },
@@ -1432,7 +1563,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "광휘의 찬송가"}, {"name": "잊혀진 피안의 슬픈 악장"}, {"name": "꼭두각시의 손"}],
+      "weapons": [{"name": "광휘의 찬송가", "pct": 100.0}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 98.2}, {"name": "꼭두각시의 손", "pct": 97.6}, {"name": "청음", "pct": 86.4}],
       "teammates": [{"id": "lynae"}, {"id": "rover_spectro"}, {"id": "zani"}],
       "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215}
     },
@@ -1450,18 +1581,18 @@
       "sprite": "Zani/T_IconRole_Pile_zanni_UI",
       "echoSet": {
         "sets": [{"name": "영원의 광채", "count": 5}],
-        "mainEcho": "악몽 · 애곡하는 아익스",
-        "image": "T_IconMonsterHead_YZ_33020_UI",
+        "mainEcho": "카피타네우스",
+        "image": "T_IconMonsterHead_32033_UI",
         "echoes": [
-          {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
           {"cost": "3", "stat": "회절 피해 보너스"},
+          {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
           {"cost": "3", "stat": "회절 피해 보너스"},
           {"cost": "1", "stat": "공격력%"},
           {"cost": "1", "stat": "공격력%"}
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "불빛의 심판"}, {"name": "희비극"}, {"name": "팔방의 천추"}],
+      "weapons": [{"name": "불빛의 심판", "pct": 100.0}, {"name": "희비극", "pct": 93.7}, {"name": "팔방의 천추", "pct": 85.0}, {"name": "거침없는 비상", "pct": 72.6}],
       "teammates": [{"id": "phoebe"}, {"id": "rover_spectro"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 1800, "regen": 115, "cr": 65, "cd": 210}
     },
@@ -1490,7 +1621,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "쿠모키리(曇斬)"}, {"name": "불길"}, {"name": "태평성대"}],
+      "weapons": [
+        {"name": "쿠모키리(曇斬)", "pct": 100.0},
+        {"name": "불길", "pct": 88.4},
+        {"name": "태평성대", "pct": 82.1},
+        {"name": "가을의 무늬", "pct": 69.8},
+        {"name": "용서의 명상록", "pct": 69.0}
+      ],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "aemeath"}, {"id": "hiyuki"}],
       "targetStats": {"type": "atk", "base": 2000, "regen": 125, "cr": 65, "cd": 210}
     },
@@ -1523,7 +1660,14 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "스펙트럼 블래스터"}, {"name": "위상의 파동"}, {"name": "숲속의 아리아"}, {"name": "부동의 안개"}],
+      "weapons": [
+        {"name": "스펙트럼 블래스터", "pct": 100.0},
+        {"name": "위상의 파동", "pct": 93.9},
+        {"name": "숲속의 아리아", "pct": 90.0},
+        {"name": "부동의 안개", "pct": 88.7},
+        {"name": "태양 불꽃", "pct": 82.7},
+        {"name": "26형 권총 · 맹렬한 돌격", "pct": 80.3}
+      ],
       "teammates": [{"id": "aemeath"}, {"id": "mornye"}, {"id": "qingxiao"}],
       "targetStats": {"type": "atk", "base": 2000, "regen": 120, "cr": 65, "cd": 265}
     },
@@ -1552,7 +1696,14 @@
         ]
       },
       "skillPriority": ["공명 스킬", "공명 해방", "기본 공격", "공명 회로", "변주 스킬"],
-      "weapons": [{"name": "한낮의 의지"}, {"name": "격동의 조력"}, {"name": "불빛의 심판"}],
+      "weapons": [
+        {"name": "한낮의 의지", "pct": 100.0},
+        {"name": "격동의 조력", "pct": 87.5},
+        {"name": "불빛의 심판", "pct": 84.6},
+        {"name": "물결의 파동", "pct": 75.7},
+        {"name": "천상의 나선", "pct": 68.8},
+        {"name": "거침없는 비상", "pct": 66.9}
+      ],
       "teammates": [{"id": "denia"}, {"id": "lynae"}, {"id": "mornye"}],
       "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 70, "cd": 235}
     },
@@ -1585,7 +1736,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "기본 공격", "공명 회로", "공명 스킬", "변주 스킬"],
-      "weapons": [{"name": "스펙트럴 트리거"}, {"name": "얽혀진 빛과 그림자"}, {"name": "위상의 파동"}],
+      "weapons": [
+        {"name": "스펙트럴 트리거", "pct": 100.0},
+        {"name": "얽혀진 빛과 그림자", "pct": 88.3},
+        {"name": "스컬 스래셔", "pct": 83.6},
+        {"name": "부동의 안개", "pct": 78.0},
+        {"name": "태양 불꽃", "pct": 74.2}
+      ],
       "teammates": [{"id": "rebecca"}, {"id": "mornye"}, {"id": "shorekeeper"}],
       "targetStats": {"type": "atk", "base": 2100, "regen": 125, "cr": 65, "cd": 210}
     },
@@ -1614,7 +1771,7 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 스킬", "공명 해방", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "기묘한 울림"}, {"name": "장야의 불빛"}],
+      "weapons": [{"name": "기묘한 울림", "pct": 100.0}, {"name": "장야의 불빛", "pct": 107.54}],
       "teammates": [{"id": "carlotta"}, {"id": "jinhsi"}, {"id": "verina"}],
       "targetStats": {"type": "def", "base": 1150, "regen": 126, "cr": 5, "cd": 150}
     },
@@ -1631,6 +1788,7 @@
       "avatar": "Danjin/T_IconRoleHead256_10_UI",
       "sprite": "Danjin/T_IconRole_Pile_micai_UI",
       "echoSet": {
+        "label": "서브딜",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "음험한 백로",
         "image": "T_IconMonsterHead_995_UI",
@@ -1643,9 +1801,30 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 스킬", "공명 해방", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "솟아오르는 화염"}, {"name": "천년의 회류"}, {"name": "야귀의 신념"}, {"name": "영원의 붕괴"}],
+      "weapons": [
+        {"name": "솟아오르는 화염", "pct": 105.7},
+        {"name": "날카로운 봄", "pct": 100.34},
+        {"name": "천년의 회류", "pct": 100.0},
+        {"name": "야귀의 신념", "pct": 81.08},
+        {"name": "영원의 붕괴", "pct": 80.72}
+      ],
       "teammates": [{"id": "phrolova"}, {"id": "cantarella"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 105, "cr": 70, "cd": 235}
+      "targetStats": {"type": "atk", "base": 2000, "regen": 105, "cr": 70, "cd": 235},
+      "echoAlts": [
+        {
+          "label": "메인딜",
+          "sets": [{"name": "어둠의 장막", "count": 5}],
+          "mainEcho": "로렐라이",
+          "image": "T_IconMonsterHead_33011_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "camellya",
@@ -1672,7 +1851,14 @@
         ]
       },
       "skillPriority": ["공명 스킬", "공명 회로", "공명 해방", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "날카로운 봄"}, {"name": "푸른 의지"}, {"name": "서린 불꽃"}],
+      "weapons": [
+        {"name": "날카로운 봄", "pct": 100.0},
+        {"name": "푸른 의지", "pct": 90.1},
+        {"name": "서린 불꽃", "pct": 89.5},
+        {"name": "천년의 회류", "pct": 89.2},
+        {"name": "예리한 날개깃", "pct": 77.7},
+        {"name": "천공의 광경", "pct": 76.1}
+      ],
       "teammates": [{"id": "lynae"}, {"id": "roccia"}, {"id": "sanhua"}],
       "targetStats": {"type": "atk", "base": 2450, "regen": 120, "cr": 65, "cd": 280}
     },
@@ -1701,7 +1887,7 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "날카로운 봄"}, {"name": "솟아오르는 화염"}, {"name": "천년의 회류"}, {"name": "마음의 닻"}],
+      "weapons": [{"name": "날카로운 봄", "pct": 104.84}, {"name": "솟아오르는 화염", "pct": 104.15}, {"name": "천년의 회류", "pct": 100.0}, {"name": "마음의 닻", "pct": 91.24}],
       "teammates": [{"id": "roccia"}, {"id": "shorekeeper"}, {"id": "danjin"}],
       "targetStats": {"type": "atk", "base": 2000, "regen": 120, "cr": 65, "cd": 270}
     },
@@ -1721,6 +1907,7 @@
       "avatar": "Roccia/T_IconRoleHead256_33_UI",
       "sprite": "Roccia/T_IconRole_Pile_luokeke_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "어둠의 장막", "count": 5}],
         "mainEcho": "악몽 · 음험한 백로",
         "image": "T_IconMonsterHead_YZ_33015_UI",
@@ -1733,9 +1920,31 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "희비극"}, {"name": "솔스원의 해석"}, {"name": "불빛의 심판"}],
+      "weapons": [
+        {"name": "희비극", "pct": 100.0},
+        {"name": "솔스원의 해석", "pct": 90.0},
+        {"name": "불빛의 심판", "pct": 88.2},
+        {"name": "물결의 파동", "pct": 81.2},
+        {"name": "거침없는 비상", "pct": 72.9},
+        {"name": "천상의 나선", "pct": 72.6}
+      ],
       "teammates": [{"id": "phrolova"}, {"id": "cantarella"}, {"id": "camellya"}],
-      "targetStats": {"type": "atk", "base": 2250, "regen": 130, "cr": 65, "cd": 280}
+      "targetStats": {"type": "atk", "base": 2250, "regen": 130, "cr": 65, "cd": 280},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "cantarella",
@@ -1765,7 +1974,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 스킬", "공명 해방", "기본 공격", "변주 스킬"],
-      "weapons": [{"name": "바다의 속삭임"}, {"name": "옥수 비단"}, {"name": "꼭두각시의 손"}],
+      "weapons": [
+        {"name": "바다의 속삭임", "pct": 100.0},
+        {"name": "옥수 비단", "pct": 87.0},
+        {"name": "꼭두각시의 손", "pct": 85.0},
+        {"name": "눈부신 빛", "pct": 77.9},
+        {"name": "청음", "pct": 77.8}
+      ],
       "teammates": [{"id": "phrolova"}, {"id": "shorekeeper"}, {"id": "roccia"}],
       "targetStats": {"type": "atk", "base": 1800, "regen": 130, "cr": 70, "cd": 280}
     },
@@ -1797,7 +2012,13 @@
         ]
       },
       "skillPriority": ["공명 해방", "기본 공격", "공명 회로", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "잊혀진 피안의 슬픈 악장"}, {"name": "꼭두각시의 손"}, {"name": "바다의 속삭임"}],
+      "weapons": [
+        {"name": "잊혀진 피안의 슬픈 악장", "pct": 100.0},
+        {"name": "꼭두각시의 손", "pct": 82.0},
+        {"name": "바다의 속삭임", "pct": 80.2},
+        {"name": "눈부신 빛", "pct": 66.9},
+        {"name": "청음", "pct": 64.9}
+      ],
       "teammates": [{"id": "cantarella"}, {"id": "qiuyuan"}, {"id": "roccia"}],
       "targetStats": {"type": "atk", "base": 2000, "regen": 100, "cr": 70, "cd": 265}
     },
@@ -1826,7 +2047,13 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "변주 스킬", "공명 스킬"],
-      "weapons": [{"name": "아득히 푸른 하늘"}, {"name": "푸른 의지"}, {"name": "영원한 샛별"}],
+      "weapons": [
+        {"name": "아득히 푸른 하늘", "pct": 100.0},
+        {"name": "푸른 의지", "pct": 87.9},
+        {"name": "영원한 샛별", "pct": 80.7},
+        {"name": "천년의 회류", "pct": 79.0},
+        {"name": "천공의 광경", "pct": 73.7}
+      ],
       "teammates": [{"id": "chisa"}, {"id": "suisui"}, {"id": "rebecca"}],
       "targetStats": {"type": "atk", "base": 2100, "regen": 107, "cr": 65, "cd": 255}
     }
