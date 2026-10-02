@@ -283,20 +283,20 @@
 
         <div class="w-full md:w-[52%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-4">
+            <div id="detail-modal-echo-tabs" class="hidden -mt-1 flex items-center gap-1 p-1 rounded-xl bg-[#0b0f17] border border-[#1e2638]"></div>
             <div class="flex items-center border-b border-slate-800 pb-2.5">
               <div class="flex items-center flex-wrap gap-2" id="detail-modal-echo-set"></div>
             </div>
-            <div class="flex items-center gap-4">
-              <div class="flex flex-col items-center justify-between p-2 rounded-xl bg-[#121722] border border-[#232b3d] w-[104px] sm:w-[120px] h-[152px] shadow-sm flex-shrink-0">
-                <div class="w-[84px] h-[84px] flex-shrink-0 rounded-xl bg-[#0a0d14] border border-[#232b3d] overflow-hidden flex items-center justify-center shadow-inner">
-                  <img id="detail-modal-echo-img" src="" alt="메인 에코" class="w-full h-full object-cover rounded-lg" crossorigin="anonymous">
+            <div class="flex items-stretch gap-3 sm:gap-4">
+              <div class="flex flex-col rounded-xl bg-[#121722] border border-[#232b3d] w-[108px] sm:w-[124px] p-1.5 shadow-sm flex-shrink-0">
+                <div class="w-full aspect-square flex-shrink-0 rounded-lg bg-[#0a0d14] border border-[#232b3d] overflow-hidden shadow-inner">
+                  <img id="detail-modal-echo-img" src="" alt="메인 에코" class="w-full h-full object-cover scale-[1.08]" crossorigin="anonymous">
                 </div>
-                <div class="w-full text-center pb-0.5">
-                  <div class="text-[10px] font-bold text-slate-400 leading-none mb-0.5">메인 에코</div>
-                  <div id="detail-modal-echo-main" class="font-extrabold text-[11px] text-white leading-tight line-clamp-2 break-keep text-center w-full"></div>
+                <div class="flex-1 flex items-center justify-center px-1 pt-1.5 pb-0.5 min-h-[34px]">
+                  <div id="detail-modal-echo-main" class="font-extrabold text-[11px] sm:text-xs text-white leading-snug line-clamp-2 break-keep text-center w-full"></div>
                 </div>
               </div>
-              <div id="detail-modal-echo-attributes" class="flex-1 min-w-0 flex flex-col justify-between py-0 min-h-[152px]"></div>
+              <div id="detail-modal-echo-attributes" class="flex-1 min-w-0 flex flex-col"></div>
             </div>
           </div>
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
@@ -596,7 +596,18 @@
             </div>
 
             <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
-              <h4 class="font-bold text-xs sm:text-sm text-cyan-300">주 에코 세트 및 옵션</h4>
+              <div class="flex items-center justify-between gap-2">
+                <h4 class="font-bold text-xs sm:text-sm text-cyan-300">주 에코 세트 및 옵션</h4>
+                <button type="button" onclick="addEditorEchoBuild()" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold transition flex-shrink-0"><i data-lucide="copy-plus" class="w-3 h-3"></i><span>빌드 추가</span></button>
+              </div>
+              <div id="edit-echo-build-bar" class="hidden space-y-2 pb-3 border-b border-slate-800">
+                <div id="edit-echo-build-tabs" class="flex flex-wrap gap-1.5"></div>
+                <div class="flex items-center gap-1.5">
+                  <label class="text-[11px] font-bold text-slate-400 flex-shrink-0">탭 이름</label>
+                  <input type="text" id="edit-echo-build-label" placeholder="예: 메인딜 / 서브딜 / 추천 / 대안" oninput="currentEchoBuilds[currentEchoBuildIdx].label = this.value; renderEditorEchoBuildTabs()" class="flex-1 min-w-0 bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+                  <button type="button" onclick="removeEditorEchoBuild()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0" title="이 빌드 삭제"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                </div>
+              </div>
               <div class="space-y-2 pb-3 border-b border-slate-800">
                 <div class="flex items-center justify-between">
                   <label class="block text-xs font-bold text-slate-300">착용 에코 세트 구성</label>
@@ -1060,7 +1071,7 @@
           customElementIcons: Object.fromEntries(Object.entries(adminConfig.customElementIcons || {}).map(([k, v]) => [k, g(v)])),
           customWeaponStatIcons: Object.fromEntries(Object.entries(adminConfig.customWeaponStatIcons || {}).map(([k, v]) => [k, g(v)]))
         },
-        resonators: RAW_RESONATORS.map(r => ({ ...r, avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') } })),
+        resonators: RAW_RESONATORS.map(r => ({ ...r, avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
         weapons: WEAPONS.map(w => ({ ...w, image: s(w.image, 'weapon') })),
         echoSets: ECHO_SETS.map(e => ({ ...e, iconUrl: s(e.iconUrl, 'set') })),
         circuits: CIRCUITS.map(c => ({ ...c, iconImage: s(c.iconImage, 'icon') }))
@@ -1074,7 +1085,8 @@
       const raw = src.resonators || [];
       const nameToId = new Map(raw.map(r => [r.name, r.id]));
       RAW_RESONATORS = raw.map(r => normalizeResonator({ ...r, avatar: R(r.avatar, 'character'), sprite: R(r.sprite, 'character'),
-        echoSet: r.echoSet ? { ...r.echoSet, image: R(r.echoSet.image, 'echo') } : r.echoSet }, nameToId));
+        echoSet: r.echoSet ? { ...r.echoSet, image: R(r.echoSet.image, 'echo') } : r.echoSet,
+        echoAlts: (r.echoAlts || []).map(a => ({ ...a, image: R(a.image, 'echo') })) }, nameToId));
       CIRCUITS = (src.circuits || []).map(c => ({ ...c, iconImage: R(c.iconImage, 'icon') }));
       const th = src.theme || {};
       adminConfig = { ...structuredClone(DEFAULT_ADMIN_CONFIG), ...th, logoImage: R(th.logoImage, 'general'),
@@ -1719,14 +1731,22 @@
       roles: [{ id: 'all', label: '전체' }, { id: 'main', label: '메인' }, { id: 'sub', label: '서브' }, { id: 'support', label: '서포터' }]
     };
 
+    const ELEMENT_ACCENT = { spectro: '#f4d35e', aero: '#4fe0b0', electro: '#b98cff', fusion: '#ff6b57', glacio: '#5ccfff', havoc: '#e2589d' };
+    function elementFilterBtn(t, active, fn) {
+      if (t.id === 'all') return `<button onclick="${fn}('all')" class="flex-1 py-1.5 px-1 rounded-lg font-bold text-xs whitespace-nowrap text-center ${active ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`;
+      const c = ELEMENT_ACCENT[t.id] || '#f5a623';
+      return `<button onclick="${fn}('${t.id}')" title="${t.label}" class="flex-1 min-w-0 flex items-center justify-center gap-1 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg font-bold text-xs whitespace-nowrap border transition ${active ? 'text-white shadow-md' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}" style="${active ? `background:${c}26;border-color:${c};box-shadow:0 0 0 1px ${c}55 inset` : ''}">
+        <span class="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0 transition ${active ? '' : 'opacity-55 grayscale-[35%]'}">${getElementIconHtml(t.id)}</span><span class="hidden sm:inline">${t.label}</span></button>`;
+    }
+
     function renderFilterBars() {
-      document.getElementById('element-tabs-bar').innerHTML = FILTER_TABS_DEF.elements.map(t => `<button onclick="setElementFilter('${t.id}')" class="flex-1 py-1.5 px-1 rounded-lg font-bold text-xs whitespace-nowrap text-center ${state.selectedElement === t.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`).join('');
+      document.getElementById('element-tabs-bar').innerHTML = FILTER_TABS_DEF.elements.map(t => elementFilterBtn(t, state.selectedElement === t.id, 'setElementFilter')).join('');
       document.getElementById('role-tabs-bar').innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setRoleFilter('${r.id}')" class="flex-1 py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${state.selectedRole === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
     }
 
     function renderGrowthFilterBars() {
       const eBar = document.getElementById('growth-element-bars'), rBar = document.getElementById('growth-role-bars');
-      if (eBar) eBar.innerHTML = FILTER_TABS_DEF.elements.map(t => `<button onclick="setGrowthElementFilter('${t.id}')" class="flex-1 py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.element === t.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`).join('');
+      if (eBar) eBar.innerHTML = FILTER_TABS_DEF.elements.map(t => elementFilterBtn(t, currentGrowthFilters.element === t.id, 'setGrowthElementFilter')).join('');
       if (rBar) rBar.innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setGrowthRoleFilter('${r.id}')" class="flex-1 py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.role === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
     }
 
@@ -1962,6 +1982,43 @@
       pop.classList.toggle('hidden', !open);
     }
 
+    // 에코 빌드 (메인딜/서브딜, 추천/대안 등 여러 개면 탭으로 전환)
+    function getEchoBuilds(char) { return [char.echoSet || {}, ...(char.echoAlts || [])]; }
+    function echoBuildLabel(b, i) { return b?.label?.trim() || (i === 0 ? '추천' : `대안 ${i}`); }
+    function renderDetailEcho(char, idx = 0) {
+      const builds = getEchoBuilds(char);
+      idx = Math.min(idx, builds.length - 1);
+      const tabsEl = document.getElementById('detail-modal-echo-tabs');
+      if (builds.length > 1) {
+        tabsEl.classList.remove('hidden');
+        tabsEl.innerHTML = builds.map((b, i) => `<button onclick="renderDetailEcho(RAW_RESONATORS.find(r => r.id === '${char.id}'), ${i})" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-black transition whitespace-nowrap ${i === idx ? 'bg-[#f5a623] text-black shadow' : 'text-slate-400 hover:text-slate-200 hover:bg-[#161c29]'}">${esc(echoBuildLabel(b, i))}</button>`).join('');
+      } else { tabsEl.classList.add('hidden'); tabsEl.innerHTML = ''; }
+      const echoData = builds[idx] || {};
+      const setList = (echoData.sets || []).filter(s => s?.name?.trim());
+      const setsHtml = setList.map(s => {
+        const meta = ECHO_SETS.find(es => es.name === s.name);
+        const isElem = s.name === GENERIC_SET_ELEM, generic = isElem || meta?.generic;
+        // 범용 속성 2세트는 캐릭터 속성으로 표시 (예: 응결 피해 +10%)
+        const label = isElem ? `${DEFAULT_ELEMENT_META[char.element]?.label || '속성'} 피해 +10%` : s.name;
+        const iconInner = isElem ? `<div class="w-8 h-8">${getElementIconHtml(char.element)}</div>`
+          : meta?.iconUrl ? `<img src="${meta.iconUrl}" class="w-8 h-8 object-contain drop-shadow-sm">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>`;
+        const big = setList.length === 1;
+        return `<div class="flex items-center gap-1.5 min-w-0">
+          <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center">${iconInner}</div>
+          <span class="${big ? 'text-base' : 'text-sm'} font-black ${generic ? 'text-slate-300' : 'text-slate-100'} break-keep">${esc(label)}</span>
+          <span class="flex-shrink-0 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[10px] font-black text-amber-400 leading-none">${s.count}세트</span>
+        </div>`;
+      }).join('<span class="text-slate-500 mx-1 text-base font-black">+</span>');
+      document.getElementById('detail-modal-echo-set').innerHTML = setsHtml || '<span class="text-base font-black text-slate-500">세트 없음</span>';
+      
+      document.getElementById('detail-modal-echo-main').textContent = echoData.mainEcho || '메인 에코';
+      document.getElementById('detail-modal-echo-img').src = echoData.image || DEFAULT_ECHO_IMG_URL;
+      
+      document.getElementById('detail-modal-echo-attributes').innerHTML = `<div class="flex flex-col justify-between w-full h-full gap-1.5">${(echoData.echoes || []).map(e => `<div class="flex items-center gap-2 min-w-0"><div class="border border-[#5f5646] text-[#e5cc98] font-bold text-xs w-6 h-6 flex items-center justify-center rounded flex-shrink-0 bg-[#161a25]/50">${e.cost}</div><span class="text-slate-500 text-xs">|</span><span class="font-bold text-slate-100 text-xs sm:text-[13px] leading-tight break-keep pt-px">${esc(e.stat)}</span></div>`).join('')}</div>`;
+
+      lucide.createIcons();
+    }
+
     function openDetailModal(resId) {
       const char = RAW_RESONATORS.find(r => r.id === resId);
       if (!char) return;
@@ -1991,28 +2048,7 @@
           ${b.duration ? `<span class="ml-auto text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">${esc(b.duration)}</span>` : ''}
         </div>`).join('');
 
-      const echoData = char.echoSet || {};
-      const setList = (echoData.sets || []).filter(s => s?.name?.trim());
-      const setsHtml = setList.map(s => {
-        const meta = ECHO_SETS.find(es => es.name === s.name);
-        const isElem = s.name === GENERIC_SET_ELEM, generic = isElem || meta?.generic;
-        // 범용 속성 2세트는 캐릭터 속성으로 표시 (예: 응결 피해 +10%)
-        const label = isElem ? `${DEFAULT_ELEMENT_META[char.element]?.label || '속성'} 피해 +10%` : s.name;
-        const iconInner = isElem ? `<div class="w-8 h-8">${getElementIconHtml(char.element)}</div>`
-          : meta?.iconUrl ? `<img src="${meta.iconUrl}" class="w-8 h-8 object-contain drop-shadow-sm">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>`;
-        const big = setList.length === 1;
-        return `<div class="flex items-center gap-1.5 min-w-0">
-          <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center">${iconInner}</div>
-          <span class="${big ? 'text-base' : 'text-sm'} font-black ${generic ? 'text-slate-300' : 'text-slate-100'} break-keep">${esc(label)}</span>
-          <span class="flex-shrink-0 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[10px] font-black text-amber-400 leading-none">${s.count}세트</span>
-        </div>`;
-      }).join('<span class="text-slate-500 mx-1 text-base font-black">+</span>');
-      document.getElementById('detail-modal-echo-set').innerHTML = setsHtml || '<span class="text-base font-black text-slate-500">세트 없음</span>';
-      
-      document.getElementById('detail-modal-echo-main').textContent = echoData.mainEcho || '메인 에코';
-      document.getElementById('detail-modal-echo-img').src = echoData.image || DEFAULT_ECHO_IMG_URL;
-      
-      document.getElementById('detail-modal-echo-attributes').innerHTML = `<div class="flex flex-col justify-between w-full h-full py-0 gap-1">${(echoData.echoes || []).map(e => `<div class="flex items-center gap-2 min-w-0"><div class="border border-[#5f5646] text-[#e5cc98] font-bold text-xs w-6 h-6 flex items-center justify-center rounded flex-shrink-0 bg-[#161a25]/50">${e.cost}</div><span class="text-slate-500 text-xs">|</span><span class="font-bold text-slate-100 text-xs sm:text-[13px] leading-tight break-keep pt-px">${esc(e.stat)}</span></div>`).join('')}</div>`;
+      renderDetailEcho(char, 0);
 
       const priority = char.skillPriority || SKILL_NAMES;
       const spEl = document.getElementById('detail-modal-skill-priority');
@@ -2028,6 +2064,7 @@
           <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
               <img src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
+              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
             </div>
             <div class="border-t ${borderClass} py-1 px-1 bg-[#0e121a] flex items-center justify-center flex-shrink-0 z-10 relative overflow-hidden">
               <span class="weapon-name-text font-extrabold text-[11px] sm:text-xs text-slate-200 block whitespace-nowrap text-center leading-tight">${esc(w.name)}</span>
@@ -2219,24 +2256,49 @@
 
     // 저장된 공명자 데이터를 현재 형식으로 맞춤.
     // 옛 버전 저장본(에코 cost4/3/1 형식, '일반 공격', 이름으로 된 동료, 무기 복사본 등)도 여기서 한 번에 변환
-    function normalizeResonator(r, nameToId = new Map()) {
-      let sp = Array.isArray(r.skillPriority) ? r.skillPriority.map(s => s === '일반 공격' ? '기본 공격' : s) : [];
-      sp = [...new Set(sp)].filter(s => SKILL_NAMES.includes(s));
-      SKILL_NAMES.forEach(s => { if (!sp.includes(s)) sp.push(s); });
+    // 추천 무기 분류: 전무 → 대체 한정 5성 → 상시 5성 → 4성 → 특수
+    const WEAPON_TAGS = {
+      sig:      { label: '전무', cls: 'bg-amber-500/90 border-amber-300 text-black' },
+      alt:      { label: '대체', cls: 'bg-[#2a1f0c]/90 border-amber-500/50 text-amber-300' },
+      standard: { label: '상시', cls: 'bg-[#1b2232]/90 border-sky-400/50 text-sky-300' },
+      r4:       { label: '4성', cls: 'bg-[#221a33]/90 border-violet-400/50 text-violet-300' },
+      special:  { label: '특수', cls: 'bg-[#0f2620]/90 border-emerald-400/50 text-emerald-300' }
+    };
+    const STANDARD_5STAR_WEAPONS = ['천년의 회류', '부동의 안개', '푸른물결의 빛', '물결의 파동', '파도의 기록'];
+    function weaponTag(w, charId) {
+      if (w?.tag && WEAPON_TAGS[w.tag]) return w.tag;
+      const wp = findWeapon(w?.name);
+      const rank = Number(wp?.rank) || 0;
+      if (wp?.signatureOf && wp.signatureOf === charId) return 'sig';
+      if (rank >= 5) return STANDARD_5STAR_WEAPONS.includes(wp.name) ? 'standard' : 'alt';
+      if (rank === 4) return 'r4';
+      return rank ? 'special' : '';
+    }
 
-      const e = r.echoSet || {};
-      let echoSet;
+    function normalizeEchoBuild(e) {
+      let b;
       if (e.sets) {
-        echoSet = { sets: e.sets, mainEcho: e.mainEcho || '', image: e.image || DEFAULT_ECHO_IMG_URL, echoes: e.echoes?.length === 5 ? e.echoes : [4, 3, 3, 1, 1].map(c => ({ cost: String(c), stat: '' })) };
+        b = { sets: e.sets, mainEcho: e.mainEcho || '', image: e.image || DEFAULT_ECHO_IMG_URL, echoes: e.echoes?.length === 5 ? e.echoes : [4, 3, 3, 1, 1].map(c => ({ cost: String(c), stat: '' })) };
       } else { // 옛 형식: { name, mainEcho, cost: '4-3-3-1-1', cost4, cost3, cost1 }
         const costs = (e.cost || '4-3-3-1-1').split('-');
         const statFor = c => ({ 4: e.cost4, 3: e.cost3, 1: e.cost1 }[c] || '');
-        echoSet = {
+        b = {
           sets: e.name ? [{ name: e.name.replace(/\s*[25]세트/g, '').trim(), count: 5 }] : [],
           mainEcho: e.mainEcho || '', image: e.image || DEFAULT_ECHO_IMG_URL,
           echoes: [0, 1, 2, 3, 4].map(i => { const c = costs[i] || '1'; return { cost: c, stat: statFor(c) }; })
         };
       }
+      if (e.label?.trim()) b = { label: e.label.trim(), ...b };
+      return b;
+    }
+
+    function normalizeResonator(r, nameToId = new Map()) {
+      let sp = Array.isArray(r.skillPriority) ? r.skillPriority.map(s => s === '일반 공격' ? '기본 공격' : s) : [];
+      sp = [...new Set(sp)].filter(s => SKILL_NAMES.includes(s));
+      SKILL_NAMES.forEach(s => { if (!sp.includes(s)) sp.push(s); });
+
+      const echoSet = normalizeEchoBuild(r.echoSet || {});
+      const echoAlts = (r.echoAlts || []).map(normalizeEchoBuild);
 
       return {
         ...r,
@@ -2245,9 +2307,10 @@
         targetStats: r.targetStats || { ...defaultTargetStats },
         skillPriority: sp,
         echoSet,
+        echoAlts,
         buffs: Array.isArray(r.buffs) ? r.buffs : [],
         // 무기는 이름만 참조 (예전 '기본 무기' 자리채움 항목은 제거)
-        weapons: (r.weapons || []).filter(w => w?.name?.trim() && !(w.name === '기본 무기' && !findWeapon(w.name))).map(w => ({ name: w.name })),
+        weapons: (r.weapons || []).filter(w => w?.name?.trim() && !(w.name === '기본 무기' && !findWeapon(w.name))).map(w => (w.tag ? { name: w.name, tag: w.tag } : { name: w.name })),
         // 동료는 id로만 참조 (예전 이름 형식 변환)
         teammates: (r.teammates || []).map(tm => ({ id: tm.id || nameToId.get(tm.name) || '' })).filter(tm => tm.id)
       };
@@ -2356,6 +2419,10 @@
               <option value="">무기 선택 안 함</option>
               ${weaponOptions}
             </select>
+            <select onchange="if (this.value) currentEditWeapons[${i}].tag = this.value; else delete currentEditWeapons[${i}].tag;" title="분류 (자동: 등급·전무 정보로 판단)" class="w-[68px] flex-shrink-0 bg-[#10141f] border border-slate-700 rounded-lg px-1 py-1.5 text-[11px] text-slate-300 outline-none cursor-pointer">
+              <option value="">자동${(() => { const t = WEAPON_TAGS[weaponTag({ name: curName }, document.getElementById('edit-char-id')?.value)]; return t ? '·' + t.label : ''; })()}</option>
+              ${Object.entries(WEAPON_TAGS).map(([k, t]) => `<option value="${k}" ${w.tag === k ? 'selected' : ''}>${t.label}</option>`).join('')}
+            </select>
             <button type="button" onclick="removeEditorWeapon(${i})" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>`;
       }).join('');
@@ -2377,7 +2444,7 @@
     function updateEditorWeaponSelection(idx, name) {
       if (!currentEditWeapons[idx]) return;
       const matched = findWeapon(name);
-      currentEditWeapons[idx] = { name: matched ? matched.name : name };
+      currentEditWeapons[idx] = { name: matched ? matched.name : name, ...(currentEditWeapons[idx].tag ? { tag: currentEditWeapons[idx].tag } : {}) };
       renderEditorWeapons();
     }
     function addEditorWeapon() {
@@ -2447,7 +2514,6 @@
       const char = RAW_RESONATORS.find(r => r.id === charId);
       if (!char) return;
 
-      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
       setVal('edit-char-id', char.id);
       setVal('edit-name', char.name);
       setVal('edit-rarity', char.rarity || 5);
@@ -2466,7 +2532,32 @@
       setVal('edit-target-cr', tStats.cr);
       setVal('edit-target-cd', tStats.cd);
 
-      const echo = char.echoSet || {};
+      currentEchoBuilds = getEchoBuilds(char).map(b => structuredClone(b));
+      currentEchoBuildIdx = 0;
+      loadEchoBuildToForm(0);
+      updatePreviewImage('preview-avatar', char.avatar, false, 'character');
+      updatePreviewImage('preview-sprite', char.sprite, true, 'character');
+
+      currentSkillPriority = [...char.skillPriority];
+      renderSkillPriorityEditor();
+      
+      currentEditWeapons = (char.weapons || []).map(w => ({ name: w.name || '', ...(w.tag ? { tag: w.tag } : {}) }));
+      renderEditorWeapons();
+
+      currentEditTeammates = (char.teammates || []).map(t => ({ id: t.id }));
+      currentEditBuffs = (char.buffs || []).map(b => ({ ...b }));
+      renderEditorBuffs();
+      renderEditorTeammates();
+      lucide.createIcons();
+    }
+
+    function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val ?? ''; }
+
+    // ---- 에코 빌드 편집 (탭 여러 개) ----
+    let currentEchoBuilds = [], currentEchoBuildIdx = 0;
+    function loadEchoBuildToForm(i) {
+      currentEchoBuildIdx = i;
+      const echo = currentEchoBuilds[i] || {};
       currentEditEchoSets = (echo.sets?.length ? echo.sets : [{ name: '', count: 5 }]).map(s => ({ name: s.name || '', count: parseInt(s.count) || 5 }));
       renderEditorEchoSets();
 
@@ -2474,10 +2565,8 @@
       setVal('edit-echo-main', echo.mainEcho || '');
       setVal('edit-echo-img-url', toShortImageInput(echoImg, 'echo'));
       updatePreviewImage('preview-echo-img', echoImg, false, 'echo');
-      updatePreviewImage('preview-avatar', char.avatar, false, 'character');
-      updatePreviewImage('preview-sprite', char.sprite, true, 'character');
       
-      const echoesList = echo.echoes;
+      const echoesList = echo.echoes || [];
       document.getElementById('edit-echo-slots-container').innerHTML = [0,1,2,3,4].map(i => `
         <div class="flex items-center gap-1.5">
           <span class="text-[10px] font-bold text-slate-500 w-8 text-center bg-[#10141f] rounded py-1.5 border border-slate-700">에코${i+1}</span>
@@ -2489,17 +2578,41 @@
           <input type="text" id="edit-echo-stat-${i}" value="${esc(echoesList[i]?.stat)}" placeholder="주 옵션" class="flex-1 bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
         </div>`).join('');
 
-      currentSkillPriority = [...char.skillPriority];
-      renderSkillPriorityEditor();
-      
-      currentEditWeapons = (char.weapons || []).map(w => ({ name: w.name || '' }));
-      renderEditorWeapons();
-
-      currentEditTeammates = (char.teammates || []).map(t => ({ id: t.id }));
-      currentEditBuffs = (char.buffs || []).map(b => ({ ...b }));
-      renderEditorBuffs();
-      renderEditorTeammates();
+      setVal('edit-echo-build-label', echo.label || '');
+      renderEditorEchoBuildTabs();
       lucide.createIcons();
+    }
+    function readEchoFormToBuild() {
+      const b = currentEchoBuilds[currentEchoBuildIdx];
+      if (!b || !document.getElementById('edit-echo-cost-0')) return;
+      const label = (document.getElementById('edit-echo-build-label')?.value || '').trim();
+      currentEchoBuilds[currentEchoBuildIdx] = {
+        ...(label ? { label } : {}),
+        sets: currentEditEchoSets.filter(s => s?.name?.trim()).map(s => ({ name: s.name.trim(), count: parseInt(s.count) || 5 })),
+        mainEcho: document.getElementById('edit-echo-main').value.trim(),
+        image: resolveImageUrl(document.getElementById('edit-echo-img-url').value, 'echo') || DEFAULT_ECHO_IMG_URL,
+        echoes: [0,1,2,3,4].map(i => ({ cost: document.getElementById(`edit-echo-cost-${i}`).value, stat: document.getElementById(`edit-echo-stat-${i}`).value.trim() }))
+      };
+    }
+    function renderEditorEchoBuildTabs() {
+      const bar = document.getElementById('edit-echo-build-bar');
+      bar.classList.toggle('hidden', currentEchoBuilds.length < 2);
+      document.getElementById('edit-echo-build-tabs').innerHTML = currentEchoBuilds.map((b, i) =>
+        `<button type="button" onclick="switchEditorEchoBuild(${i})" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition ${i === currentEchoBuildIdx ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200' : 'bg-[#161a25] border-slate-700 text-slate-400 hover:text-slate-200'}">${esc(echoBuildLabel(b, i))}</button>`).join('');
+    }
+    function switchEditorEchoBuild(i) { readEchoFormToBuild(); loadEchoBuildToForm(i); }
+    function addEditorEchoBuild() {
+      readEchoFormToBuild();
+      const cur = currentEchoBuilds[currentEchoBuildIdx] || {};
+      if (currentEchoBuilds.length === 1 && !cur.label) cur.label = '추천';
+      currentEchoBuilds.push({ ...structuredClone(cur), label: `대안 ${currentEchoBuilds.length}` });
+      loadEchoBuildToForm(currentEchoBuilds.length - 1);
+    }
+    function removeEditorEchoBuild() {
+      if (currentEchoBuilds.length < 2) return;
+      currentEchoBuilds.splice(currentEchoBuildIdx, 1);
+      if (currentEchoBuilds.length === 1) delete currentEchoBuilds[0].label;
+      loadEchoBuildToForm(Math.max(0, currentEchoBuildIdx - 1));
     }
 
     function handleImageFileUpload(event, targetType) {
@@ -2533,7 +2646,7 @@
       const idx = RAW_RESONATORS.findIndex(r => r.id === id);
       if (idx === -1) return;
       
-      const newEchoes = [0,1,2,3,4].map(i => ({ cost: document.getElementById(`edit-echo-cost-${i}`).value, stat: document.getElementById(`edit-echo-stat-${i}`).value.trim() }));
+      readEchoFormToBuild();
       RAW_RESONATORS[idx] = {
         ...RAW_RESONATORS[idx],
         name: document.getElementById('edit-name').value.trim() || '이름 없음',
@@ -2545,14 +2658,10 @@
         buffSummary: document.getElementById('edit-buffsummary').value.trim(),
         avatar: resolveImageUrl(document.getElementById('edit-avatar-url').value, 'character') || RAW_RESONATORS[idx].avatar,
         sprite: resolveImageUrl(document.getElementById('edit-sprite-url').value, 'character') || RAW_RESONATORS[idx].sprite,
-        echoSet: {
-          sets: currentEditEchoSets.filter(s => s?.name?.trim()).map(s => ({ name: s.name.trim(), count: parseInt(s.count) || 5 })),
-          mainEcho: document.getElementById('edit-echo-main').value.trim(),
-          image: resolveImageUrl(document.getElementById('edit-echo-img-url').value, 'echo') || DEFAULT_ECHO_IMG_URL,
-          echoes: newEchoes
-        },
+        echoSet: currentEchoBuilds[0],
+        echoAlts: currentEchoBuilds.slice(1),
         skillPriority: currentSkillPriority,
-        weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => ({ name: w.name })),
+        weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => (w.tag ? { name: w.name, tag: w.tag } : { name: w.name })),
         teammates: currentEditTeammates.filter(t => t?.id?.trim()).map(t => ({ id: t.id.trim() })),
         buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb, duration: (b.duration || '').trim() })),
         targetStats: {
