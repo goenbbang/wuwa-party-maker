@@ -145,7 +145,7 @@
     </div>
   </header>
 
-  <div class="w-full flex items-center justify-center gap-6 py-2 border-b border-slate-800 bg-[#06080d] md:hidden">
+  <div class="w-full flex items-center justify-start gap-4 px-4 py-2 border-b border-slate-800 bg-[#06080d] md:hidden overflow-x-auto no-scrollbar whitespace-nowrap">
     <button onclick="switchMainView('party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
     <div class="w-px h-3 bg-slate-700"></div>
     <button onclick="switchMainView('growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 육성 현황표</button>
@@ -176,7 +176,7 @@
           </label>
         </div>
       </div>
-      <div class="overflow-y-auto max-h-[550px] pr-1"><div id="roster-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5"></div></div>
+      <div class="overflow-y-auto max-h-[550px] pr-1"><div id="roster-grid" class="grid grid-cols-5 sm:grid-cols-4 gap-1.5 sm:gap-2.5"></div></div>
     </aside>
 
     <section class="flex-1 w-full min-w-0 flex flex-col gap-3.5">
@@ -220,9 +220,9 @@
       </div>
       
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2 w-full pt-1">
-        <div class="flex items-center gap-1.5 text-xs flex-wrap" id="growth-element-bars"></div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="growth-element-bars"></div>
         <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
-        <div class="flex items-center gap-1.5 text-xs flex-wrap" id="growth-role-bars"></div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="growth-role-bars"></div>
       </div>
     </div>
 
@@ -245,15 +245,15 @@
       </div>
     </div>
     <!-- 무기 도감 5열 배치 -->
-    <div id="weapon-codex-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch"></div>
+    <div id="weapon-codex-grid" class="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2 sm:gap-4 items-stretch"></div>
   </main>
 
   <!-- 공명자 상세 모달 -->
   <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
     <div class="bg-[#0d111a] w-full max-w-5xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
       <div class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
-        <div class="relative w-full md:w-[48%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[380px] md:min-h-[300px] overflow-hidden">
-          <img id="detail-modal-sprite" src="" class="absolute inset-0 w-full h-full object-cover object-top transform scale-[1.2] translate-y-2 pointer-events-none" crossorigin="anonymous">
+        <div class="relative w-full md:w-[48%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[62vh] md:min-h-[300px] overflow-hidden">
+          <img id="detail-modal-sprite" src="" class="absolute inset-0 w-full h-full object-cover object-[50%_8%] md:object-top transform scale-110 md:scale-[1.2] md:translate-y-2 pointer-events-none" crossorigin="anonymous">
           <div class="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-[#0d111a] via-[#0d111a]/80 to-transparent pointer-events-none z-0"></div>
           <div class="absolute bottom-0 left-0 w-full p-6 flex flex-col gap-2 z-10">
             <div class="flex items-center gap-2">
@@ -1530,22 +1530,22 @@
         const summaryText = wp.buffSummary?.trim() || '';
 
         return `
-          <div data-name="${esc(wp.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="bg-[#121622] border ${rankBorderClass} rounded-2xl p-4 flex flex-col justify-between h-full cursor-pointer transition-all active:scale-[0.98] shadow-xl group">
+          <div data-name="${esc(wp.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="bg-[#121622] border ${rankBorderClass} rounded-xl sm:rounded-2xl p-1.5 sm:p-4 flex flex-col justify-between h-full cursor-pointer transition-all active:scale-[0.98] shadow-xl group">
             <div>
-              <div class="flex gap-3 border-b border-[#1e2638] pb-2.5 relative items-center">
-                <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center relative bg-gradient-to-b ${gradClass} to-transparent">
+              <div class="flex flex-col sm:flex-row gap-1 sm:gap-3 sm:border-b border-[#1e2638] sm:pb-2.5 relative items-center">
+                <div class="w-full aspect-square sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center relative bg-gradient-to-b ${gradClass} to-transparent">
                   <img loading="lazy" decoding="async" src="${wp.image || DEFAULT_WEAPON_IMG}" class="w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition duration-300 pointer-events-none" crossorigin="anonymous">
                 </div>
-                <div class="flex-1 min-w-0 flex flex-col items-start gap-1.5">
-                  <div class="w-full text-sm font-black text-white truncate" title="${esc(wp.name)}">${esc(wp.name)}</div>
-                  <div class="flex items-center gap-1 flex-shrink-0">
+                <div class="w-full sm:flex-1 min-w-0 flex flex-col items-center sm:items-start gap-1.5">
+                  <div class="w-full text-[10px] sm:text-sm font-black text-white text-center sm:text-left line-clamp-2 sm:truncate leading-tight break-keep" title="${esc(wp.name)}">${esc(wp.name)}</div>
+                  <div class="hidden sm:flex items-center gap-1 flex-shrink-0">
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${rankTagClass}">${rank}★</span>
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${typeTagClass}">${wp.weaponType || '직검'}</span>
                   </div>
                 </div>
               </div>
               <!-- 스탯 영역과 버프 요약 사이 여백을 초록색 선 길이만큼 살짝 조절 (pt-2.5 적용) -->
-              <div class="pt-2.5 flex flex-col gap-1.5">
+              <div class="hidden sm:flex pt-2.5 flex-col gap-1.5">
                 <div class="grid grid-cols-[2fr_3fr] gap-2">
                   <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
                     <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">공격력</span>
@@ -1676,13 +1676,18 @@
       return ghost;
     }
 
+    // 종말 매트릭스 규칙: 서포터(범용 힐러)·이번 주기 추가 피로도 캐릭터는 2회, 나머지는 1회.
+    // 방랑자는 속성이 달라도 같은 캐릭터로 취급 → 전체 합쳐 1회
+    const usageGroup = (id) => (id && id.startsWith('rover_') ? 'rover' : id);
+    const partyHasGroup = (slots, id) => slots.some(s => s && usageGroup(s) === usageGroup(id));
     function getMaxUsage(resonatorId) {
+      if (usageGroup(resonatorId) === 'rover') return 1;
       if (resonatorId === state.seasonBuffResonatorId) return 2;
       return RAW_RESONATORS.find(item => item.id === resonatorId)?.role === 'support' ? 2 : 1;
     }
 
     function getDeployedPartyNumbers(resonatorId) {
-      return state.parties.reduce((acc, p, idx) => { if (p.slots.includes(resonatorId)) acc.push(idx + 1); return acc; }, []);
+      return state.parties.reduce((acc, p, idx) => { if (partyHasGroup(p.slots, resonatorId)) acc.push(idx + 1); return acc; }, []);
     }
 
     const FILTER_TABS_DEF = {
@@ -1697,8 +1702,8 @@
 
     function renderGrowthFilterBars() {
       const eBar = document.getElementById('growth-element-bars'), rBar = document.getElementById('growth-role-bars');
-      if (eBar) eBar.innerHTML = FILTER_TABS_DEF.elements.map(t => `<button onclick="setGrowthElementFilter('${t.id}')" class="py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.element === t.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`).join('');
-      if (rBar) rBar.innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setGrowthRoleFilter('${r.id}')" class="py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.role === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
+      if (eBar) eBar.innerHTML = FILTER_TABS_DEF.elements.map(t => `<button onclick="setGrowthElementFilter('${t.id}')" class="flex-1 py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.element === t.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`).join('');
+      if (rBar) rBar.innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setGrowthRoleFilter('${r.id}')" class="flex-1 py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.role === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
     }
 
     function setElementFilter(id) { state.selectedElement = id; renderFilterBars(); renderRoster(); }
@@ -1712,7 +1717,7 @@
       const hideDeployed = document.getElementById('chk-hide-deployed').checked;
       const depMap = new Map();
       state.parties.forEach((p, i) => p.slots.forEach(id => { if (!id) return; const a = depMap.get(id) || []; if (!a.includes(i + 1)) a.push(i + 1); depMap.set(id, a); }));
-      const getDep = id => depMap.get(id) || [];
+      const getDep = id => getDeployedPartyNumbers(id);
       const resMap = new Map(RAW_RESONATORS.map(x => [x.id, x]));
       
       let filtered = RAW_RESONATORS.filter(r => {
@@ -1728,20 +1733,20 @@
         const kwText = keywordsWithoutMainDmg(r).join(' · ');
         const maxU = getMaxUsage(r.id), deployed = getDep(r.id), remaining = maxU - deployed.length, isDepleted = remaining <= 0;
         const roleMeta = ROLE_META[r.role] || ROLE_META.main;
-        const pill = deployed.length > 0 ? `<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"><div class="px-2.5 py-0.5 rounded-full bg-[#f5a623]/95 text-black font-black text-xs shadow-lg border border-[#f5a623]">${deployed.map(n => String(n).padStart(2, '0')).join(', ')}</div></div>` : '';
+        const pill = deployed.length > 0 ? `<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"><div class="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-[#f5a623]/95 text-black font-black text-[9px] sm:text-xs shadow-lg border border-[#f5a623]">${deployed.map(n => String(n).padStart(2, '0')).join(', ')}</div></div>` : '';
         return `
-          <div data-id="${r.id}" class="roster-card relative rounded-2xl p-1.5 flex flex-col justify-start transition-all select-none border group cursor-pointer ${isDepleted ? 'bg-[#0a0d13]/85 border-[#181f2b] opacity-35 grayscale cursor-not-allowed' : 'bg-[#10141f] border-[#1f2738] hover:border-amber-400 hover:bg-[#161c2b] hover:shadow-xl'}" ${!isDepleted ? 'draggable="true"' : ''}>
-            <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1.5">
+          <div data-id="${r.id}" class="roster-card relative rounded-xl sm:rounded-2xl p-1 sm:p-1.5 flex flex-col justify-start transition-all select-none border group cursor-pointer ${isDepleted ? 'bg-[#0a0d13]/85 border-[#181f2b] opacity-35 grayscale cursor-not-allowed' : 'bg-[#10141f] border-[#1f2738] hover:border-amber-400 hover:bg-[#161c2b] hover:shadow-xl'}" ${!isDepleted ? 'draggable="true"' : ''}>
+            <div class="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1 sm:mb-1.5">
               <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-200" crossorigin="anonymous">
               ${pill}
-              <div class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/85 border border-white/10 text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
-              <div class="absolute top-1 left-1 z-20 pointer-events-none w-7 h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
-              <div class="absolute top-1.5 right-1.5 z-20 pointer-events-none"><div class="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold border shadow-sm ${roleMeta.tagClass}">${roleMeta.label}</div></div>
+              <div class="absolute bottom-0.5 left-0.5 sm:bottom-1.5 sm:left-1.5 px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
+              <div class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 z-20 pointer-events-none w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
+              <div class="absolute top-1.5 right-1.5 z-20 pointer-events-none hidden sm:block"><div class="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold border shadow-sm ${roleMeta.tagClass}">${roleMeta.label}</div></div>
             </div>
-            <div class="w-full text-left space-y-0.5 px-1 pb-1">
-              <div class="text-[13px] font-black text-slate-100 truncate">${esc(r.name)}</div>
-              <div class="text-[11px] font-bold theme-attack-text truncate">${esc(r.mainDmg)}</div>
-              ${kwText ? `<div class="text-[11px] theme-buff-text truncate leading-tight" title="${esc(kwText)}">${esc(kwText)}</div>` : ''}
+            <div class="w-full text-center sm:text-left space-y-0.5 px-0 sm:px-1 pb-0.5 sm:pb-1">
+              <div class="text-[10px] sm:text-[13px] font-black text-slate-100 truncate">${esc(r.name)}</div>
+              <div class="hidden sm:block text-[11px] font-bold theme-attack-text truncate">${esc(r.mainDmg)}</div>
+              ${kwText ? `<div class="hidden sm:block text-[11px] theme-buff-text truncate leading-tight" title="${esc(kwText)}">${esc(kwText)}</div>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -1774,18 +1779,18 @@
         const activeCircuit = CIRCUITS.find(c => c.id === party.circuitId);
         const slotsHtml = party.slots.map((resId, sIdx) => {
           if (!resId) {
-            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400/50 hover:bg-[#0f1422] cursor-pointer flex flex-col gap-1 items-center justify-center h-[72px] sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}" onclick="openSlotPicker(${pIdx}, ${sIdx})" title="눌러서 공명자 선택 (또는 목록에서 끌어오기)"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-500 md:hidden">눌러서 선택</span></div>`;
+            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400/50 hover:bg-[#0f1422] cursor-pointer flex flex-col gap-1 items-center justify-center aspect-square sm:aspect-auto sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}" onclick="openSlotPicker(${pIdx}, ${sIdx})" title="눌러서 공명자 선택 (또는 목록에서 끌어오기)"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-500 sm:hidden">선택</span></div>`;
           }
           const r = RAW_RESONATORS.find(item => item.id === resId) || { name: '알 수 없음', avatar: '', mainDmg: '', buffSummary: '', element: 'spectro' };
           return `
-            <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md group flex items-center p-2 sm:p-2.5 h-[96px] sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
+            <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md group flex items-center p-0 sm:p-2.5 aspect-square sm:aspect-auto sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
               <div class="absolute top-1.5 right-1.5 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="p-1 rounded bg-black/70 hover:bg-rose-900 text-slate-400 hover:text-white transition shadow"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
-              <div class="flex items-center gap-2.5 w-full h-full min-w-0">
-                <div class="relative h-full w-[56px] sm:w-[64px] rounded-lg overflow-hidden bg-[#0a0d14] border border-[#2b364d] flex-shrink-0 shadow-md">
+              <div class="flex items-center gap-0 sm:gap-2.5 w-full h-full min-w-0">
+                <div class="relative h-full w-full sm:w-[64px] rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md">
                   <img src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
                 </div>
-                <div class="min-w-0 flex-1 flex flex-col justify-center gap-1">
+                <div class="hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
                   <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
                   <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
@@ -1811,7 +1816,7 @@
               </div>
               <span class="text-2xl sm:text-3xl font-black text-slate-200 tracking-tight">${String(pIdx + 1).padStart(2, '0')}</span>
             </div>
-            <div class="order-last md:order-none basis-full md:basis-auto grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-1 items-stretch min-w-0">${slotsHtml}</div>
+            <div class="order-last md:order-none basis-full md:basis-auto grid grid-cols-3 gap-2 sm:gap-2.5 flex-1 items-stretch min-w-0">${slotsHtml}</div>
             ${circuitBoxHtml}
             <button onclick="removeParty(${pIdx})" class="p-2 text-slate-500 hover:text-rose-400 transition flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 hide-on-export"><i data-lucide="x" class="w-5 h-5 stroke-[2.4]"></i></button>
           </div>`;
@@ -1879,7 +1884,7 @@
       if (!slotPickerTarget) return;
       const q = document.getElementById('slot-picker-search').value.trim().toLowerCase();
       const party = state.parties[slotPickerTarget.pIdx];
-      const list = RAW_RESONATORS.filter(r => isOwned(r.id) && !party.slots.includes(r.id) && getDeployedPartyNumbers(r.id).length < getMaxUsage(r.id))
+      const list = RAW_RESONATORS.filter(r => isOwned(r.id) && !partyHasGroup(party.slots, r.id) && getDeployedPartyNumbers(r.id).length < getMaxUsage(r.id))
         .filter(r => !q || [r.name, r.mainDmg, resonatorKeywords(r).join(' ')].some(s => (s || '').toLowerCase().includes(q)))
         .sort(byName);
       document.getElementById('slot-picker-grid').innerHTML = list.length ? list.map(r => `
@@ -1900,15 +1905,15 @@
     function handleSlotDrop(data, targetPartyIdx, targetSlotIdx) {
       if (data.type === 'from-roster') {
         const resId = data.resonatorId, deployed = getDeployedPartyNumbers(resId), maxU = getMaxUsage(resId);
-        if (state.parties[targetPartyIdx].slots.includes(resId)) { showToast('중복 배치는 불가합니다.'); return; }
+        if (partyHasGroup(state.parties[targetPartyIdx].slots, resId)) { showToast('중복 배치는 불가합니다.'); return; }
         if (deployed.length >= maxU) { showToast(`최대 편성 횟수(${maxU}회) 소진`); return; }
         state.parties[targetPartyIdx].slots[targetSlotIdx] = resId;
       } else if (data.type === 'from-slot') {
         const fromP = data.fromPartyIndex, fromS = data.fromSlotIndex, movingResId = data.resonatorId, targetResId = state.parties[targetPartyIdx].slots[targetSlotIdx];
         if (fromP === targetPartyIdx && fromS === targetSlotIdx) return;
         if (fromP !== targetPartyIdx) {
-          if (targetResId && state.parties[fromP].slots.includes(targetResId)) { showToast('대상 파티에 동일 공명자 존재'); return; }
-          if (!targetResId && state.parties[targetPartyIdx].slots.includes(movingResId)) { showToast('해당 파티에 동일 공명자 존재'); return; }
+          if (targetResId && partyHasGroup(state.parties[fromP].slots, targetResId)) { showToast('대상 파티에 동일 공명자 존재'); return; }
+          if (!targetResId && partyHasGroup(state.parties[targetPartyIdx].slots, movingResId)) { showToast('해당 파티에 동일 공명자 존재'); return; }
         }
         state.parties[fromP].slots[fromS] = targetResId;
         state.parties[targetPartyIdx].slots[targetSlotIdx] = movingResId;
