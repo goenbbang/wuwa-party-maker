@@ -62,6 +62,7 @@
       "avatar": "Baizhi/T_IconRoleHead256_6_UI",
       "sprite": "Baizhi/T_IconRole_Pile_bailian_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "돌아갈 곳이 없는 오류",
         "image": "T_IconMonsterHead_350_UI",
@@ -76,7 +77,22 @@
       "skillPriority": ["공명 해방", "공명 스킬", "공명 회로", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "심해의 메아리"}, {"name": "수행자의 증폭기 · 탐색"}],
       "teammates": [{"id": "jinhsi"}, {"id": "shorekeeper"}, {"id": "verina"}],
-      "targetStats": {"type": "hp", "base": 20000, "regen": 220, "cr": 60, "cd": 210}
+      "targetStats": {"type": "hp", "base": 20000, "regen": 220, "cr": 60, "cd": 210},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "HP% / 크리티컬"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"}
+          ]
+        }
+      ]
     },
     {
       "id": "lingyang",
@@ -91,7 +107,8 @@
       "avatar": "Lingyang/T_IconRoleHead256_14_UI",
       "sprite": "Lingyang/T_IconRole_Pile_lingyang_UI",
       "echoSet": {
-        "sets": [{"name": "야밤의 서리", "count": 5}],
+        "label": "추천",
+        "sets": [{"name": "끊임없는 잔향", "count": 5}],
         "mainEcho": "조립식 로봇",
         "image": "T_IconMonsterHead_993_UI",
         "echoes": [
@@ -111,7 +128,35 @@
         {"name": "천상의 나선", "pct": 86.5}
       ],
       "teammates": [{"id": "lynae"}, {"id": "zhezhi"}, {"id": "sanhua"}],
-      "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 65, "cd": 240}
+      "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 65, "cd": 240},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "냉철한 결단", "count": 5}],
+          "mainEcho": "이성(異性) 무장",
+          "image": "T_IconMonsterHead_33012_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        },
+        {
+          "label": "대안 2",
+          "sets": [{"name": "야밤의 서리", "count": 5}],
+          "mainEcho": "반디의 군세",
+          "image": "T_IconMonsterHead_994_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "zhezhi",
@@ -174,6 +219,7 @@
       "avatar": "Youhu/T_IconRoleHead256_31_UI",
       "sprite": "Youhu/T_IconRole_Pile_Youhu_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "돌아갈 곳이 없는 오류",
         "image": "T_IconMonsterHead_350_UI",
@@ -188,7 +234,22 @@
       "skillPriority": ["공명 스킬", "공명 회로", "공명 해방", "기본 공격", "변주 스킬"],
       "weapons": [{"name": "바람의 악센트"}, {"name": "21형 권갑 · 아이언 팬텀"}],
       "teammates": [{"id": "yinlin"}, {"id": "zhezhi"}, {"id": "mortefi"}],
-      "targetStats": {"type": "atk", "base": 1300, "regen": 100, "cr": 60, "cd": 210}
+      "targetStats": {"type": "atk", "base": 1300, "regen": 100, "cr": 60, "cd": 210},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "공명 효율 / 응결 피해 보너스"},
+            {"cost": "3", "stat": "공명 효율 / 응결 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "carlotta",
@@ -282,6 +343,7 @@
       "avatar": "Lucilla/T_IconRoleHead256_66_UI",
       "sprite": "Lucilla/T_IconRole_Pile_luosela_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "소리 없이 내려앉은 기도의 눈", "count": 5}],
         "mainEcho": "글로모스",
         "image": "T_IconMonsterHead_32061_UI",
@@ -302,7 +364,35 @@
         {"name": "청음", "pct": 88.6}
       ],
       "teammates": [{"id": "hiyuki"}, {"id": "sigrika"}, {"id": "phrolova"}],
-      "targetStats": {"type": "atk", "base": 2400, "regen": 100, "cr": 75, "cd": 265}
+      "targetStats": {"type": "atk", "base": 2400, "regen": 100, "cr": 75, "cd": 265},
+      "echoAlts": [
+        {
+          "label": "에코 스킬",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        },
+        {
+          "label": "플로로 파티",
+          "sets": [{"name": "뒤틀린 피안의 꿈", "count": 3}, {"name": "속성 피해 +10%", "count": 2}],
+          "mainEcho": "보이드 모스",
+          "image": "T_IconMonsterHead_32066_UI",
+          "echoes": [
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "응결 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "suisui",
@@ -320,6 +410,7 @@
       "avatar": "Suisui/T_IconRoleHead256_71_UI",
       "sprite": "Suisui/T_IconRole_Pile_SuiSui_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "내려앉은 깃털의 노래", "count": 5}],
         "mainEcho": "봉정계유",
         "image": "T_IconMonsterHead_32068_UI",
@@ -334,7 +425,22 @@
       "skillPriority": ["변주 스킬", "공명 회로", "공명 스킬", "공명 해방", "기본 공격"],
       "weapons": [{"name": "노을에 깃든 이슬", "pct": 100.0}, {"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "심해의 메아리"}],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "hiyuki"}, {"id": "hsin"}],
-      "targetStats": {"type": "hp", "base": 40000, "regen": 260, "cr": 20, "cd": 150}
+      "targetStats": {"type": "hp", "base": 40000, "regen": 260, "cr": 20, "cd": 150},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "찬란한 광휘", "count": 5}],
+          "mainEcho": "돌아갈 곳이 없는 오류",
+          "image": "T_IconMonsterHead_350_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 피해"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"}
+          ]
+        }
+      ]
     },
     {
       "id": "chixia",
@@ -378,6 +484,7 @@
       "avatar": "Encore/T_IconRoleHead256_8_UI",
       "sprite": "Encore/T_IconRole_Pile_anke_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "솟구치는 용암", "count": 5}],
         "mainEcho": "지옥불 기사",
         "image": "T_IconMonsterHead_325_UI",
@@ -390,9 +497,30 @@
         ]
       },
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "꼭두각시의 손", "pct": 110.0}, {"name": "옥수 비단", "pct": 104.4}, {"name": "눈부신 빛", "pct": 94.4}, {"name": "청음", "pct": 94.4}],
+      "weapons": [
+        {"name": "꼭두각시의 손", "pct": 110.0},
+        {"name": "옥수 비단", "pct": 104.4},
+        {"name": "파도의 기록", "pct": 100.0},
+        {"name": "눈부신 빛", "pct": 94.4},
+        {"name": "청음", "pct": 94.4}
+      ],
       "teammates": [{"id": "lupa"}, {"id": "sanhua"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1900, "regen": 120, "cr": 70, "cd": 270}
+      "targetStats": {"type": "atk", "base": 1900, "regen": 120, "cr": 70, "cd": 270},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "울부짖는 늑대의 불꽃", "count": 5}],
+          "mainEcho": "영광의 사자",
+          "image": "T_IconMonsterHead_33022_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "mortefi",
@@ -407,6 +535,7 @@
       "avatar": "Mortefi/T_IconRoleHead256_13_UI",
       "sprite": "Mortefi/T_IconRole_Pile_baer_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "음험한 백로",
         "image": "T_IconMonsterHead_995_UI",
@@ -421,7 +550,22 @@
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
       "weapons": [{"name": "죽음과 춤", "pct": 106.12}, {"name": "부동의 안개", "pct": 100.0}, {"name": "역설의 격류", "pct": 83.92}, {"name": "천공의 순간", "pct": 83.64}],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "galbrena"}, {"id": "jiyan"}],
-      "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215}
+      "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "하늘의 합주곡", "count": 5}],
+          "mainEcho": "헤카테",
+          "image": "T_IconMonsterHead_34010_1_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "changli",
@@ -477,6 +621,7 @@
       "avatar": "Brant/T_IconRoleHead256_44_UI",
       "sprite": "Brant/T_IconRole_Pile_Bulante_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "파도에 맞선 용기", "count": 5}],
         "mainEcho": "탄식의 고룡",
         "image": "T_IconMonsterHead_33013_UI",
@@ -491,7 +636,22 @@
       "skillPriority": ["공명 회로", "기본 공격", "공명 해방", "변주 스킬", "공명 스킬"],
       "weapons": [{"name": "흔들리지 않는 용기", "pct": 100.0}, {"name": "레이저 변형", "pct": 77.2}, {"name": "혈맹의 약속", "pct": 75.1}, {"name": "천년의 회류", "pct": 71.3}],
       "teammates": [{"id": "lupa"}, {"id": "galbrena"}, {"id": "aemeath"}],
-      "targetStats": {"type": "atk", "base": 1700, "regen": 270, "cr": 75, "cd": 220}
+      "targetStats": {"type": "atk", "base": 1700, "regen": 270, "cr": 75, "cd": 220},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "솟구치는 용암", "count": 5}],
+          "mainEcho": "악몽 · 지옥불 기사",
+          "image": "T_IconMonsterHead_YZ_33019_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "공명 효율 / 용융 피해 보너스"},
+            {"cost": "3", "stat": "공명 효율 / 용융 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "lupa",
@@ -582,6 +742,7 @@
       "avatar": "Mornye/T_IconRoleHead256_61_UI",
       "sprite": "Mornye/T_IconRole_Pile_Moning_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "빛을 쫓는 별의 고리", "count": 5}],
         "mainEcho": "리액터 허스크",
         "image": "T_IconMonsterHead_34022_UI",
@@ -596,7 +757,22 @@
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "변주 스킬", "공명 스킬"],
       "weapons": [{"name": "별하늘 연산 측정기"}, {"name": "기묘한 울림"}, {"name": "41형 대검 · 무거운 책임"}],
       "teammates": [{"id": "lynae"}, {"id": "lupa"}, {"id": "denia"}],
-      "targetStats": {"type": "def", "base": 3500, "regen": 240, "cr": 20, "cd": 150}
+      "targetStats": {"type": "def", "base": 3500, "regen": 240, "cr": 20, "cd": 150},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "찬란한 광휘", "count": 5}],
+          "mainEcho": "돌아갈 곳이 없는 오류",
+          "image": "T_IconMonsterHead_350_UI",
+          "echoes": [
+            {"cost": "4", "stat": "방어력%"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "1", "stat": "방어력%"},
+            {"cost": "1", "stat": "방어력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "aemeath",
@@ -649,6 +825,7 @@
       "avatar": "Denia/T_IconRoleHead256_64_UI",
       "sprite": "Denia/T_IconRole_Pile_daniya_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "오색찬란한 거품", "count": 5}],
         "mainEcho": "공명의 메아리 · 데니아",
         "image": "T_IconMonsterHead_34028_1_UI",
@@ -668,7 +845,35 @@
         {"name": "청음", "pct": 80.88}
       ],
       "teammates": [{"id": "aemeath"}, {"id": "qingxiao"}, {"id": "luuk_herssen"}],
-      "targetStats": {"type": "atk", "base": 2300, "regen": 120, "cr": 75, "cd": 275}
+      "targetStats": {"type": "atk", "base": 2300, "regen": 120, "cr": 75, "cd": 275},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "마음을 엮은 꿈의 그림자", "count": 5}],
+          "mainEcho": "보이드 모스",
+          "image": "T_IconMonsterHead_32066_UI",
+          "echoes": [
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        },
+        {
+          "label": "루파 파티",
+          "sets": [{"name": "울부짖는 늑대의 불꽃", "count": 5}],
+          "mainEcho": "영광의 사자",
+          "image": "T_IconMonsterHead_33022_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "3", "stat": "용융 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "jingran",
@@ -712,6 +917,7 @@
       "avatar": "Calcharo/T_IconRoleHead256_18_UI",
       "sprite": "Calcharo/T_IconRole_Pile_kakaluo_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "울려퍼지는 뇌음", "count": 5}],
         "mainEcho": "악몽 · 뇌운의 비늘",
         "image": "T_IconMonsterHead_YZ_33016_UI",
@@ -732,7 +938,22 @@
         {"name": "금빛 하늘", "pct": 83.29}
       ],
       "teammates": [{"id": "lynae"}, {"id": "yinlin"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 2200, "regen": 130, "cr": 65, "cd": 260}
+      "targetStats": {"type": "atk", "base": 2200, "regen": 130, "cr": 65, "cd": 260},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "끊임없는 잔향", "count": 5}],
+          "mainEcho": "악몽 · 뇌운의 비늘",
+          "image": "T_IconMonsterHead_YZ_33016_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "yinlin",
@@ -750,6 +971,7 @@
       "avatar": "Yinlin/T_IconRoleHead256_17_UI",
       "sprite": "Yinlin/T_IconRole_Pile_yinlin_UI",
       "echoSet": {
+        "label": "서포트",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "음험한 백로",
         "image": "T_IconMonsterHead_995_UI",
@@ -764,7 +986,22 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "기본 공격", "변주 스킬"],
       "weapons": [{"name": "꼭두각시의 손", "pct": 100.0}, {"name": "바다의 속삭임", "pct": 96.9}, {"name": "옥수 비단", "pct": 96.6}, {"name": "청음", "pct": 87.9}],
       "teammates": [{"id": "iuno"}, {"id": "jinhsi"}, {"id": "xiangli_yao"}],
-      "targetStats": {"type": "atk", "base": 1850, "regen": 120, "cr": 80, "cd": 270}
+      "targetStats": {"type": "atk", "base": 1850, "regen": 120, "cr": 80, "cd": 270},
+      "echoAlts": [
+        {
+          "label": "합주",
+          "sets": [{"name": "하늘의 합주곡", "count": 5}],
+          "mainEcho": "악몽 · 천둥의 비늘",
+          "image": "T_IconMonsterHead_YZ_33017_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "yuanwu",
@@ -779,6 +1016,7 @@
       "avatar": "Yuanwu/T_IconRoleHead256_15_UI",
       "sprite": "Yuanwu/T_IconRole_Pile_yuanwu_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "돌아갈 곳이 없는 오류",
         "image": "T_IconMonsterHead_350_UI",
@@ -798,7 +1036,35 @@
         {"name": "수호자의 권갑 · 강력", "pct": 90.36}
       ],
       "teammates": [{"id": "jinhsi"}, {"id": "shorekeeper"}, {"id": "verina"}],
-      "targetStats": {"type": "def", "base": 1200, "regen": 100, "cr": 60, "cd": 250}
+      "targetStats": {"type": "def", "base": 1200, "regen": 100, "cr": 60, "cd": 250},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "방어력%"},
+            {"cost": "1", "stat": "방어력%"}
+          ]
+        },
+        {
+          "label": "특수",
+          "sets": [{"name": "하늘의 합주곡", "count": 5}],
+          "mainEcho": "악몽 · 천둥의 비늘",
+          "image": "T_IconMonsterHead_YZ_33017_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "방어력%"},
+            {"cost": "1", "stat": "방어력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "jinhsi",
@@ -849,6 +1115,7 @@
       "avatar": "Xiangli_Yao/T_IconRoleHead256_25_UI",
       "sprite": "Xiangli_Yao/T_IconRole_Pile_xiangliyao_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "울려퍼지는 뇌음", "count": 5}],
         "mainEcho": "악몽 · 뇌운의 비늘",
         "image": "T_IconMonsterHead_YZ_33016_UI",
@@ -869,7 +1136,22 @@
         {"name": "황금 권갑", "pct": 79.7}
       ],
       "teammates": [{"id": "lynae"}, {"id": "yinlin"}, {"id": "mornye"}],
-      "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 65, "cd": 280}
+      "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 65, "cd": 280},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "끊임없는 잔향", "count": 5}],
+          "mainEcho": "악몽 · 뇌운의 비늘",
+          "image": "T_IconMonsterHead_YZ_33016_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "augusta",
@@ -948,6 +1230,7 @@
       "avatar": "Rebecca/T_IconRoleHead256_69_UI",
       "sprite": "Rebecca/T_IconRole_Pile_LiBeiKa_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "타종 거북이",
         "image": "T_IconMonsterHead_992_UI",
@@ -969,7 +1252,35 @@
         {"name": "26형 권총 · 맹렬한 돌격", "pct": 75.9}
       ],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "lucy"}, {"id": "suisui"}],
-      "targetStats": {"type": "atk", "base": 2300, "regen": 125, "cr": 70, "cd": 285}
+      "targetStats": {"type": "atk", "base": 2300, "regen": 125, "cr": 70, "cd": 285},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "꿈을 깨뜨리는 망령의 악몽", "count": 1}, {"name": "속성 피해 +10%", "count": 2}, {"name": "공격력 +10%", "count": 2}],
+          "mainEcho": "공명의 메아리 · 악몽 아담 · 스매셔",
+          "image": "T_IconMonsterHead_34029_1_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        },
+        {
+          "label": "루시 파티",
+          "sets": [{"name": "역광 속 눈부신 서약", "count": 5}],
+          "mainEcho": "하이와티아",
+          "image": "T_IconMonsterHead_34021_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "rover_electro",
@@ -1079,6 +1390,7 @@
       "avatar": "Yangyang/T_IconRoleHead256_1_UI",
       "sprite": "Yangyang/T_IconRole_Pile_yangyang_UI",
       "echoSet": {
+        "label": "서포트",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "음험한 백로",
         "image": "T_IconMonsterHead_995_UI",
@@ -1093,7 +1405,22 @@
       "skillPriority": ["공명 해방", "공명 스킬", "공명 회로", "기본 공격", "변주 스킬"],
       "weapons": [{"name": "솟아오르는 화염", "pct": 102.39}, {"name": "천년의 회류", "pct": 100.0}, {"name": "천공의 광경", "pct": 82.96}, {"name": "영원의 붕괴", "pct": 82.82}],
       "teammates": [{"id": "carlotta"}, {"id": "xiangli_yao"}, {"id": "changli"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 107, "cr": 60, "cd": 210}
+      "targetStats": {"type": "atk", "base": 1800, "regen": 107, "cr": 60, "cd": 210},
+      "echoAlts": [
+        {
+          "label": "딜러",
+          "sets": [{"name": "스쳐가는 바람", "count": 5}],
+          "mainEcho": "악몽 · 폭주의 고릴라",
+          "image": "T_IconMonsterHead_YZ_33014_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "aalto",
@@ -1108,6 +1435,7 @@
       "avatar": "Aalto/T_IconRoleHead256_12_UI",
       "sprite": "Aalto/T_IconRole_Pile_qiushui_UI",
       "echoSet": {
+        "label": "메인딜",
         "sets": [{"name": "스쳐가는 바람", "count": 5}],
         "mainEcho": "악몽 · 폭주의 고릴라",
         "image": "T_IconMonsterHead_YZ_33014_UI",
@@ -1122,7 +1450,35 @@
       "skillPriority": ["기본 공격", "공명 스킬", "공명 해방", "공명 회로", "변주 스킬"],
       "weapons": [{"name": "죽음과 춤", "pct": 102.6}, {"name": "숲속의 아리아", "pct": 101.0}, {"name": "부동의 안개", "pct": 100.0}, {"name": "역설의 격류", "pct": 85.5}],
       "teammates": [{"id": "ciaccona"}, {"id": "rover_aero"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1600, "regen": 145, "cr": 60, "cd": 215}
+      "targetStats": {"type": "atk", "base": 1600, "regen": 145, "cr": 60, "cd": 215},
+      "echoAlts": [
+        {
+          "label": "샤콘 파티",
+          "sets": [{"name": "영광이 깃든 바람", "count": 5}],
+          "mainEcho": "악몽 · 켈피",
+          "image": "T_IconMonsterHead_33021_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        },
+        {
+          "label": "서포트",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "jiyan",
@@ -1137,6 +1493,7 @@
       "avatar": "Jiyan/T_IconRoleHead256_11_UI",
       "sprite": "Jiyan/T_IconRole_Pile_jiyan_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "영광이 깃든 바람", "count": 5}],
         "mainEcho": "악몽 · 켈피",
         "image": "T_IconMonsterHead_33021_UI",
@@ -1151,7 +1508,22 @@
       "skillPriority": ["공명 해방", "공명 회로", "공명 스킬", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "청룡의 천장", "pct": 100.0}, {"name": "천둥벼락을 다스리는 권능", "pct": 90.3}, {"name": "태평성대", "pct": 88.3}, {"name": "금빛 하늘", "pct": 83.2}],
       "teammates": [{"id": "iuno"}, {"id": "phrolova"}, {"id": "ciaccona"}],
-      "targetStats": {"type": "atk", "base": 2250, "regen": 130, "cr": 70, "cd": 260}
+      "targetStats": {"type": "atk", "base": 2250, "regen": 130, "cr": 70, "cd": 260},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "스쳐가는 바람", "count": 5}],
+          "mainEcho": "악몽 · 폭주의 고릴라",
+          "image": "T_IconMonsterHead_YZ_33014_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "jianxin",
@@ -1166,6 +1538,7 @@
       "avatar": "Jianxin/T_IconRoleHead256_23_UI",
       "sprite": "Jianxin/T_IconRole_Pile_jiexin_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "음험한 백로",
         "image": "T_IconMonsterHead_995_UI",
@@ -1186,7 +1559,22 @@
         {"name": "원능의 권갑 · 견습IV"}
       ],
       "teammates": [{"id": "iuno"}, {"id": "xiangli_yao"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1700, "regen": 160, "cr": 70, "cd": 245}
+      "targetStats": {"type": "atk", "base": 1700, "regen": 160, "cr": 70, "cd": 245},
+      "echoAlts": [
+        {
+          "label": "힐러",
+          "sets": [{"name": "찬란한 광휘", "count": 5}],
+          "mainEcho": "돌아갈 곳이 없는 오류",
+          "image": "T_IconMonsterHead_350_UI",
+          "echoes": [
+            {"cost": "4", "stat": "치료 효과 보너스"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"}
+          ]
+        }
+      ]
     },
     {
       "id": "rover_aero",
@@ -1201,6 +1589,7 @@
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_zhujue_UI",
       "echoSet": {
+        "label": "서포트",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "타종 거북이",
         "image": "T_IconMonsterHead_992_UI",
@@ -1215,7 +1604,22 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "혈맹의 약속", "pct": 121.12}],
       "teammates": [{"id": "cartethyia"}, {"id": "ciaccona"}, {"id": "iuno"}],
-      "targetStats": {"type": "atk", "base": 1900, "regen": 150, "cr": 60, "cd": 200}
+      "targetStats": {"type": "atk", "base": 1900, "regen": 150, "cr": 60, "cd": 200},
+      "echoAlts": [
+        {
+          "label": "특수",
+          "sets": [{"name": "영광이 깃든 바람", "count": 5}],
+          "mainEcho": "공명의 메아리 · 플뢰르 드 리스",
+          "image": "T_IconMonsterHead_34012_1_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "ciaccona",
@@ -1230,6 +1634,7 @@
       "avatar": "Ciaccona/T_IconRoleHead256_37_UI",
       "sprite": "Ciaccona/T_IconRole_Pile_xiakong_UI",
       "echoSet": {
+        "label": "기류 파티",
         "sets": [{"name": "끝없는 하늘", "count": 5}],
         "mainEcho": "악몽 · 켈피",
         "image": "T_IconMonsterHead_33021_UI",
@@ -1250,7 +1655,35 @@
         {"name": "작별의 로맨스", "pct": 72.7}
       ],
       "teammates": [{"id": "cartethyia"}, {"id": "sigrika"}, {"id": "chisa"}],
-      "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 75, "cd": 275}
+      "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 75, "cd": 275},
+      "echoAlts": [
+        {
+          "label": "그 외 파티",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        },
+        {
+          "label": "메인딜",
+          "sets": [{"name": "영광이 깃든 바람", "count": 5}],
+          "mainEcho": "악몽 · 켈피",
+          "image": "T_IconMonsterHead_33021_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "cartethyia",
@@ -1294,6 +1727,7 @@
       "avatar": "Iuno/T_IconRoleHead256_48_UI",
       "sprite": "Iuno/T_IconRole_Pile_younuo_UI",
       "echoSet": {
+        "label": "메인딜",
         "sets": [{"name": "영광의 칼날로 만들어진 왕관", "count": 3}, {"name": "속성 피해 +10%", "count": 2}],
         "mainEcho": "바다의 여인",
         "image": "T_IconMonsterHead_34018_UI",
@@ -1308,7 +1742,22 @@
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
       "weapons": [{"name": "세상 만물의 진리", "pct": 100.0}, {"name": "팔방의 천추", "pct": 98.7}, {"name": "거침없는 비상", "pct": 81.0}, {"name": "황금 권갑", "pct": 80.3}],
       "teammates": [{"id": "jingran"}, {"id": "augusta"}, {"id": "lynae"}],
-      "targetStats": {"type": "atk", "base": 2300, "regen": 130, "cr": 80, "cd": 260}
+      "targetStats": {"type": "atk", "base": 2300, "regen": 130, "cr": 80, "cd": 260},
+      "echoAlts": [
+        {
+          "label": "서브딜",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "qiuyuan",
@@ -1326,6 +1775,7 @@
       "avatar": "Qiuyuan/T_IconRoleHead256_56_UI",
       "sprite": "Qiuyuan/T_IconRole_Pile_Qiuyuan_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "만물의 숨결에 비롯된 울림", "count": 3}, {"name": "속성 피해 +10%", "count": 2}],
         "mainEcho": "공명의 메아리 · 펜리코",
         "image": "T_IconMonsterHead_34015_2_UI",
@@ -1346,7 +1796,22 @@
         {"name": "예리한 날개깃", "pct": 80.1}
       ],
       "teammates": [{"id": "sigrika"}, {"id": "phrolova"}, {"id": "galbrena"}],
-      "targetStats": {"type": "atk", "base": 2350, "regen": 130, "cr": 70, "cd": 260}
+      "targetStats": {"type": "atk", "base": 2350, "regen": 130, "cr": 70, "cd": 260},
+      "echoAlts": [
+        {
+          "label": "갈브레나 파티",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "3", "stat": "기류 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "sigrika",
@@ -1425,9 +1890,10 @@
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_zhujue_UI",
       "echoSet": {
+        "label": "서포트",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
-        "mainEcho": "악몽 · 애곡하는 아익스",
-        "image": "T_IconMonsterHead_YZ_33020_UI",
+        "mainEcho": "음험한 백로",
+        "image": "T_IconMonsterHead_995_UI",
         "echoes": [
           {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
           {"cost": "3", "stat": "회절 피해 보너스"},
@@ -1439,7 +1905,35 @@
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
       "weapons": [{"name": "솟아오르는 화염", "pct": 107.85}, {"name": "천년의 회류", "pct": 100.0}, {"name": "상승의 서녘", "pct": 86.05}, {"name": "영원의 붕괴", "pct": 85.72}],
       "teammates": [{"id": "phoebe"}, {"id": "zani"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 120, "cr": 60, "cd": 210}
+      "targetStats": {"type": "atk", "base": 1800, "regen": 120, "cr": 60, "cd": 210},
+      "echoAlts": [
+        {
+          "label": "힐러",
+          "sets": [{"name": "찬란한 광휘", "count": 5}],
+          "mainEcho": "돌아갈 곳이 없는 오류",
+          "image": "T_IconMonsterHead_350_UI",
+          "echoes": [
+            {"cost": "4", "stat": "치료 효과 보너스"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"}
+          ]
+        },
+        {
+          "label": "메인딜",
+          "sets": [{"name": "영원의 광채", "count": 5}],
+          "mainEcho": "악몽 · 애곡하는 아익스",
+          "image": "T_IconMonsterHead_YZ_33020_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "회절 피해 보너스"},
+            {"cost": "3", "stat": "회절 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "verina",
@@ -1486,6 +1980,7 @@
       "avatar": "Lumi/T_IconRoleHead256_30_UI",
       "sprite": "Lumi/T_IconRole_Pile_dengdeng_UI",
       "echoSet": {
+        "label": "서포트",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
         "mainEcho": "음험한 백로",
         "image": "T_IconMonsterHead_995_UI",
@@ -1498,9 +1993,24 @@
         ]
       },
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
-      "weapons": [{"name": "태평성대", "pct": 108.33}, {"name": "청룡의 천장", "pct": 101.11}, {"name": "가을의 무늬", "pct": 94.03}],
+      "weapons": [{"name": "태평성대", "pct": 108.33}, {"name": "청룡의 천장", "pct": 101.11}, {"name": "푸른물결의 빛", "pct": 100.0}, {"name": "가을의 무늬", "pct": 94.03}],
       "teammates": [{"id": "jinhsi"}, {"id": "carlotta"}, {"id": "verina"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 142, "cr": 65, "cd": 210}
+      "targetStats": {"type": "atk", "base": 2000, "regen": 142, "cr": 65, "cd": 210},
+      "echoAlts": [
+        {
+          "label": "메인딜",
+          "sets": [{"name": "울려퍼지는 뇌음", "count": 5}],
+          "mainEcho": "악몽 · 뇌운의 비늘",
+          "image": "T_IconMonsterHead_YZ_33016_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "3", "stat": "전도 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "shorekeeper",
@@ -1519,6 +2029,7 @@
       "avatar": "Shorekeeper/T_IconRoleHead256_28_UI",
       "sprite": "Shorekeeper/T_IconRole_Pile_Shouanren_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "돌아갈 곳이 없는 오류",
         "image": "T_IconMonsterHead_350_UI",
@@ -1533,7 +2044,22 @@
       "skillPriority": ["변주 스킬", "공명 스킬", "기본 공격", "공명 회로", "공명 해방"],
       "weapons": [{"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}],
       "teammates": [{"id": "augusta"}, {"id": "carlotta"}, {"id": "zani"}],
-      "targetStats": {"type": "hp", "base": 20000, "regen": 230, "cr": 60, "cd": 220}
+      "targetStats": {"type": "hp", "base": 20000, "regen": 230, "cr": 60, "cd": 220},
+      "echoAlts": [
+        {
+          "label": "경연 파티",
+          "sets": [{"name": "빛을 쫓는 별의 고리", "count": 5}],
+          "mainEcho": "스페이스트렉 탐색기",
+          "image": "T_IconMonsterHead_32054_UI",
+          "echoes": [
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "4", "stat": "크리티컬 피해"},
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"}
+          ]
+        }
+      ]
     },
     {
       "id": "phoebe",
@@ -1551,6 +2077,7 @@
       "avatar": "Phoebe/T_IconRoleHead256_45_UI",
       "sprite": "Phoebe/T_IconRole_Pile_Feibi_UI",
       "echoSet": {
+        "label": "메인딜",
         "sets": [{"name": "영원의 광채", "count": 5}],
         "mainEcho": "카피타네우스",
         "image": "T_IconMonsterHead_32033_UI",
@@ -1565,7 +2092,22 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "광휘의 찬송가", "pct": 100.0}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 98.2}, {"name": "꼭두각시의 손", "pct": 97.6}, {"name": "청음", "pct": 86.4}],
       "teammates": [{"id": "lynae"}, {"id": "rover_spectro"}, {"id": "zani"}],
-      "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215}
+      "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215},
+      "echoAlts": [
+        {
+          "label": "서포트",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "회절 피해 보너스"},
+            {"cost": "3", "stat": "회절 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "zani",
@@ -1609,6 +2151,7 @@
       "avatar": "Chisa/T_IconRoleHead256_57_UI",
       "sprite": "Chisa/T_IconRole_Pile_Qianxiao_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "돌아갈 곳이 없는 오류",
         "image": "T_IconMonsterHead_350_UI",
@@ -1629,7 +2172,22 @@
         {"name": "용서의 명상록", "pct": 69.0}
       ],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "aemeath"}, {"id": "hiyuki"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 125, "cr": 65, "cd": 210}
+      "targetStats": {"type": "atk", "base": 2000, "regen": 125, "cr": 65, "cd": 210},
+      "echoAlts": [
+        {
+          "label": "상황별",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "lynae",
@@ -1759,6 +2317,7 @@
       "avatar": "Taoqi/T_IconRoleHead256_9_UI",
       "sprite": "Taoqi/T_IconRole_Pile_taohua_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
         "mainEcho": "돌아갈 곳이 없는 오류",
         "image": "T_IconMonsterHead_350_UI",
@@ -1773,7 +2332,22 @@
       "skillPriority": ["공명 회로", "공명 스킬", "공명 해방", "기본 공격", "변주 스킬"],
       "weapons": [{"name": "기묘한 울림", "pct": 100.0}, {"name": "장야의 불빛", "pct": 107.54}],
       "teammates": [{"id": "carlotta"}, {"id": "jinhsi"}, {"id": "verina"}],
-      "targetStats": {"type": "def", "base": 1150, "regen": 126, "cr": 5, "cd": 150}
+      "targetStats": {"type": "def", "base": 1150, "regen": 126, "cr": 5, "cd": 150},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "방어력%"},
+            {"cost": "3", "stat": "공명 효율 / 인멸 피해 보너스"},
+            {"cost": "3", "stat": "공명 효율 / 인멸 피해 보너스"},
+            {"cost": "1", "stat": "방어력%"},
+            {"cost": "1", "stat": "방어력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "danjin",
@@ -1813,9 +2387,9 @@
       "echoAlts": [
         {
           "label": "메인딜",
-          "sets": [{"name": "어둠의 장막", "count": 5}],
-          "mainEcho": "로렐라이",
-          "image": "T_IconMonsterHead_33011_UI",
+          "sets": [{"name": "빛을 삼키는 해", "count": 5}],
+          "mainEcho": "무망자",
+          "image": "T_IconMonsterHead_998_UI",
           "echoes": [
             {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
             {"cost": "3", "stat": "인멸 피해 보너스"},
@@ -1839,6 +2413,7 @@
       "avatar": "Camellya/T_IconRoleHead256_29_UI",
       "sprite": "Camellya/T_IconRole_Pile_chun_UI",
       "echoSet": {
+        "label": "추천",
         "sets": [{"name": "빛을 삼키는 해", "count": 5}],
         "mainEcho": "악몽 · 크라운리스",
         "image": "T_IconMonsterHead_YZ_33018_UI",
@@ -1860,7 +2435,22 @@
         {"name": "천공의 광경", "pct": 76.1}
       ],
       "teammates": [{"id": "lynae"}, {"id": "roccia"}, {"id": "sanhua"}],
-      "targetStats": {"type": "atk", "base": 2450, "regen": 120, "cr": 65, "cd": 280}
+      "targetStats": {"type": "atk", "base": 2450, "regen": 120, "cr": 65, "cd": 280},
+      "echoAlts": [
+        {
+          "label": "대안",
+          "sets": [{"name": "끊임없는 잔향", "count": 5}],
+          "mainEcho": "조립식 로봇",
+          "image": "T_IconMonsterHead_993_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "3", "stat": "인멸 피해 보너스"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "rover_havoc",
@@ -1932,7 +2522,7 @@
       "targetStats": {"type": "atk", "base": 2250, "regen": 130, "cr": 65, "cd": 280},
       "echoAlts": [
         {
-          "label": "대안",
+          "label": "서포트",
           "sets": [{"name": "떠오르는 구름", "count": 5}],
           "mainEcho": "음험한 백로",
           "image": "T_IconMonsterHead_995_UI",
@@ -1962,6 +2552,7 @@
       "avatar": "Cantarella/T_IconRoleHead256_34_UI",
       "sprite": "Cantarella/T_IconRole_Pile_kanteleila_UI",
       "echoSet": {
+        "label": "인멸 파티",
         "sets": [{"name": "어둠의 장막", "count": 5}],
         "mainEcho": "로렐라이",
         "image": "T_IconMonsterHead_33011_UI",
@@ -1982,7 +2573,22 @@
         {"name": "청음", "pct": 77.8}
       ],
       "teammates": [{"id": "phrolova"}, {"id": "shorekeeper"}, {"id": "roccia"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 130, "cr": 70, "cd": 280}
+      "targetStats": {"type": "atk", "base": 1800, "regen": 130, "cr": 70, "cd": 280},
+      "echoAlts": [
+        {
+          "label": "그 외 파티",
+          "sets": [{"name": "떠오르는 구름", "count": 5}],
+          "mainEcho": "음험한 백로",
+          "image": "T_IconMonsterHead_995_UI",
+          "echoes": [
+            {"cost": "4", "stat": "크리티컬 / 크리티컬 피해"},
+            {"cost": "3", "stat": "인멸 피해 보너스 / 공명 효율"},
+            {"cost": "3", "stat": "인멸 피해 보너스 / 공명 효율"},
+            {"cost": "1", "stat": "공격력%"},
+            {"cost": "1", "stat": "공격력%"}
+          ]
+        }
+      ]
     },
     {
       "id": "phrolova",

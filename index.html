@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>공명자 관리기록부</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/app.css">
   <script defer src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 
   <style>
@@ -308,8 +307,8 @@
             <div id="detail-modal-weapons" class="flex flex-wrap md:flex-nowrap items-stretch gap-2.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
           </div>
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
-            <span class="text-base font-black text-white block mb-1.5">추천 파티 구성원</span>
-            <div id="detail-modal-teammates" class="flex flex-wrap md:flex-nowrap items-center gap-3 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
+            <span id="detail-modal-teammates-title" class="text-base font-black text-white block mb-1.5">추천 파티 구성원</span>
+            <div id="detail-modal-teammates" class="grid grid-cols-2 md:flex md:flex-nowrap items-center gap-2.5 md:gap-3 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
           </div>
         </div>
       </div>
@@ -318,17 +317,17 @@
 
   <!-- 추천 무기 상세 정보 팝업 모달 -->
   <div id="weapon-detail-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
-    <div class="bg-[#0e121a] max-w-[620px] w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
+    <div class="bg-[#0e121a] max-w-[680px] w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
       <button onclick="closeModal('weapon-detail-modal')" class="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       
-      <!-- 모바일: 이름·재련이 맨 위 한 줄 전체 폭 / PC: 이미지 옆 -->
-      <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 sm:gap-x-5 gap-y-3 sm:gap-y-2">
-        <div class="col-span-2 sm:col-span-1 sm:col-start-2 sm:row-start-1 pr-9 min-w-0 flex flex-col gap-1.5">
-          <h4 class="font-black text-lg sm:text-xl text-white tracking-tight whitespace-nowrap overflow-hidden text-ellipsis" id="wp-detail-title">무기 이름</h4>
-          <div id="wp-detail-refine" class="flex items-center gap-1"></div>
+      <!-- 모바일: 이름 맨 위 전체 폭 → 이미지 | 재련+옵션 / PC: 이미지 | 이름+재련 한 줄, 옵션 (이미지 높이와 위아래 맞춤) -->
+      <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 sm:gap-x-5 gap-y-2.5 sm:gap-y-2">
+        <div class="contents sm:flex sm:items-center sm:gap-3 sm:col-start-2 sm:row-start-1 sm:self-start sm:pr-9 min-w-0">
+          <h4 class="col-span-2 row-start-1 pr-9 sm:pr-0 min-w-0 font-black text-lg sm:text-[19px] text-white tracking-tight whitespace-nowrap overflow-hidden text-ellipsis" id="wp-detail-title">무기 이름</h4>
+          <div id="wp-detail-refine" class="col-start-2 row-start-2 self-start flex items-center gap-1 flex-shrink-0"></div>
         </div>
-        <div id="wp-detail-img-box" class="sm:row-span-2 sm:row-start-1 sm:col-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 relative shadow-inner"></div>
-          <div class="flex flex-col gap-2 justify-center sm:justify-end self-stretch min-w-0 sm:col-start-2">
+        <div id="wp-detail-img-box" class="row-start-2 row-span-2 col-start-1 sm:row-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 relative shadow-inner"></div>
+        <div class="col-start-2 row-start-3 sm:row-start-2 self-end flex flex-col gap-2 min-w-0">
             <div class="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-[#141926] border border-slate-700/80">
               <div class="flex items-center gap-2 text-slate-300 font-bold text-xs sm:text-sm">
                 <span id="wp-detail-atk-icon" class="w-4 h-4 flex items-center justify-center"></span>
@@ -343,7 +342,7 @@
               </div>
               <span class="text-sm sm:text-base font-black text-white" id="wp-detail-stat-val">-</span>
             </div>
-          </div>
+        </div>
       </div>
       
       <div class="bg-[#080b11] border border-slate-800 rounded-2xl p-4 sm:p-5">
@@ -994,20 +993,20 @@
     function getElementIconHtml(elemKey) {
       const src = adminConfig.customElementIcons[elemKey] || (ELEMENT_ICON_IMG[elemKey] ? resolveImageUrl(ELEMENT_ICON_IMG[elemKey], 'set') : '');
       return src
-        ? `<img src="${src}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">`
+        ? `<img loading="lazy" decoding="async" src="${src}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">`
         : (DEFAULT_ELEMENT_META[elemKey]?.defaultSvg || '');
     }
 
     function getWeaponStatIconHtml(type, size = 'w-4 h-4') {
       const custom = adminConfig.customWeaponStatIcons?.[type];
-      if (custom) return `<img src="${custom}" class="${size} object-contain pointer-events-none" crossorigin="anonymous">`;
-      if (STAT_META[type]?.img) return `<img src="${resolveImageUrl(STAT_META[type].img, 'icon')}" class="${size} object-contain pointer-events-none" crossorigin="anonymous">`;
+      if (custom) return `<img loading="lazy" decoding="async" src="${custom}" class="${size} object-contain pointer-events-none" crossorigin="anonymous">`;
+      if (STAT_META[type]?.img) return `<img loading="lazy" decoding="async" src="${resolveImageUrl(STAT_META[type].img, 'icon')}" class="${size} object-contain pointer-events-none" crossorigin="anonymous">`;
       return `<i data-lucide="${STAT_META[type]?.icon || 'sparkles'}" class="${size} text-slate-400"></i>`;
     }
 
     function getCircuitIconHtml(circuit) {
       return circuit.iconImage 
-        ? `<img src="${circuit.iconImage}" class="w-10 h-10 object-contain pointer-events-none" crossorigin="anonymous">` 
+        ? `<img loading="lazy" decoding="async" src="${circuit.iconImage}" class="w-10 h-10 object-contain pointer-events-none" crossorigin="anonymous">` 
         : (circuit.iconSvg || `<svg viewBox="0 0 24 24" class="w-10 h-10 text-cyan-300 fill-none stroke-current stroke-2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`);
     }
 
@@ -1189,7 +1188,7 @@
       root.style.setProperty('--ui-scale', (adminConfig.uiScale / 100).toString());
       
       const logoBox = document.getElementById('app-header-logo-container');
-      if (logoBox) logoBox.innerHTML = adminConfig.logoImage ? `<img src="${adminConfig.logoImage}" class="w-full h-full object-contain" crossorigin="anonymous">` : `<span class="text-black font-black text-sm">WW</span>`;
+      if (logoBox) logoBox.innerHTML = adminConfig.logoImage ? `<img loading="lazy" decoding="async" src="${adminConfig.logoImage}" class="w-full h-full object-contain" crossorigin="anonymous">` : `<span class="text-black font-black text-sm">WW</span>`;
       ['point','attack','buff','bg'].forEach(id => { const el = document.getElementById(`cfg-color-${id}`); if(el) el.value = adminConfig[`color${id.charAt(0).toUpperCase() + id.slice(1)}`]; });
       const cf = document.getElementById('cfg-font-family'), cs = document.getElementById('cfg-ui-scale'), cl = document.getElementById('cfg-icon-logo');
       if (cf) cf.value = adminConfig.fontFamily;
@@ -1214,7 +1213,7 @@
           <div class="p-2.5 rounded-xl bg-[#161a25] border border-slate-700/80 flex flex-col gap-2 shadow-sm transition hover:border-amber-500/50">
             <div class="flex items-center justify-start gap-2.5 group">
               <div class="relative w-9 h-9 rounded-lg bg-[#0a0d14] border border-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0">
-                ${curImg ? `<img src="${curImg}" class="w-full h-full object-contain pointer-events-none">` : getWeaponStatIconHtml(key, 'w-5 h-5')}
+                ${curImg ? `<img loading="lazy" decoding="async" src="${curImg}" class="w-full h-full object-contain pointer-events-none">` : getWeaponStatIconHtml(key, 'w-5 h-5')}
                 <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   <i data-lucide="upload" class="w-3.5 h-3.5 text-amber-300"></i>
                   <input type="file" accept="image/*" class="hidden" onchange="handleWpStatIconUpload(event, '${key}')">
@@ -1232,7 +1231,7 @@
           <div class="p-3 rounded-xl bg-[#161a25] border border-slate-700/80 flex flex-col gap-2 shadow-sm transition hover:border-amber-500/50">
             <div class="flex items-center justify-start gap-3 group">
               <div class="relative w-10 h-10 rounded-lg bg-[#0a0d14] border border-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0">
-                ${curImg ? `<img src="${curImg}" class="w-full h-full object-contain pointer-events-none">` : `<div class="w-7 h-7">${getElementIconHtml(key)}</div>`}
+                ${curImg ? `<img loading="lazy" decoding="async" src="${curImg}" class="w-full h-full object-contain pointer-events-none">` : `<div class="w-7 h-7">${getElementIconHtml(key)}</div>`}
                 <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   <i data-lucide="upload" class="w-4 h-4 text-amber-300"></i>
                   <input type="file" accept="image/*" class="hidden" onchange="handleElementIconUpload(event, '${key}')">
@@ -1310,7 +1309,7 @@
         <div class="p-4 bg-[#161a25] rounded-xl border border-slate-700/80 flex flex-col gap-3 shadow-sm">
           <div class="flex items-center gap-3">
             <div class="relative w-12 h-12 rounded-lg bg-[#0a0d14] border border-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0 group cursor-pointer">
-              ${es.iconUrl ? `<img src="${es.iconUrl}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="image" class="w-5 h-5 text-slate-500"></i>`}
+              ${es.iconUrl ? `<img loading="lazy" decoding="async" src="${es.iconUrl}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="image" class="w-5 h-5 text-slate-500"></i>`}
               <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 <i data-lucide="upload" class="w-4 h-4 text-amber-300"></i>
                 <input type="file" accept="image/*" class="hidden" onchange="handleEchoSetIconUpload(event, '${es.id}')">
@@ -1382,7 +1381,7 @@
           <div class="p-4 bg-[#161a25] rounded-xl border border-slate-700/85 flex flex-col gap-2.5 shadow-sm">
             <div class="flex items-center gap-3">
               <div class="relative w-12 h-12 rounded-lg bg-[#0a0d14] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 group cursor-pointer">
-                ${wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="sword" class="w-5 h-5 text-slate-500"></i>`}
+                ${wp.image ? `<img loading="lazy" decoding="async" src="${wp.image}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="sword" class="w-5 h-5 text-slate-500"></i>`}
                 <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   <i data-lucide="upload" class="w-4 h-4 text-rose-300"></i>
                   <input type="file" accept="image/*" class="hidden" onchange="handleWeaponEditorIconUpload(event, '${wp.id}')">
@@ -1632,18 +1631,18 @@
       document.getElementById('edit-circuit-desc').value = c.desc || '';
       document.getElementById('edit-circuit-icon-url').value = toShortImageInput(c.iconImage || '', 'icon');
       const box = document.getElementById('preview-circuit-icon-box');
-      box.innerHTML = c.iconImage ? `<img src="${c.iconImage}" class="w-full h-full object-contain">` : (c.iconSvg || `<span class="text-xs text-slate-500">기본</span>`);
+      box.innerHTML = c.iconImage ? `<img loading="lazy" decoding="async" src="${c.iconImage}" class="w-full h-full object-contain">` : (c.iconSvg || `<span class="text-xs text-slate-500">기본</span>`);
     }
 
     function updateCircuitIconPreview(val) {
       const resolved = resolveImageUrl(val, 'icon');
-      document.getElementById('preview-circuit-icon-box').innerHTML = resolved ? `<img src="${resolved}" class="w-full h-full object-contain">` : `<span class="text-xs text-slate-500">기본</span>`;
+      document.getElementById('preview-circuit-icon-box').innerHTML = resolved ? `<img loading="lazy" decoding="async" src="${resolved}" class="w-full h-full object-contain">` : `<span class="text-xs text-slate-500">기본</span>`;
     }
 
     function handleCircuitIconUpload(e) {
       readImageFile(e, src => {
         document.getElementById('edit-circuit-icon-url').value = src;
-        document.getElementById('preview-circuit-icon-box').innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
+        document.getElementById('preview-circuit-icon-box').innerHTML = `<img loading="lazy" decoding="async" src="${src}" class="w-full h-full object-contain">`;
       }, 256);
     }
 
@@ -1685,8 +1684,16 @@
       });
     }
 
+    // 이미지 저장 라이브러리는 실제로 저장할 때만 불러옴 (첫 로딩 가볍게)
+    function loadScriptOnce(src) {
+      return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve();
+        const el = document.createElement('script'); el.src = src; el.onload = resolve; el.onerror = reject; document.head.appendChild(el);
+      });
+    }
     async function exportPartyDeckAsImage() {
       const targetArea = document.getElementById('parties-capture-area'), saveBtn = document.getElementById('btn-save-image');
+      if (!window.htmlToImage) { try { await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js'); } catch {} }
       if (!targetArea || !window.htmlToImage) { showToast('이미지 저장 실패'); return; }
       const origText = saveBtn.innerHTML; saveBtn.disabled = true; saveBtn.innerHTML = `<span>저장 중...</span>`;
       try {
@@ -1711,7 +1718,7 @@
       const ghost = document.createElement('div');
       ghost.id = 'active-drag-ghost';
       ghost.className = 'drag-ghost-frame';
-      ghost.innerHTML = `<img src="${imgSrc}" crossorigin="anonymous">`;
+      ghost.innerHTML = `<img loading="lazy" decoding="async" src="${imgSrc}" crossorigin="anonymous">`;
       document.body.appendChild(ghost);
       return ghost;
     }
@@ -1835,7 +1842,7 @@
               <div class="absolute top-1.5 right-1.5 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="p-1 rounded bg-black/70 hover:bg-rose-900 text-slate-400 hover:text-white transition shadow"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
               <div class="flex items-center gap-0 sm:gap-2.5 w-full h-full min-w-0">
                 <div class="relative h-full w-full sm:w-[64px] rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md">
-                  <img src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
+                  <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
                 </div>
                 <div class="hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
@@ -2005,7 +2012,7 @@
         // 범용 속성 2세트는 캐릭터 속성으로 표시 (예: 응결 피해 +10%)
         const label = isElem ? `${DEFAULT_ELEMENT_META[char.element]?.label || '속성'} 피해 +10%` : s.name;
         const iconInner = isElem ? `<div class="w-8 h-8">${getElementIconHtml(char.element)}</div>`
-          : meta?.iconUrl ? `<img src="${meta.iconUrl}" class="w-8 h-8 object-contain drop-shadow-sm">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>`;
+          : meta?.iconUrl ? `<img loading="lazy" decoding="async" src="${meta.iconUrl}" class="w-8 h-8 object-contain drop-shadow-sm">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>`;
         const big = setList.length === 1;
         return `<div class="flex items-center gap-1.5 min-w-0">
           <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center">${iconInner}</div>
@@ -2067,7 +2074,7 @@
         return `
           <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
-              <img src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
+              <img loading="lazy" decoding="async" src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
               ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
               ${w.pct != null ? `<span class="absolute top-1 right-1 z-10 px-1 py-0.5 rounded bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums" title="Prydwen 효율 (기준 무기 = 100%)">${Number(w.pct).toFixed(1)}%</span>` : ''}
             </div>
@@ -2079,14 +2086,24 @@
       wpEl.scrollLeft = 0;
 
       const tmEl = document.getElementById('detail-modal-teammates');
-      const teammatesList = char.teammates || [];
+      // 서포터는 '이 서포터를 추천 동료로 넣은 딜러'를 자동으로 모아서 보여줌 (메인 → 서브 순)
+      const isSupport = char.role === 'support';
+      document.getElementById('detail-modal-teammates-title').textContent = isSupport ? '함께 쓰는 추천 딜러' : '추천 파티 구성원';
+      const roleRank = { main: 0, sub: 1 };
+      let teammatesList = char.teammates || [];
+      if (isSupport) {
+        const users = RAW_RESONATORS.filter(r => r.role !== 'support' && (r.teammates || []).some(t => t.id === char.id));
+        const mains = users.filter(r => r.role === 'main');
+        const picked = (mains.length ? mains : users).sort((a, b) => (roleRank[a.role] ?? 2) - (roleRank[b.role] ?? 2) || byName(a, b));
+        if (picked.length) teammatesList = picked.map(r => ({ id: r.id }));
+      }
       tmEl.innerHTML = teammatesList.length === 0 ? `<div class="w-full text-center text-sm text-slate-500 py-2">등록된 추천 동료가 없습니다.</div>` : teammatesList.map(t => {
         const target = RAW_RESONATORS.find(x => x.id === t.id);
         if (!target) return '';
         const targetId = target.id;
         return `
-          <div onclick="openDetailModal('${targetId}')" class="rounded-xl bg-[#151a26] border border-[#232c40] p-1.5 pr-4 flex items-center gap-3 hover:border-amber-400/60 hover:bg-[#182030] transition shadow-sm flex-shrink-0 cursor-pointer active:scale-95">
-            <img src="${target.avatar}" draggable="false" class="w-12 h-12 rounded-lg object-cover border border-slate-700 flex-shrink-0 pointer-events-none" crossorigin="anonymous">
+          <div onclick="openDetailModal('${targetId}')" class="min-w-0 rounded-xl bg-[#151a26] border border-[#232c40] p-1.5 pr-3 md:pr-4 flex items-center gap-2.5 md:gap-3 hover:border-amber-400/60 hover:bg-[#182030] transition shadow-sm flex-shrink-0 cursor-pointer active:scale-95">
+            <img loading="lazy" decoding="async" src="${target.avatar}" draggable="false" class="w-12 h-12 rounded-lg object-cover border border-slate-700 flex-shrink-0 pointer-events-none" crossorigin="anonymous">
             <div class="font-extrabold text-sm text-white whitespace-nowrap">${esc(target.name)}</div>
           </div>`;
       }).join('');
@@ -2105,14 +2122,14 @@
       document.getElementById('wp-detail-effect').innerHTML = formatWeaponEffect(wp.effect, wp.refine, level);
     }
 
-    // 전무 무기: 이미지 하단에 주인 표시 (누르면 그 공명자 상세로 이동)
+    // 전무 무기: 이미지 하단에 주인(프로필+이름) 표시 (누르면 그 공명자 상세로 이동)
     function ownerStripHtml(wp) {
       const owner = wp.signatureOf && RAW_RESONATORS.find(r => r.id === wp.signatureOf);
       if (!owner) return '';
       return `<button onclick="closeModal('weapon-detail-modal'); openDetailModal('${owner.id}')" title="${esc(owner.name)} 상세 보기"
         class="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 pt-4 pb-1 px-1 bg-gradient-to-t from-black/90 via-black/70 to-transparent hover:from-amber-950/90 transition">
-        <img src="${owner.avatar}" class="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover ring-1 ring-amber-400/70 flex-shrink-0" crossorigin="anonymous">
-        <span class="text-[10px] sm:text-[11px] font-black text-amber-300 whitespace-nowrap truncate">${esc(owner.name)} 전무</span>
+        <img loading="lazy" decoding="async" src="${owner.avatar}" class="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover ring-1 ring-amber-400/70 flex-shrink-0" crossorigin="anonymous">
+        <span class="text-[10px] sm:text-[11px] font-black text-amber-300 whitespace-nowrap truncate">${esc(owner.name)}</span>
       </button>`;
     }
 
@@ -2123,8 +2140,8 @@
       
       const imgBox = document.getElementById('wp-detail-img-box');
       if (imgBox) {
-        imgBox.className = `sm:row-span-2 sm:row-start-1 sm:col-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner`;
-        imgBox.innerHTML = (wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`)
+        imgBox.className = `row-start-2 row-span-2 col-start-1 sm:row-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner`;
+        imgBox.innerHTML = (wp.image ? `<img loading="lazy" decoding="async" src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`)
           + ownerStripHtml(wp);
       }
       
@@ -2195,7 +2212,7 @@
         return `
           <div onclick="selectTempFatigueResonator('${r.id}')" class="flex flex-col items-center p-1.5 rounded-xl border cursor-pointer transition select-none group relative ${isSelected ? 'bg-[#151c2a] border-amber-500/60 shadow-lg shadow-amber-500/10' : 'bg-[#0d1017] border-[#1d2331] hover:border-amber-400/50'}">
             <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-[#090c13] border border-[#2a3449] mb-1.5">
-              <img src="${r.avatar}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
+              <img loading="lazy" decoding="async" src="${r.avatar}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
               <div class="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center ${isSelected ? 'bg-amber-400 text-black' : 'bg-black/80 text-slate-500 border border-slate-700'} shadow z-10 pointer-events-none">
                 <i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>
               </div>
@@ -2277,8 +2294,8 @@
     const WEAPON_TAGS = {
       sig:      { label: '전무', cls: 'bg-amber-500/90 border-amber-300 text-black' },
       alt:      { label: '한정 5성', cls: '', hidden: true },
-      standard: { label: '상시', cls: 'bg-[#1b2232]/90 border-sky-400/50 text-sky-300' },
-      r4:       { label: '4성', cls: 'bg-[#221a33]/90 border-violet-400/50 text-violet-300' },
+      standard: { label: '상시', cls: '', hidden: true },
+      r4:       { label: '4성', cls: '', hidden: true },
       special:  { label: '특수', cls: 'bg-[#0f2620]/90 border-emerald-400/50 text-emerald-300' }
     };
     const STANDARD_5STAR_WEAPONS = ['천년의 회류', '부동의 안개', '푸른물결의 빛', '물결의 파동', '파도의 기록'];
@@ -2376,7 +2393,7 @@
         return `
           <div class="flex items-center gap-2 p-2 rounded-xl bg-[#161a25] border border-slate-700/80">
             <div class="w-7 h-7 rounded-lg bg-[#0a0d14] border border-slate-700 flex items-center justify-center flex-shrink-0">
-              ${matched?.iconUrl ? `<img src="${matched.iconUrl}" class="w-5 h-5 object-contain">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>`}
+              ${matched?.iconUrl ? `<img loading="lazy" decoding="async" src="${matched.iconUrl}" class="w-5 h-5 object-contain">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>`}
             </div>
             <select onchange="updateEditorEchoSetField(${i}, 'name', this.value)" class="flex-1 min-w-0 bg-[#10141f] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-cyan-400 cursor-pointer">
               <option value="">세트 선택 안 함</option>
@@ -2430,7 +2447,7 @@
           <div class="weapon-item flex items-center gap-2 p-2 rounded-xl bg-[#161a25] border border-slate-700/80">
             <i data-lucide="grip-vertical" class="w-4 h-4 text-slate-500 cursor-grab active:cursor-grabbing hover:text-amber-400 weapon-drag-handle flex-shrink-0"></i>
             <div class="w-8 h-8 rounded-lg bg-[#0a0d14] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0">
-              ${img ? `<img src="${img}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="sword" class="w-4 h-4 text-slate-500"></i>`}
+              ${img ? `<img loading="lazy" decoding="async" src="${img}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="sword" class="w-4 h-4 text-slate-500"></i>`}
             </div>
             <select onchange="updateEditorWeaponSelection(${i}, this.value)" class="flex-1 min-w-0 bg-[#10141f] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-cyan-400 cursor-pointer">
               <option value="">무기 선택 안 함</option>

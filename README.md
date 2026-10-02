@@ -5,7 +5,8 @@
 ## 폴더 구성
 - `index.html` — 사이트 본체 (코드)
 - `data/game-data.json` — 공명자 · 무기 · 에코 세트 · 회로 · 테마 데이터 (**수정은 여기만**)
-- `images/` — 이미지
+- `images/` — 이미지 (WebP. 같은 이름의 `.png`를 올려도 자동으로 읽음)
+- `assets/app.css` — 디자인(Tailwind) 미리 빌드한 파일. `index.html` 과 한 세트이니 같이 교체
 
 ## 데이터 수정 → 사이트 반영
 1. 사이트 주소 뒤에 `?admin` 을 붙여 접속 → 관리자 모드 (이 브라우저에서 계속 유지, `?admin=off` 로 끔)
