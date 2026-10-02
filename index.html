@@ -249,7 +249,7 @@
 
   <!-- 공명자 상세 모달 -->
   <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-[#0d111a] w-full max-w-5xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
+    <div class="bg-[#0d111a] w-full max-w-6xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
       <div class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
         <div class="relative w-full md:w-[48%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[74vh] md:min-h-[300px] overflow-hidden">
           <img id="detail-modal-sprite" src="" class="absolute inset-0 w-full h-full object-cover object-top transform scale-110 -translate-y-[7%] md:scale-[1.2] md:translate-y-2 pointer-events-none" crossorigin="anonymous">
@@ -282,8 +282,8 @@
 
         <div class="w-full md:w-[52%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-4">
-            <div id="detail-modal-echo-tabs" class="hidden -mt-1 flex items-center gap-1 p-1 rounded-xl bg-[#0b0f17] border border-[#1e2638]"></div>
-            <div class="flex items-center border-b border-slate-800 pb-2.5">
+            <div class="flex flex-col gap-2.5 border-b border-slate-800 pb-2.5">
+              <div id="detail-modal-echo-tabs" class="hidden flex-wrap items-center gap-1.5"></div>
               <div class="flex items-center flex-wrap gap-2" id="detail-modal-echo-set"></div>
             </div>
             <div class="flex items-stretch gap-3 sm:gap-4">
@@ -304,9 +304,12 @@
           </div>
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
             <span class="text-base font-black text-white block mb-1.5">추천 무기</span>
-            <div id="detail-modal-weapons" class="flex flex-wrap md:flex-nowrap items-stretch gap-2.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
+            <div class="relative">
+              <div id="detail-modal-weapons" onscroll="updateScrollHint(this)" class="flex flex-wrap md:flex-nowrap items-stretch gap-2.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
+              <button type="button" data-scroll-hint="detail-modal-weapons" onclick="const el = document.getElementById('detail-modal-weapons'); el.scrollBy({ left: el.clientWidth * 0.8, behavior: 'smooth' })" class="hidden absolute right-0 top-0 bottom-1 w-12 items-center justify-end pr-0.5 bg-gradient-to-l from-[#121622] via-[#121622]/85 to-transparent text-slate-300 hover:text-amber-300" aria-label="무기 더 보기"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+            </div>
           </div>
-          <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
+          <div id="detail-modal-teammates-box" class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
             <span id="detail-modal-teammates-title" class="text-base font-black text-white block mb-1.5">추천 파티 구성원</span>
             <div id="detail-modal-teammates" class="grid grid-cols-2 md:flex md:flex-nowrap items-center gap-2.5 md:gap-3 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
           </div>
@@ -1993,6 +1996,14 @@
       pop.classList.toggle('hidden', !open);
     }
 
+    // 가로 스크롤 목록 오른쪽에 더 있으면 화살표 표시
+    function updateScrollHint(el) {
+      const hint = document.querySelector(`[data-scroll-hint="${el.id}"]`); if (!hint) return;
+      const more = el.scrollWidth - el.clientWidth - el.scrollLeft > 4;
+      hint.classList.toggle('hidden', !more); hint.classList.toggle('flex', more);
+    }
+    window.addEventListener('resize', () => { const el = document.getElementById('detail-modal-weapons'); if (el) updateScrollHint(el); });
+
     // 에코 빌드 (메인딜/서브딜, 추천/대안 등 여러 개면 탭으로 전환)
     function getEchoBuilds(char) { return [char.echoSet || {}, ...(char.echoAlts || [])]; }
     function echoBuildLabel(b, i) { return b?.label?.trim() || (i === 0 ? '추천' : `대안 ${i}`); }
@@ -2001,9 +2012,9 @@
       idx = Math.min(idx, builds.length - 1);
       const tabsEl = document.getElementById('detail-modal-echo-tabs');
       if (builds.length > 1) {
-        tabsEl.classList.remove('hidden');
-        tabsEl.innerHTML = builds.map((b, i) => `<button onclick="renderDetailEcho(RAW_RESONATORS.find(r => r.id === '${char.id}'), ${i})" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-black transition whitespace-nowrap ${i === idx ? 'bg-[#f5a623] text-black shadow' : 'text-slate-400 hover:text-slate-200 hover:bg-[#161c29]'}">${esc(echoBuildLabel(b, i))}</button>`).join('');
-      } else { tabsEl.classList.add('hidden'); tabsEl.innerHTML = ''; }
+        tabsEl.classList.remove('hidden'); tabsEl.classList.add('flex');
+        tabsEl.innerHTML = builds.map((b, i) => `<button onclick="renderDetailEcho(RAW_RESONATORS.find(r => r.id === '${char.id}'), ${i})" class="px-2.5 py-1 rounded-md border text-[11px] font-bold leading-none transition whitespace-nowrap ${i === idx ? 'bg-amber-500/15 border-amber-400/80 text-amber-300' : 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'}">${esc(echoBuildLabel(b, i))}</button>`).join('');
+      } else { tabsEl.classList.add('hidden'); tabsEl.classList.remove('flex'); tabsEl.innerHTML = ''; }
       const echoData = builds[idx] || {};
       const setList = (echoData.sets || []).filter(s => s?.name?.trim());
       const setsHtml = setList.map(s => {
@@ -2072,7 +2083,7 @@
         const matched = findWeapon(w.name) || w;
         const rs = rankStyle(matched.rank), borderClass = rs.border, gradClass = rs.grad;
         return `
-          <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
+          <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] md:w-[96px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
               <img loading="lazy" decoding="async" src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
               ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
@@ -2084,19 +2095,12 @@
           </div>`;
       }).join('');
       wpEl.scrollLeft = 0;
+      requestAnimationFrame(() => updateScrollHint(wpEl));
 
       const tmEl = document.getElementById('detail-modal-teammates');
-      // 서포터는 '이 서포터를 추천 동료로 넣은 딜러'를 자동으로 모아서 보여줌 (메인 → 서브 순)
-      const isSupport = char.role === 'support';
-      document.getElementById('detail-modal-teammates-title').textContent = isSupport ? '함께 쓰는 추천 딜러' : '추천 파티 구성원';
-      const roleRank = { main: 0, sub: 1 };
-      let teammatesList = char.teammates || [];
-      if (isSupport) {
-        const users = RAW_RESONATORS.filter(r => r.role !== 'support' && (r.teammates || []).some(t => t.id === char.id));
-        const mains = users.filter(r => r.role === 'main');
-        const picked = (mains.length ? mains : users).sort((a, b) => (roleRank[a.role] ?? 2) - (roleRank[b.role] ?? 2) || byName(a, b));
-        if (picked.length) teammatesList = picked.map(r => ({ id: r.id }));
-      }
+      // 서포터는 추천 동료 칸을 숨김
+      document.getElementById('detail-modal-teammates-box').classList.toggle('hidden', char.role === 'support');
+      const teammatesList = char.teammates || [];
       tmEl.innerHTML = teammatesList.length === 0 ? `<div class="w-full text-center text-sm text-slate-500 py-2">등록된 추천 동료가 없습니다.</div>` : teammatesList.map(t => {
         const target = RAW_RESONATORS.find(x => x.id === t.id);
         if (!target) return '';
@@ -2122,17 +2126,6 @@
       document.getElementById('wp-detail-effect').innerHTML = formatWeaponEffect(wp.effect, wp.refine, level);
     }
 
-    // 전무 무기: 이미지 하단에 주인(프로필+이름) 표시 (누르면 그 공명자 상세로 이동)
-    function ownerStripHtml(wp) {
-      const owner = wp.signatureOf && RAW_RESONATORS.find(r => r.id === wp.signatureOf);
-      if (!owner) return '';
-      return `<button onclick="closeModal('weapon-detail-modal'); openDetailModal('${owner.id}')" title="${esc(owner.name)} 상세 보기"
-        class="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 pt-4 pb-1 px-1 bg-gradient-to-t from-black/90 via-black/70 to-transparent hover:from-amber-950/90 transition">
-        <img loading="lazy" decoding="async" src="${owner.avatar}" class="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover ring-1 ring-amber-400/70 flex-shrink-0" crossorigin="anonymous">
-        <span class="text-[10px] sm:text-[11px] font-black text-amber-300 whitespace-nowrap truncate">${esc(owner.name)}</span>
-      </button>`;
-    }
-
     function openWeaponDetailModal(weaponName) {
       const wp = WEAPONS.find(w => w.name === weaponName);
       if (!wp) return;
@@ -2141,8 +2134,7 @@
       const imgBox = document.getElementById('wp-detail-img-box');
       if (imgBox) {
         imgBox.className = `row-start-2 row-span-2 col-start-1 sm:row-start-1 w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner`;
-        imgBox.innerHTML = (wp.image ? `<img loading="lazy" decoding="async" src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`)
-          + ownerStripHtml(wp);
+        imgBox.innerHTML = wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`;
       }
       
       const titleEl = document.getElementById('wp-detail-title');
