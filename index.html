@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공명자 관리기록부</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+  <style>
+    :root {
+      --font-family-base: "Pretendard Variable", Pretendard, sans-serif;
+      --color-point: #f5a623;
+      --color-attack: #f5a623;
+      --color-buff: #38bdf8;
+      --color-bg-base: #06080d;
+      --ui-scale: 1;
+    }
+    html { font-size: calc(16px * var(--ui-scale)); }
+    *, *::before, *::after { font-family: var(--font-family-base) !important; }
+    body { background-color: var(--color-bg-base); color: #e2e8f0; user-select: none; font-feature-settings: "tnum"; letter-spacing: -0.02em; }
+    .theme-attack-text { color: var(--color-attack) !important; } .theme-buff-text { color: var(--color-buff) !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: #0a0d14; } ::-webkit-scrollbar-thumb { background: #1c2436; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--color-point); }
+    .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .drag-party-active { border: 2px dashed var(--color-point) !important; background-color: rgba(245, 166, 35, 0.08) !important; } .drag-slot-active { border: 2px dashed #38bdf8 !important; background-color: rgba(56, 189, 248, 0.12) !important; }
+    .party-handle { cursor: grab; } .party-handle:active { cursor: grabbing; }
+    .drag-ghost-frame { position: absolute; top: -9999px; left: -9999px; width: 84px; height: 84px; border-radius: 16px; overflow: hidden; border: 2.5px solid var(--color-point); box-shadow: 0 0 18px rgba(245, 166, 35, 0.7), 0 8px 20px rgba(0, 0, 0, 0.85); background-color: #0a0d14; pointer-events: none; z-index: 99999; }
+    .drag-ghost-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
+    /* 폼 요소 간격 통일: textarea/input의 baseline 여백(descender gap) 제거 */
+    textarea { display: block; }
+    input:not([type="checkbox"]):not([type="radio"]), select { vertical-align: middle; }
+    .card-graduated { border-color: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
+
+    /* 모달: 배경은 페이드, 내용은 살짝 아래에서 커지며 등장 */
+    .fixed.inset-0[id$="-modal"] > div { transition: transform .18s cubic-bezier(.2,.8,.2,1), opacity .18s; }
+    .fixed.inset-0[id$="-modal"].opacity-0 > div { transform: translateY(6px) scale(.98); }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
+    /* 키보드 사용자용 포커스 표시 */
+    button:focus-visible, [onclick]:focus-visible { outline: 2px solid var(--color-point); outline-offset: 2px; }
+
+    html:not(.is-admin) .admin-only { display: none !important; }
+    html.is-admin body { padding-bottom: 72px; }  /* 관리자 바에 내용이 가려지지 않게 */
+
+    #visual-editor-modal input:focus,
+    #visual-editor-modal select:focus,
+    #visual-editor-modal textarea:focus {
+      border-color: #ffffff !important;
+      outline: none !important;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start pb-6 selection:bg-[#f5a623] selection:text-black">
+
+  <!-- 데이터 파일을 못 불러왔을 때 -->
+  <div id="load-error" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#06080d]">
+    <div class="max-w-md text-center space-y-2">
+      <div class="text-lg font-black text-white">데이터를 불러오지 못했습니다</div>
+      <p class="text-sm text-slate-400">data/game-data.json 파일을 찾을 수 없어요. 웹사이트 주소로 접속했는지, 저장소에 data 폴더가 올라가 있는지 확인해 주세요. (HTML 파일을 더블클릭해서 열면 보안 정책 때문에 데이터를 읽을 수 없어요)</p>
+    </div>
+  </div>
+
+  <!-- 관리자 모드 바 (?admin 으로 접속했을 때만) -->
+  <div id="admin-bar" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-[90] flex flex-wrap items-center justify-center gap-2 px-3 py-2 rounded-2xl bg-[#121724]/95 border border-amber-500/40 shadow-2xl backdrop-blur-md text-xs max-w-[95vw]">
+    <span class="font-black text-amber-400">관리자 모드</span>
+    <span id="admin-bar-status" class="font-bold"></span>
+    <button onclick="downloadGameData()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-black whitespace-nowrap">사이트 데이터 내보내기</button>
+    <button id="admin-bar-discard" onclick="discardDraft()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold whitespace-nowrap">수정 취소</button>
+    <a href="?admin=off" class="px-2 py-1.5 text-slate-500 hover:text-slate-300 font-bold whitespace-nowrap">관리자 모드 끄기</a>
+  </div>
+
+  <!-- 게시 방법 안내 -->
+  <div id="publish-guide-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0f131d] max-w-md w-full p-5 rounded-2xl border border-slate-700 shadow-2xl space-y-3 text-sm text-slate-300">
+      <h4 class="font-black text-white">game-data.json 을 받았어요. 이제 GitHub에 올리면 끝!</h4>
+      <ol class="list-decimal pl-5 space-y-1.5 text-xs leading-relaxed">
+        <li>GitHub 저장소의 <b class="text-white">data</b> 폴더를 엽니다.</li>
+        <li><b class="text-white">Add file → Upload files</b> 를 누르고 방금 받은 <b class="text-white">game-data.json</b> 을 끌어다 놓습니다. (같은 이름 파일을 덮어씀)</li>
+        <li>아래 <b class="text-white">Commit changes</b> 를 누릅니다.</li>
+        <li>1~2분 뒤 사이트를 새로고침하면 모두에게 반영돼요.</li>
+      </ol>
+      <p class="text-[11px] text-slate-500">편집기에서 직접 업로드한 이미지는 데이터 파일에 통째로 들어가 파일이 커져요. 가능하면 이미지는 저장소 images 폴더에 올리고 파일명으로 입력하세요.</p>
+      <div class="flex justify-end"><button onclick="closeModal('publish-guide-modal')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold">확인</button></div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- 확인 모달 -->
+  <div id="confirm-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0f131d] max-w-sm w-full p-5 rounded-2xl border border-slate-700 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-950/80 border border-rose-500/50 flex items-center justify-center text-rose-400"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
+        <div><h4 class="font-bold text-sm text-white" id="confirm-modal-title">확인</h4><p class="text-xs text-slate-400" id="confirm-modal-message">정말 진행하시겠습니까?</p></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+        <button id="confirm-btn-cancel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold transition">닫기</button>
+        <button id="confirm-btn-ok" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs text-white font-bold transition">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 w-full px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-3 border-b border-[#161d2b] bg-[#06080d]/95 backdrop-blur-md">
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-3">
+        <div id="app-header-logo-container" class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md shadow-amber-500/20 bg-gradient-to-br from-amber-500 to-amber-600">
+          <span class="text-black font-black text-sm">WW</span>
+        </div>
+        <h1 class="text-base sm:text-lg font-black tracking-tight text-white select-none whitespace-nowrap">공명자 관리기록부</h1>
+      </div>
+      <div class="w-px h-5 bg-slate-700/80 hidden md:block"></div>
+      <div class="flex items-center gap-8 hidden md:flex">
+        <button onclick="switchMainView('party')" id="tab-btn-party" class="text-sm font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
+        <button onclick="switchMainView('growth')" id="tab-btn-growth" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 육성 현황표</button>
+        <button onclick="switchMainView('weapon')" id="tab-btn-weapon" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">무기 도감</button>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-1.5 sm:gap-2.5 justify-end flex-shrink-0">
+      <button title="공명자 편집" aria-label="공명자 편집" onclick="openModal('visual-editor-modal'); initVisualEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i><span class="hidden lg:inline">공명자 편집</span></button>
+      <button title="무기 편집" aria-label="무기 편집" onclick="openModal('weapon-editor-modal'); renderWeaponEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="sword" class="w-4 h-4 text-rose-400"></i><span class="hidden lg:inline">무기 편집</span></button>
+      <button title="에코 세트 편집" aria-label="에코 세트 편집" onclick="openModal('echo-set-editor-modal'); renderEchoSetEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-purple-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="layers" class="w-4 h-4 text-purple-400"></i><span class="hidden lg:inline">에코 세트 편집</span></button>
+      <button title="회로 편집" aria-label="회로 편집" onclick="openModal('circuit-editor-modal'); initCircuitEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-cyan-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i><span class="hidden lg:inline">회로 편집</span></button>
+      <button onclick="openModal('admin-settings-modal'); initAdminSettingsModal();" class="admin-only p-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-slate-300 hover:text-amber-400 transition shadow-sm active:scale-95" title="사이트 설정"><i data-lucide="sliders" class="w-4 h-4"></i></button>
+    </div>
+  </header>
+
+  <div class="w-full flex items-center justify-center gap-6 py-2 border-b border-slate-800 bg-[#06080d] md:hidden">
+    <button onclick="switchMainView('party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
+    <div class="w-px h-3 bg-slate-700"></div>
+    <button onclick="switchMainView('growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 육성 현황표</button>
+    <div class="w-px h-3 bg-slate-700"></div>
+    <button onclick="switchMainView('weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</button>
+  </div>
+
+  <main id="view-party" class="w-full max-w-[1720px] px-6 py-5 flex-1 flex flex-col xl:flex-row items-start justify-center gap-6">
+    <aside class="w-full xl:w-[530px] 2xl:w-[560px] flex-shrink-0 bg-[#0c1018] border border-[#1a2233] rounded-2xl p-4 sm:p-5 flex flex-col gap-3.5 shadow-xl">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <h2 class="font-black text-lg text-white">공명자 목록</h2>
+        <div class="flex items-center gap-2">
+          <button onclick="openFatigueModal();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-xs text-amber-300 font-bold transition active:scale-95 shadow-sm"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i><span>추가 피로도 : <span id="fatigue-char-label">미지정</span></span></button>
+          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition active:scale-95 shadow-sm"><span class="text-amber-400 text-xs">◇</span><span>보유 공명자 설정</span></button>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs pb-0.5" id="element-tabs-bar"></div>
+      <div class="flex items-center gap-1.5 text-xs pb-0.5" id="role-tabs-bar"></div>
+      <div class="flex items-center gap-2.5 pt-0.5">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
+          <input type="text" id="roster-search-input" oninput="renderRosterDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+        </div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <label class="flex items-center gap-1.5 cursor-pointer hover:text-white select-none text-xs text-slate-300">
+            <input type="checkbox" id="chk-hide-deployed" onchange="renderRoster()" class="w-4 h-4 accent-[#f5a623] rounded bg-slate-900 border-slate-700 cursor-pointer">
+            <span class="font-medium text-xs">배치 완료 숨기기</span>
+          </label>
+        </div>
+      </div>
+      <div class="overflow-y-auto max-h-[550px] pr-1"><div id="roster-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5"></div></div>
+    </aside>
+
+    <section class="flex-1 w-full min-w-0 flex flex-col gap-3.5">
+      <div class="bg-[#0c1018] border border-[#1a2233] rounded-2xl px-5 py-3.5 flex items-center justify-between flex-wrap gap-2.5 shadow-lg">
+        <h3 class="font-black text-lg text-white tracking-tight">파티 편성 현황</h3>
+        <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+          <button onclick="promptResetParties()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1 whitespace-nowrap">초기화</button>
+          <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs sm:text-sm font-black transition flex items-center gap-1.5 shadow-md active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-4 h-4 text-black"></i><span>이미지로 저장</span></button>
+          <button onclick="openExportModal()" class="whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i><span>내보내기</span></button>
+          <button onclick="openImportModal()" class="whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i><span>불러오기</span></button>
+        </div>
+      </div>
+      <div id="parties-capture-area" class="space-y-3.5 p-1 -mx-1 rounded-2xl bg-[#06080d]"><div id="parties-container" class="space-y-3.5"></div></div>
+      <button onclick="addNewParty()" class="w-full py-4 rounded-2xl bg-[#0c1018] hover:bg-[#111624] border border-[#1d263a] hover:border-amber-400/50 text-xs sm:text-sm text-slate-300 hover:text-amber-400 font-extrabold transition flex items-center justify-center gap-2 shadow-sm active:scale-[0.99]"><i data-lucide="plus" class="w-4 h-4 text-slate-500"></i><span>새 파티 추가하기</span></button>
+    </section>
+  </main>
+
+  <main id="view-growth" class="w-full max-w-[1720px] px-6 py-5 flex-1 flex flex-col gap-4 hidden">
+    <div class="bg-[#0c1018] border border-[#1a2233] rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="relative w-full sm:w-64 xl:w-[280px]">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
+            <input type="text" id="growth-search-input" oninput="renderGrowthTrackerDebounced()" placeholder="이름 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
+          </div>
+          <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" title="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
+          <div class="flex items-center gap-2 ml-1">
+            <span class="text-xs font-bold text-slate-400">소속 파티:</span>
+            <select id="growth-filter-party" onchange="renderGrowthTracker()" class="bg-[#121622] border border-[#212a3d] text-amber-300 font-bold text-xs rounded-lg px-2 py-1.5 outline-none focus:border-amber-400 cursor-pointer">
+              <option value="all" class="text-white">전체 보기</option>
+            </select>
+          </div>
+          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95 ml-1"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button onclick="resetGrowthData()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
+          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span class="hidden sm:inline">내보내기</span></button>
+          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span class="hidden sm:inline">불러오기</span></button>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-4 w-full pt-1 overflow-x-auto no-scrollbar">
+        <div class="flex items-center gap-1.5 text-xs flex-shrink-0" id="growth-element-bars"></div>
+        <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1"></div>
+        <div class="flex items-center gap-1.5 text-xs flex-shrink-0" id="growth-role-bars"></div>
+      </div>
+    </div>
+
+    <div id="growth-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5 gap-4 items-start"></div>
+  </main>
+
+  <!-- 무기 도감 뷰 -->
+  <main id="view-weapon" class="w-full max-w-[1720px] px-6 py-5 flex-1 flex flex-col gap-4 hidden">
+    <div class="bg-[#0c1018] border border-[#1a2233] rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div class="flex flex-wrap items-center gap-3 w-full">
+          <div class="relative w-full sm:w-64 xl:w-[280px]">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
+            <input type="text" id="weapon-search-input" oninput="renderWeaponCodexDebounced()" placeholder="무기 이름 또는 효과 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
+          </div>
+          <div class="flex items-center gap-1.5 text-xs flex-wrap" id="weapon-type-filter-bar"></div>
+          <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
+          <div class="flex items-center gap-1.5 text-xs flex-wrap" id="weapon-rank-filter-bar"></div>
+        </div>
+      </div>
+    </div>
+    <!-- 무기 도감 5열 배치 -->
+    <div id="weapon-codex-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch"></div>
+  </main>
+
+  <!-- 공명자 상세 모달 -->
+  <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-5xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+        <div class="relative w-full md:w-[48%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[300px] overflow-hidden">
+          <img id="detail-modal-sprite" src="" class="absolute inset-0 w-full h-full object-cover object-top transform scale-[1.2] translate-y-2 pointer-events-none" crossorigin="anonymous">
+          <div class="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-[#0d111a] via-[#0d111a]/80 to-transparent pointer-events-none z-0"></div>
+          <div class="absolute bottom-0 left-0 w-full p-6 flex flex-col gap-2 z-10">
+            <div class="flex items-center gap-2">
+              <div id="detail-modal-title-element" class="w-10 h-10 flex items-center justify-center drop-shadow-md"></div>
+              <span id="detail-modal-name" class="text-3xl font-black text-white tracking-tight drop-shadow-md">이름</span>
+              <div id="detail-modal-rarity" class="flex items-center gap-0.5 drop-shadow-md ml-1"></div>
+              <div id="detail-modal-buffs-card" class="relative ml-auto hidden">
+                <button type="button" onclick="toggleDetailBuffs(); event.stopPropagation()" title="파티 버프 · 디버프" aria-label="파티 버프 · 디버프 보기" class="w-9 h-9 inline-flex items-center justify-center rounded-xl bg-black/55 border border-sky-500/40 hover:bg-sky-500/20 hover:border-sky-400 transition backdrop-blur-sm">
+                  <img id="detail-modal-buffs-icon" src="" alt="" class="w-5 h-5 object-contain pointer-events-none" crossorigin="anonymous">
+                  <span id="detail-modal-buffs-count" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-sky-500 text-[10px] leading-[18px] font-black text-black text-center"></span>
+                </button>
+                <div id="detail-modal-buffs-pop" onclick="event.stopPropagation()" class="hidden absolute bottom-full right-0 mb-2.5 z-30 w-[min(340px,80vw)] p-3 rounded-xl bg-[#121622]/95 border border-slate-600 shadow-2xl backdrop-blur-md origin-bottom-right">
+                  <div class="text-[11px] font-black text-slate-300 mb-2">파티 버프 · 디버프</div>
+                  <div id="detail-modal-buffs" class="flex flex-col gap-1.5"></div>
+                  <div class="absolute -bottom-1.5 right-3 w-3 h-3 rotate-45 bg-[#121622] border-r border-b border-slate-600"></div>
+                </div>
+              </div>
+            </div>
+            <div class="w-full h-[1px] bg-slate-600/80 rounded-full my-1.5"></div>
+            <div class="flex flex-wrap items-center gap-1.5 pb-1">
+              <div id="detail-modal-role-badge" class="px-2.5 py-1 rounded-lg text-xs font-bold border shadow-sm whitespace-nowrap">역할</div>
+              <div id="detail-modal-maindmg-wrap" class="flex items-center px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-bold text-amber-400 shadow-sm whitespace-nowrap"><span id="detail-modal-maindmg">주력기</span></div>
+              <div id="detail-modal-buff-wrap" class="contents"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full md:w-[52%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
+          <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-4">
+            <div class="flex items-center border-b border-slate-800 pb-2.5">
+              <div class="flex items-center flex-wrap gap-2" id="detail-modal-echo-set"></div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="flex flex-col items-center justify-between p-2 rounded-xl bg-[#121722] border border-[#232b3d] w-[120px] h-[152px] shadow-sm flex-shrink-0">
+                <div class="w-[84px] h-[84px] flex-shrink-0 rounded-xl bg-[#0a0d14] border border-[#232b3d] overflow-hidden flex items-center justify-center shadow-inner">
+                  <img id="detail-modal-echo-img" src="" alt="메인 에코" class="w-full h-full object-cover rounded-lg" crossorigin="anonymous">
+                </div>
+                <div class="w-full text-center pb-0.5">
+                  <div class="text-[10px] font-bold text-slate-400 leading-none mb-0.5">메인 에코</div>
+                  <div id="detail-modal-echo-main" class="font-extrabold text-[11px] text-white leading-tight line-clamp-2 break-keep text-center w-full"></div>
+                </div>
+              </div>
+              <div id="detail-modal-echo-attributes" class="flex-1 flex flex-col justify-between py-0 h-[152px]"></div>
+            </div>
+          </div>
+          <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
+            <span class="text-base font-black text-white block mb-1.5">스킬 레벨업 추천 순서</span>
+            <div id="detail-modal-skill-priority" class="flex flex-nowrap items-center gap-0.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
+          </div>
+          <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
+            <span class="text-base font-black text-white block mb-1.5">추천 무기</span>
+            <div id="detail-modal-weapons" class="flex flex-nowrap items-stretch gap-2.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
+          </div>
+          <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
+            <span class="text-base font-black text-white block mb-1.5">추천 파티 구성원</span>
+            <div id="detail-modal-teammates" class="flex flex-nowrap items-center gap-3 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추천 무기 상세 정보 팝업 모달 -->
+  <div id="weapon-detail-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0e121a] max-w-xl w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
+      <button onclick="closeModal('weapon-detail-modal')" class="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      
+      <div class="flex items-start gap-4 sm:gap-5">
+        <div id="wp-detail-img-box" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 relative shadow-inner"></div>
+        
+        <div class="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap pr-8">
+              <h4 class="font-black text-lg sm:text-xl text-white tracking-tight truncate mt-0.5" id="wp-detail-title">무기 이름</h4>
+              <div id="wp-detail-refine" class="flex items-center gap-1"></div>
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-2 mt-2">
+            <div class="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-[#141926] border border-slate-700/80">
+              <div class="flex items-center gap-2 text-slate-300 font-bold text-xs sm:text-sm">
+                <span id="wp-detail-atk-icon" class="w-4 h-4 flex items-center justify-center"></span>
+                <span>공격력</span>
+              </div>
+              <span class="text-sm sm:text-base font-black text-white" id="wp-detail-atk">-</span>
+            </div>
+            <div class="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-[#141926] border border-slate-700/80">
+              <div class="flex items-center gap-2 text-slate-300 font-bold text-xs sm:text-sm">
+                <span id="wp-detail-stat-icon" class="w-4 h-4 flex items-center justify-center"></span>
+                <span id="wp-detail-stat-label">주 옵션</span>
+              </div>
+              <span class="text-sm sm:text-base font-black text-white" id="wp-detail-stat-val">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-[#080b11] border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="text-xs sm:text-sm text-slate-200 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap select-text pr-1" id="wp-detail-effect">-</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 회로 선택 모달 -->
+  <div id="circuit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0f131d] w-full max-w-2xl rounded-2xl p-5 border border-slate-700 shadow-2xl relative max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">증폭 회로 선택 <span id="circuit-modal-party-label" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-cyan-300 font-bold">PARTY 01</span></h3>
+        <button onclick="closeModal('circuit-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="flex-1 overflow-y-auto py-3 space-y-2 pr-1" id="circuit-list-container"></div>
+    </div>
+  </div>
+
+  <!-- 추가 피로도 공명자 선택 모달 -->
+  <div id="fatigue-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0f131d] w-full max-w-3xl rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-2xl relative flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+        <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+          <span>추가 피로도 공명자 선택</span>
+        </h3>
+        <button onclick="closeModal('fatigue-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 pr-1 overflow-y-auto flex-1 py-1" id="fatigue-char-list"></div>
+      <div class="pt-3 border-t border-slate-800 flex justify-end gap-2 mt-2">
+        <button onclick="closeModal('fatigue-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="applyFatigueModalSelection()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition shadow-md">적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 보유 공명자 설정 모달 -->
+  <div id="owned-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0f131d] w-full max-w-3xl rounded-3xl p-5 sm:p-6 border border-slate-700/80 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-400 text-base leading-none">◇</span>
+            <h3 class="text-base font-extrabold text-white">보유 공명자 설정</h3>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="setAllOwnership(true)" class="px-3 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-300 font-bold transition">전체 선택</button>
+            <button onclick="setAllOwnership(false)" class="px-3 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-rose-300 font-bold transition">전체 해제</button>
+          </div>
+        </div>
+        <button onclick="closeModal('owned-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition flex-shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="flex-1 overflow-y-auto py-4 pr-1"><div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="owned-checklist-container"></div></div>
+      <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+        <button onclick="closeModal('owned-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="saveOwnershipModal()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition shadow-md">적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사이트 설정 모달 -->
+  <div id="admin-settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-xl rounded-3xl p-6 border border-slate-700 shadow-2xl relative max-h-[92vh] flex flex-col gap-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400"><i data-lucide="sliders" class="w-4 h-4"></i></div>
+          <h3 class="text-base font-extrabold text-white">사이트 설정</h3>
+        </div>
+        <button onclick="closeModal('admin-settings-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+        <button id="tab-btn-theme" onclick="switchAdminTab('theme')" class="px-3.5 py-1.5 rounded-xl font-bold text-xs bg-amber-500 text-black">색상 설정</button>
+        <button id="tab-btn-icons" onclick="switchAdminTab('icons')" class="px-3.5 py-1.5 rounded-xl font-bold text-xs bg-[#161a25] text-slate-300 hover:bg-[#202738]">아이콘 설정</button>
+      </div>
+      <div id="admin-tab-theme" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+        <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-3">
+          <h4 class="font-bold text-sm text-slate-200 flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4 text-amber-400"></i><span>커스텀 컬러 테마</span></h4>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[#161a25] border border-slate-700"><span class="text-slate-300 font-semibold">포인트 강조색</span><input type="color" id="cfg-color-point" value="#f5a623" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"></div>
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[#161a25] border border-slate-700"><span class="text-slate-300 font-semibold">주력 공격 태그색</span><input type="color" id="cfg-color-attack" value="#f5a623" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"></div>
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[#161a25] border border-slate-700"><span class="text-slate-300 font-semibold">버프 요약 글자색</span><input type="color" id="cfg-color-buff" value="#38bdf8" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"></div>
+            <div class="flex items-center justify-between p-2 rounded-xl bg-[#161a25] border border-slate-700"><span class="text-slate-300 font-semibold">전체 배경색</span><input type="color" id="cfg-color-bg" value="#06080d" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"></div>
+          </div>
+        </div>
+        <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-3">
+          <h4 class="font-bold text-sm text-slate-200 flex items-center gap-2"><i data-lucide="type" class="w-4 h-4 text-cyan-400"></i><span>폰트 & 레이아웃 크기</span></h4>
+          <div><label class="block text-slate-300 mb-1 font-semibold">기본 글꼴</label><select id="cfg-font-family" class="w-full bg-[#161a25] border border-slate-700 rounded-xl px-3 py-2 text-white"><option value='"Pretendard Variable", Pretendard, sans-serif'>Pretendard</option><option value='"Noto Sans KR", sans-serif'>Noto Sans KR</option></select></div>
+          <div>
+            <div class="flex justify-between items-center mb-1"><span class="text-slate-300 font-semibold">UI 전체 크기 배율</span><span id="cfg-scale-val" class="text-amber-400 font-bold font-mono">100%</span></div>
+            <input type="range" id="cfg-ui-scale" min="85" max="115" step="5" value="100" class="w-full accent-amber-400 cursor-pointer" oninput="document.getElementById('cfg-scale-val').innerText = this.value + '%'">
+          </div>
+        </div>
+      </div>
+      <div id="admin-tab-icons" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs hidden">
+        <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2">
+          <h4 class="font-bold text-sm text-slate-200">로고</h4>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-black border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0"><img id="preview-icon-logo" src="" class="w-full h-full object-contain hidden"><span id="preview-icon-logo-text" class="font-black text-amber-400">WW</span></div>
+            <div class="flex-1 space-y-1"><input type="text" id="cfg-icon-logo" placeholder="폴더명/파일명 또는 URL" class="w-full bg-[#161a25] border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white" oninput="updateLogoPreview(this.value)"><label class="cursor-pointer px-2 py-0.5 rounded bg-[#202738] hover:bg-[#2c374f] text-[10px] font-bold text-amber-300 inline-flex items-center gap-1 border border-slate-700 mt-1"><i data-lucide="upload" class="w-3 h-3"></i><span>파일 선택</span><input type="file" accept="image/*" class="hidden" onchange="handleAdminIconUpload(event, 'logo')"></label></div>
+          </div>
+        </div>
+        <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-3">
+          <h4 class="font-bold text-sm text-slate-200">무기 옵션 아이콘 설정</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="admin-wp-stat-icons-grid"></div>
+        </div>
+        <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-3">
+          <h4 class="font-bold text-sm text-slate-200">속성 아이콘</h4>
+          <div class="grid grid-cols-3 gap-3" id="admin-element-icons-grid"></div>
+        </div>
+      </div>
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-1">
+          <button onclick="resetAdminSettingsToDefault()" class="text-xs text-rose-400 hover:text-rose-300 underline font-medium px-2 py-1">기본값 복원</button>
+          <button onclick="resetAllStoredData()" class="text-xs text-rose-400 hover:text-rose-300 underline font-medium px-2 py-1">전체 데이터 초기화</button>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="closeModal('admin-settings-modal')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">닫기</button>
+          <button onclick="saveAdminSettings()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 font-bold text-black text-xs shadow-md">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 회로 편집기 모달 -->
+  <div id="circuit-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-4xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#121622]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400"><i data-lucide="cpu" class="w-4 h-4"></i></div>
+          <h3 class="text-base font-extrabold text-white">증폭 회로 편집기</h3>
+        </div>
+        <button onclick="closeModal('circuit-editor-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="flex-1 overflow-hidden flex flex-col md:flex-row">
+        <div class="w-full md:w-64 bg-[#090c13] border-b md:border-b-0 md:border-r border-[#1e2536] flex flex-col p-3 flex-shrink-0">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+            <span class="text-sm font-bold text-slate-300">회로 목록</span>
+            <button onclick="addNewCircuitItem()" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold"><i data-lucide="plus" class="w-3 h-3"></i><span>추가</span></button>
+          </div>
+          <div id="circuit-editor-items-list" class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[160px] md:max-h-none"></div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-5 sm:p-6 bg-[#0e1118] space-y-4">
+          <input type="hidden" id="edit-circuit-id">
+          <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-3.5">
+            <div class="grid grid-cols-1 gap-3.5">
+              <div><label class="block text-xs font-bold text-slate-300 mb-1">회로 명칭</label><input type="text" id="edit-circuit-name" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>
+              <div><label class="block text-xs font-bold text-slate-300 mb-1">효과 상세 설명</label><textarea id="edit-circuit-desc" rows="3" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl p-3 text-xs text-white resize-none"></textarea></div>
+            </div>
+            <div class="pt-2 border-t border-slate-800 mt-3.5">
+              <label class="block text-xs font-bold text-slate-300 mb-1">회로 아이콘</label>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0" id="preview-circuit-icon-box"></div>
+                <div class="flex-1 space-y-1.5">
+                  <input type="text" id="edit-circuit-icon-url" placeholder="이미지 파일명 또는 URL" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white" oninput="updateCircuitIconPreview(this.value)">
+                  <label class="cursor-pointer px-2.5 py-1 rounded bg-[#202738] hover:bg-[#2c374f] text-[11px] font-bold text-slate-200 inline-flex items-center gap-1 border border-slate-700"><i data-lucide="upload" class="w-3 h-3"></i><span>파일 선택</span><input type="file" accept="image/*" class="hidden" onchange="handleCircuitIconUpload(event)"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between pt-2">
+            <button onclick="deleteCurrentCircuit()" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-400 border border-rose-900/50">삭제</button>
+            <div class="flex gap-2">
+              <button onclick="closeModal('circuit-editor-modal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-bold">닫기</button>
+              <button onclick="saveCurrentCircuitForm()" class="px-4 py-2 rounded-xl bg-cyan-500 text-black font-extrabold text-xs">저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공명자 데이터 편집기 모달 -->
+  <div id="visual-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-5xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[94vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#121622]">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400"><i data-lucide="user-cog" class="w-5 h-5"></i></div>
+          <h3 class="text-base font-extrabold text-white">공명자 데이터 편집기</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetAllDataToDefaultPrompt()" class="text-xs text-rose-400 underline font-medium px-2 py-1">기본값 복원</button>
+          <button onclick="closeModal('visual-editor-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-hidden flex flex-col md:flex-row">
+        <div class="w-full md:w-60 bg-[#090c13] border-b md:border-b-0 md:border-r border-[#1e2536] flex flex-col p-3 flex-shrink-0">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+            <span class="text-xs font-bold text-slate-300">공명자 선택</span>
+            <button onclick="addNewCustomResonator()" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold"><i data-lucide="plus" class="w-3 h-3"></i><span>추가</span></button>
+          </div>
+          <input type="text" id="editor-char-search" oninput="renderEditorCharListDebounced()" placeholder="이름 검색..." class="w-full bg-[#121620] border border-[#232c3f] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-500 mb-2">
+          <div id="editor-char-list" class="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[160px] md:max-h-none"></div>
+        </div>
+        <div class="flex-1 flex flex-col bg-[#0e1118] min-w-0">
+          <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
+            <input type="hidden" id="edit-char-id">
+            
+            <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
+              <h4 class="font-bold text-xs sm:text-sm text-amber-300">공명자 프로필</h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">이름</label><input type="text" id="edit-name" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">성급</label><select id="edit-rarity" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"><option value="5">5성 (★★★★★)</option><option value="4">4성 (★★★★)</option></select></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">속성</label><select id="edit-element" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"><option value="spectro">회절 (Spectro)</option><option value="havoc">인멸 (Havoc)</option><option value="fusion">용융 (Fusion)</option><option value="electro">전도 (Electro)</option><option value="glacio">응결 (Glacio)</option><option value="aero">기류 (Aero)</option></select></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">역할군</label><select id="edit-role" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"><option value="main">메인</option><option value="sub">서브</option><option value="support">서포터</option></select></div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">사용 무기</label>
+                  <select id="edit-weapontype" onchange="handleResonatorWeaponTypeChange(this.value)" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                    <option value="직검">직검</option>
+                    <option value="대검">대검</option>
+                    <option value="권총">권총</option>
+                    <option value="권갑">권갑</option>
+                    <option value="증폭기">증폭기</option>
+                  </select>
+                </div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">주 공격 유형</label><input type="text" id="edit-maindmg" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-bold text-slate-300 mb-1">특수 키워드 <span class="font-medium text-slate-500">(특수 판정·메커니즘, · 로 구분)</span></label>
+                  <input type="text" id="edit-buffsummary" placeholder="예: 협동 공격 · 견인" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                </div>
+                <div class="sm:col-span-2">
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block text-xs font-bold text-slate-300">파티 버프 · 디버프 <span class="font-medium text-slate-500">(카드 키워드는 여기서 자동 생성)</span></label>
+                    <button type="button" onclick="addEditorBuff()" class="px-2 py-1 rounded-lg bg-[#171d2b] border border-slate-700 text-[11px] font-bold text-slate-300 hover:text-white">+ 추가</button>
+                  </div>
+                  <div id="edit-buffs-container" class="flex flex-col gap-1.5"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold text-slate-300 mb-1">프로필 이미지</label>
+                  <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center"><img id="preview-avatar" src="" class="w-full h-full object-cover"></div>
+                    <div class="flex-1 space-y-1.5"><input type="text" id="edit-avatar-url" placeholder="파일명 또는 URL" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white" oninput="updatePreviewImage('preview-avatar', this.value, false, 'character')"><label class="cursor-pointer px-2.5 py-1 rounded bg-[#202738] text-[11px] font-bold text-slate-200 inline-flex items-center gap-1 border border-slate-700"><span>파일 선택</span><input type="file" accept="image/*" class="hidden" onchange="handleImageFileUpload(event, 'avatar')"></label></div>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold text-slate-300 mb-1">일러스트</label>
+                  <div class="flex items-center gap-3">
+                    <div class="w-14 h-20 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center"><img id="preview-sprite" src="" class="w-full h-full object-contain"></div>
+                    <div class="flex-1 space-y-1.5"><input type="text" id="edit-sprite-url" placeholder="파일명 또는 URL" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white" oninput="updatePreviewImage('preview-sprite', this.value, true, 'character')"><label class="cursor-pointer px-2.5 py-1 rounded bg-[#202738] text-[11px] font-bold text-slate-200 inline-flex items-center gap-1 border border-slate-700"><span>파일 선택</span><input type="file" accept="image/*" class="hidden" onchange="handleImageFileUpload(event, 'sprite')"></label></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
+              <h4 class="font-bold text-xs sm:text-sm text-cyan-300">주 에코 세트 및 옵션</h4>
+              <div class="space-y-2 pb-3 border-b border-slate-800">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-slate-300">착용 에코 세트 구성</label>
+                  <button type="button" onclick="addEditorEchoSet()" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold transition"><i data-lucide="plus" class="w-3 h-3"></i><span>세트 추가</span></button>
+                </div>
+                <div id="edit-echo-sets-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">메인 에코 (이름)</label><input type="text" id="edit-echo-main" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white"></div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">메인 에코 이미지</label>
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-10 h-10 rounded bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0"><img id="preview-echo-img" src="" class="w-full h-full object-cover"></div>
+                    <input type="text" id="edit-echo-img-url" placeholder="파일명 또는 URL" class="flex-1 bg-[#171d2b] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white" oninput="updatePreviewImage('preview-echo-img', this.value, false, 'echo')">
+                    <label class="cursor-pointer px-2 py-1.5 rounded bg-[#202738] text-[10px] font-bold text-slate-200 border border-slate-700">첨부<input type="file" accept="image/*" class="hidden" onchange="handleImageFileUpload(event, 'echo')"></label>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-800">
+                <label class="block text-xs font-bold text-slate-300 mb-2">에코 코스트 및 주 옵션 구성</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="edit-echo-slots-container"></div>
+              </div>
+            </div>
+
+            <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-xs sm:text-sm text-rose-300">추천 무기</h4>
+                <button type="button" onclick="addEditorWeapon()" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold transition"><i data-lucide="plus" class="w-3 h-3"></i><span>무기 추가</span></button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="edit-weapons-container"></div>
+            </div>
+
+            <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-xs sm:text-sm text-amber-300">추천 파티 구성원</h4>
+                <button type="button" onclick="addEditorTeammate()" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold transition"><i data-lucide="plus" class="w-3 h-3"></i><span>구성원 추가</span></button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="edit-teammates-container"></div>
+            </div>
+
+            <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
+              <h4 class="font-bold text-xs sm:text-sm text-cyan-300">스킬 레벨업 순서</h4>
+              <div class="w-full"><div id="edit-skill-priority-list" class="flex flex-row items-center gap-2 overflow-x-auto pb-2 no-scrollbar"></div></div>
+            </div>
+
+            <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-4">
+              <h4 class="font-bold text-xs sm:text-sm text-emerald-300">목표 스테이터스 설정</h4>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">기본 스탯 타입</label><select id="edit-target-type" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"><option value="atk">공격력</option><option value="hp">HP</option><option value="def">방어력</option></select></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">기본 스탯 목표</label><input type="number" id="edit-target-base" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="2000"></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">공명 효율 목표(%)</label><input type="number" id="edit-target-regen" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="120"></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">크리티컬 목표(%)</label><input type="number" id="edit-target-cr" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="60"></div>
+                <div><label class="block text-xs font-bold text-slate-300 mb-1">크리티컬 피해 목표(%)</label><input type="number" id="edit-target-cd" class="w-full bg-[#171d2b] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="240"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-4 border-t border-slate-800 bg-[#0e1118] flex justify-between items-center z-10 w-full">
+            <button onclick="deleteCurrentResonator()" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-400 border border-rose-900/50">삭제</button>
+            <div class="flex gap-2">
+              <button onclick="closeModal('visual-editor-modal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-bold">닫기</button>
+              <button onclick="saveCurrentResonatorForm()" class="px-4 py-2 rounded-xl bg-amber-500 text-black font-extrabold text-xs shadow-md">저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 에코 세트 편집기 모달 -->
+  <div id="echo-set-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-5xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#121622]">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400"><i data-lucide="layers" class="w-4 h-4"></i></div>
+          <h3 class="text-base font-extrabold text-white">에코 세트 편집기</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="addEchoSet()" class="px-3 py-1.5 rounded-lg bg-purple-500 text-black text-xs font-bold flex items-center gap-1 shadow-sm mr-2"><i data-lucide="plus" class="w-3.5 h-3.5"></i><span>추가</span></button>
+          <button onclick="closeModal('echo-set-editor-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4 pb-4 bg-[#0e1118]">
+        <div id="echo-set-editor-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 무기 편집기 모달 -->
+  <div id="weapon-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-5xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-[#121622]">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400"><i data-lucide="sword" class="w-5 h-5"></i></div>
+          <h3 class="text-base font-extrabold text-white">무기 편집기</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="addWeapon()" class="px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-400 text-black text-xs font-bold flex items-center gap-1 shadow-sm mr-2 transition"><i data-lucide="plus" class="w-3.5 h-3.5"></i><span>추가</span></button>
+          <button onclick="closeModal('weapon-editor-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4 pb-4 bg-[#0e1118]">
+        <div id="weapon-editor-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="export-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0f131d] w-full max-w-lg rounded-2xl p-5 border border-slate-700 shadow-2xl relative flex flex-col gap-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <h3 id="export-modal-title" class="text-sm font-bold text-white flex items-center gap-2"></h3>
+        <button onclick="closeModal('export-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <p id="export-modal-desc" class="text-[11px] text-slate-400"></p>
+      <textarea id="export-base64-textarea" readonly rows="4" class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none select-all outline-none"></textarea>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('export-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="copyExportCode()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition">복사</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="import-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
+    <div class="bg-[#0f131d] w-full max-w-lg rounded-2xl p-5 border border-slate-700 shadow-2xl relative flex flex-col gap-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <h3 id="import-modal-title" class="text-sm font-bold text-white flex items-center gap-2"></h3>
+        <button onclick="closeModal('import-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <textarea id="import-base64-textarea" rows="4" placeholder="코드를 여기에 붙여넣으세요..." class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none"></textarea>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="applyBase64Import()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition">적용</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 관리자 모드: 주소 뒤에 ?admin 을 붙여 한 번 열면 이 브라우저에서 계속 켜짐, ?admin=off 로 끔.
+    // 일반 방문자에게는 편집기·설정 버튼이 보이지 않음
+    const IS_ADMIN = (() => {
+      const p = new URLSearchParams(location.search);
+      try {
+        if (p.has('admin')) p.get('admin') === 'off' ? localStorage.removeItem('wuwa_admin_mode') : localStorage.setItem('wuwa_admin_mode', '1');
+        return localStorage.getItem('wuwa_admin_mode') === '1';
+      } catch { return p.has('admin') && p.get('admin') !== 'off'; }
+    })();
+    document.documentElement.classList.toggle('is-admin', IS_ADMIN);
+
+    const storage = {
+      get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; } },
+      set: (k, v) => {
+        try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+        catch (e) { console.error('저장 실패:', k, e); if (typeof showToast === 'function') showToast('저장 공간이 부족합니다. 업로드 이미지를 줄여주세요.'); return false; }
+      },
+      remove: (k) => localStorage.removeItem(k)
+    };
+    const KO = new Intl.Collator('ko-KR');
+    const debounce = (fn, ms = 150) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    const defaultTargetStats = { type: 'atk', base: 2000, regen: 120, cr: 60, cd: 240 };
+    const RAW_IMG_BASE = 'https://raw.githubusercontent.com/goenbbang/wuwa-party-maker/refs/heads/main/images/';
+    const GITHUB_IMG_BASE = location.protocol.startsWith('http') ? new URL('images/', location.href).href : RAW_IMG_BASE;
+    const DEFAULT_ECHO_IMG_URL = `${GITHUB_IMG_BASE}echoes/T_IconMonsterHead00_UI.png`;
+    const DEFAULT_WEAPON_IMG = `${GITHUB_IMG_BASE}weapons/T_IconWeapon21010011_UI.png`;
+
+    // ── 공용 상수 (여러 곳에 흩어져 있던 목록을 한 곳으로) ──
+    const IMG_PREFIX = { character: 'characters/', weapon: 'weapons/', echo: 'echoes/', set: 'sets/', icon: 'icons/' };
+    const SKILL_NAMES = ['기본 공격', '공명 스킬', '공명 회로', '공명 해방', '변주 스킬']; // 육성 탭 s1~s5 순서 & 기본 스킬 우선순위
+    const WEAPON_TYPES = ['직검', '대검', '권총', '권갑', '증폭기'];
+    const STAT_META = {
+      atk: { label: '기초 공격력', icon: 'swords', img: 'T_Iconpropertyredattack_UI' },
+      '공격력': { label: '공격력', icon: 'sword', img: 'T_Iconpropertyredattack_UI' },
+      '크리티컬': { label: '크리티컬', icon: 'crosshair', img: 'T_Iconpropertyredbaoji_UI' },
+      '크리티컬 피해': { label: '크리티컬 피해', icon: 'zap', img: 'T_Iconpropertyredcrit_UI' },
+      '공명 효율': { label: '공명 효율', icon: 'activity', img: 'T_Iconpropertygreenenergy_UI' },
+      'HP': { label: 'HP', icon: 'heart', img: 'T_Iconpropertygreenlife_UI' },
+      '방어력': { label: '방어력', icon: 'shield', img: 'T_Iconpropertygreendefense_UI' }
+    };
+    const MAIN_STAT_TYPES = Object.keys(STAT_META).filter(k => k !== 'atk');
+    // Tailwind가 클래스를 인식할 수 있도록 전체 클래스명을 그대로 적어둠
+    const RANK_STYLE = {
+      5: { border: 'border-amber-500/60', card: 'border-amber-500/50 hover:border-amber-400', grad: 'from-amber-500/20', tag: 'bg-amber-500/10 border-amber-500/30 text-amber-400' },
+      4: { border: 'border-purple-500/60', card: 'border-purple-500/50 hover:border-purple-400', grad: 'from-purple-500/20', tag: 'bg-purple-500/10 border-purple-500/30 text-purple-300' },
+      3: { border: 'border-blue-500/60', card: 'border-blue-500/50 hover:border-blue-400', grad: 'from-blue-500/20', tag: 'bg-blue-500/10 border-blue-500/30 text-blue-300' },
+      2: { border: 'border-emerald-500/60', card: 'border-emerald-500/50 hover:border-emerald-400', grad: 'from-emerald-500/20', tag: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' },
+      1: { border: 'border-slate-500/60', card: 'border-slate-600 hover:border-slate-400', grad: 'from-slate-700/25', tag: 'bg-slate-800 border-slate-700 text-slate-300' }
+    };
+    const rankOf = (r) => { const n = parseInt(r); return RANK_STYLE[n] ? n : 5; };
+    const rankStyle = (r) => RANK_STYLE[rankOf(r)];
+    const DEFAULT_ADMIN_CONFIG = {
+      colorPoint: '#f5a623', colorAttack: '#f5a623', colorBuff: '#38bdf8', colorBg: '#06080d',
+      fontFamily: '"Pretendard Variable", Pretendard, sans-serif', uiScale: 100, logoImage: '',
+      customElementIcons: {}, customWeaponStatIcons: {}
+    };
+    // 버프 → 카드용 짧은 키워드 (수치 없이). 공격 유형 피해는 '피해'를 빼서 짧게: '일반 공격 피해 부스트' → '일반 공격 부스트'
+    // (에코 어빌리티만 '에코 피해'로 표기)
+    const ATTACK_TYPES = ['일반 공격', '강공격', '공명 스킬', '공명 해방', '협동 공격', '에코 어빌리티', '변주 스킬'];
+    function buffKeyword(b) {
+      let stat = (b.stat || '').trim(); if (!stat) return '';
+      const at = ATTACK_TYPES.find(a => stat === `${a} 피해`);
+      if (at) stat = at === '에코 어빌리티' ? '에코 피해' : at;
+      return `${b.target === '적' ? '적 ' : ''}${stat} ${b.verb ?? '증가'}`.trim();
+    }
+    function resonatorKeywords(r) {
+      const list = (r.buffSummary || '').split(/[·,]/).map(s => s.trim()).filter(Boolean);
+      // 같은 스탯이 '부스트'와 '증가' 둘 다 있으면 카드에는 하나만 (상세는 세부 창 버프 목록에서)
+      const seen = new Set();
+      [...(r.buffs || [])].sort((a, b) => (a.verb === '부스트' ? 0 : 1) - (b.verb === '부스트' ? 0 : 1)).forEach(b => {
+        const k = buffKeyword(b), statKey = k.replace(/ (부스트|증가|감소)$/, '');
+        if (k && !seen.has(statKey) && !list.includes(k)) { seen.add(statKey); list.push(k); }
+      });
+      return list;
+    }
+    const keywordsWithoutMainDmg = (r) => resonatorKeywords(r).filter(k => k !== r.mainDmg && k !== `${r.mainDmg} 피해`);
+    const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '공명 체인'];
+    const BUFF_TARGETS = ['다음 캐릭터', '파티 전체', '등장 캐릭터', '자신', '적'];
+    const byName = (a, b) => KO.compare(a.name || '', b.name || '');
+    const findWeapon = (name) => WEAPONS.find(w => w.name === name);
+    const NO_IMG = (w, h) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="#181d28"/><text x="50%" y="50%" fill="#94a3b8" font-size="14" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">No Img</text></svg>`)}`;
+
+    // 업로드 이미지: 큰 사진을 그대로 base64로 저장하면 localStorage(약 5MB)가 금방 차므로 축소 후 저장
+    function readImageFile(e, cb, maxSize = 512) {
+      const file = e.target.files?.[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = evt => {
+        const src = evt.target.result;
+        if (/svg|gif/.test(file.type)) return cb(src);
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const out = c.toDataURL('image/webp', 0.9);
+          cb(out.length < src.length ? out : src);
+        };
+        img.onerror = () => cb(src);
+        img.src = src;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+
+    // 현재 보고 있는 탭만 다시 그림
+    function refreshActiveView() {
+      if (currentMainView === 'growth') renderGrowthTracker();
+      if (currentMainView === 'weapon') renderWeaponCodex();
+    }
+
+    function resolveImageUrl(rawInput, type = 'general') {
+      if (!rawInput || !rawInput.trim()) return '';
+      let val = rawInput.trim();
+      if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:')) return val;
+      val = val.replace(/^\/+/, '');
+      const ext = /\.(png|jpg|jpeg|webp|gif|svg)$/i.test(val) ? '' : '.png';
+      const prefix = IMG_PREFIX[type] || '';
+      if (prefix) val = val.replace(new RegExp(`^${prefix}`, 'i'), '');
+      return `${GITHUB_IMG_BASE}${prefix}${val}${ext}`;
+    }
+
+    function toShortImageInput(fullUrl, type = 'general') {
+      if (!fullUrl || !fullUrl.trim() || fullUrl.startsWith('data:')) return fullUrl || '';
+      const prefix = [GITHUB_IMG_BASE, RAW_IMG_BASE].map(b => `${b}${IMG_PREFIX[type] || ''}`).find(p => fullUrl.startsWith(p));
+      if (prefix) {
+        let shortVal = fullUrl.slice(prefix.length);
+        return shortVal.toLowerCase().endsWith('.png') ? shortVal.slice(0, -4) : shortVal;
+      }
+      return fullUrl;
+    }
+
+
+
+    const DEFAULT_ELEMENT_META = {
+      spectro: { label: '회절', defaultSvg: `<svg viewBox="0 0 24 24" class="w-full h-full text-amber-300 fill-none stroke-current stroke-2 drop-shadow-md"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>` },
+      havoc: { label: '인멸', defaultSvg: `<svg viewBox="0 0 24 24" class="w-full h-full text-purple-300 fill-none stroke-current stroke-2 drop-shadow-md"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>` },
+      fusion: { label: '용융', defaultSvg: `<svg viewBox="0 0 24 24" class="w-full h-full text-rose-400 fill-none stroke-current stroke-2 drop-shadow-md"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>` },
+      electro: { label: '전도', defaultSvg: `<svg viewBox="0 0 24 24" class="w-full h-full text-violet-300 fill-none stroke-current stroke-2 drop-shadow-md"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>` },
+      glacio: { label: '응결', defaultSvg: `<svg viewBox="0 0 24 24" class="w-full h-full text-cyan-300 fill-none stroke-current stroke-2 drop-shadow-md"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/></svg>` },
+      aero: { label: '기류', defaultSvg: `<svg viewBox="0 0 24 24" class="w-full h-full text-emerald-300 fill-none stroke-current stroke-2 drop-shadow-md"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2"/></svg>` }
+    };
+
+    const ROLE_META = { main: { label: '메인', tagClass: 'text-rose-300 border-rose-500/40 bg-rose-950/70' }, sub: { label: '서브', tagClass: 'text-violet-300 border-violet-500/40 bg-violet-950/70' }, support: { label: '서포터', tagClass: 'text-emerald-300 border-emerald-500/40 bg-emerald-950/70' } };
+    // 에코 세트: 게임 데이터(3.7) 기준
+    // 범용 2세트: 특정 세트가 아니라 '해당 2세트 효과를 주는 아무 세트'를 뜻함 (3세트+2세트, 1세트+2+2 조합용)
+    const GENERIC_SET_ELEM = '속성 피해 +10%', GENERIC_SET_ATK = '공격력 +10%';
+
+
+    let RAW_RESONATORS = [], CIRCUITS = [], ECHO_SETS = [], WEAPONS = [];
+    let GROWTH_DATA = {};
+    let activeEditorResonatorId = null, activeCircuitEditorId = null;
+    let currentSkillPriority = [], currentEditEchoSets = [], currentEditWeapons = [], currentEditTeammates = [], currentEditBuffs = [];
+    let skillSortable = null, weaponsSortable = null, teammatesSortable = null;
+    
+    let state = { 
+      parties: [ { id: 'p1', slots: [null, null, null], circuitId: null } ], 
+      selectedElement: 'all', 
+      selectedRole: 'all', 
+      seasonBuffResonatorId: 'denia', 
+      ownedResonators: {}, 
+      activeCircuitPartyIndex: null 
+    };
+    let tempSelectedFatigueId = null, SEASON_BUFF_DEFAULT = null;
+    let draggedPartyIndex = null, isDraggingCharacter = false;
+    let adminConfig = structuredClone(DEFAULT_ADMIN_CONFIG);
+    let currentMainView = 'party', currentGrowthFilters = { element: 'all', role: 'all', favOnly: false };
+    let currentWeaponTypeFilter = 'all', currentWeaponRankFilter = 'all';
+
+    const renderRosterDebounced = debounce(() => renderRoster());
+    const renderGrowthTrackerDebounced = debounce(() => renderGrowthTracker());
+    const renderWeaponCodexDebounced = debounce(() => renderWeaponCodex());
+    const renderEditorCharListDebounced = debounce(() => renderEditorCharList());
+
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+      lucide.createIcons();
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        if (id === 'circuit-modal') state.activeCircuitPartyIndex = null;
+      }, 150);
+    }
+
+    function switchMainView(view) {
+      currentMainView = view;
+      const vParty = document.getElementById('view-party'), vGrowth = document.getElementById('view-growth'), vWeapon = document.getElementById('view-weapon');
+      const tParty = document.getElementById('tab-btn-party'), tGrowth = document.getElementById('tab-btn-growth'), tWeapon = document.getElementById('tab-btn-weapon');
+      const tPartyM = document.getElementById('tab-btn-party-mobile'), tGrowthM = document.getElementById('tab-btn-growth-mobile'), tWeaponM = document.getElementById('tab-btn-weapon-mobile');
+      
+      const isParty = view === 'party', isGrowth = view === 'growth', isWeapon = view === 'weapon';
+      vParty.classList.toggle('hidden', !isParty);
+      vGrowth.classList.toggle('hidden', !isGrowth);
+      vWeapon.classList.toggle('hidden', !isWeapon);
+      
+      const activeCls = 'text-sm font-bold text-white transition-colors duration-200';
+      const inactiveCls = 'text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200';
+      tParty.className = isParty ? activeCls : inactiveCls;
+      tGrowth.className = isGrowth ? activeCls : inactiveCls;
+      tWeapon.className = isWeapon ? activeCls : inactiveCls;
+      
+      if (tPartyM) {
+        tPartyM.className = isParty ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
+        tGrowthM.className = isGrowth ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
+        tWeaponM.className = isWeapon ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
+      }
+      
+      if (isGrowth) { populateGrowthPartyFilter(); renderGrowthTracker(); renderGrowthFilterBars(); }
+      if (isWeapon) { renderWeaponFiltersBars(); renderWeaponCodex(); }
+    }
+
+    // 기본 속성 아이콘 = 각 속성 에코 세트 아이콘 (관리자 설정에서 따로 지정하면 그게 우선)
+    const ELEMENT_ICON_IMG = {
+      glacio: 'T_IconElementAttri128_Ice', fusion: 'T_IconElementAttri128_Fire', electro: 'T_IconElementAttri128_Thunder',
+      aero: 'T_IconElementAttri128_Wind', spectro: 'T_IconElementAttri128_Light', havoc: 'T_IconElementAttri128_Dark'
+    };
+    function getElementIconHtml(elemKey) {
+      const src = adminConfig.customElementIcons[elemKey] || (ELEMENT_ICON_IMG[elemKey] ? resolveImageUrl(ELEMENT_ICON_IMG[elemKey], 'set') : '');
+      return src
+        ? `<img src="${src}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">`
+        : (DEFAULT_ELEMENT_META[elemKey]?.defaultSvg || '');
+    }
+
+    function getWeaponStatIconHtml(type, size = 'w-4 h-4') {
+      const custom = adminConfig.customWeaponStatIcons?.[type];
+      if (custom) return `<img src="${custom}" class="${size} object-contain pointer-events-none" crossorigin="anonymous">`;
+      if (STAT_META[type]?.img) return `<img src="${resolveImageUrl(STAT_META[type].img, 'icon')}" class="${size} object-contain pointer-events-none" crossorigin="anonymous">`;
+      return `<i data-lucide="${STAT_META[type]?.icon || 'sparkles'}" class="${size} text-slate-400"></i>`;
+    }
+
+    function getCircuitIconHtml(circuit) {
+      return circuit.iconImage 
+        ? `<img src="${circuit.iconImage}" class="w-10 h-10 object-contain pointer-events-none" crossorigin="anonymous">` 
+        : (circuit.iconSvg || `<svg viewBox="0 0 24 24" class="w-10 h-10 text-cyan-300 fill-none stroke-current stroke-2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`);
+    }
+
+    function updatePreviewImage(imgId, url, isSprite = false, type = 'general') {
+      const img = document.getElementById(imgId);
+      if (!img) return;
+      img.src = url?.trim() ? resolveImageUrl(url, type) : (isSprite ? NO_IMG(120, 160) : NO_IMG(120, 120));
+    }
+
+    function initDragToScroll() {
+      ['detail-modal-weapons', 'detail-modal-teammates', 'detail-modal-skill-priority'].forEach(id => {
+        const slider = document.getElementById(id);
+        if (!slider || slider.dataset.dragScrollBound === 'true') return;
+        slider.dataset.dragScrollBound = 'true';
+        let isDown = false, startX = 0, scrollLeft = 0;
+        slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+        slider.addEventListener('mouseleave', () => isDown = false);
+        slider.addEventListener('mouseup', () => isDown = false);
+        slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); slider.scrollLeft = scrollLeft - ((e.pageX - slider.offsetLeft) - startX) * 1.5; });
+        slider.addEventListener('wheel', (e) => { if (slider.scrollWidth > slider.clientWidth) { e.preventDefault(); slider.scrollLeft += e.deltaY; } }, { passive: false });
+      });
+    }
+
+    function fitWeaponNames() {
+      const container = document.getElementById('detail-modal-weapons');
+      if (!container) return;
+      container.querySelectorAll('.weapon-name-text').forEach(span => {
+        const parent = span.parentElement;
+        if (!parent) return;
+        const maxWidth = parent.clientWidth - 10;
+        let fontSize = 13;
+        span.style.fontSize = fontSize + 'px';
+        while (span.scrollWidth > maxWidth && fontSize > 7) {
+          fontSize -= 0.5;
+          span.style.fontSize = fontSize + 'px';
+        }
+      });
+    }
+
+    // ── 사이트 데이터 ──
+    // 모든 방문자는 data/game-data.json 을 봄. 관리자 모드에서 편집하면 이 브라우저에 '편집본'으로 임시 저장되고,
+    // [사이트 데이터 내보내기]로 받은 game-data.json 을 GitHub에 올리면 모두에게 반영됨.
+    // (보유 공명자·육성 기록은 방문자 각자의 브라우저에 따로 저장)
+    let SITE_DATA = null;
+    const DRAFT_KEY = 'wuwa_admin_draft';
+
+    function exportGameData() {
+      const s = (v, t) => toShortImageInput(v || '', t);
+      const g = (v) => toShortImageInput(v || '', 'general');
+      return {
+        version: 1,
+        updatedAt: new Date().toISOString().slice(0, 10),
+        settings: { seasonBuffResonatorId: SEASON_BUFF_DEFAULT },
+        theme: {
+          ...adminConfig, logoImage: g(adminConfig.logoImage),
+          customElementIcons: Object.fromEntries(Object.entries(adminConfig.customElementIcons || {}).map(([k, v]) => [k, g(v)])),
+          customWeaponStatIcons: Object.fromEntries(Object.entries(adminConfig.customWeaponStatIcons || {}).map(([k, v]) => [k, g(v)]))
+        },
+        resonators: RAW_RESONATORS.map(r => ({ ...r, avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') } })),
+        weapons: WEAPONS.map(w => ({ ...w, image: s(w.image, 'weapon') })),
+        echoSets: ECHO_SETS.map(e => ({ ...e, iconUrl: s(e.iconUrl, 'set') })),
+        circuits: CIRCUITS.map(c => ({ ...c, iconImage: s(c.iconImage, 'icon') }))
+      };
+    }
+
+    function applyGameData(src) {
+      const R = (v, t) => (v ? resolveImageUrl(v, t) : '');
+      ECHO_SETS = (src.echoSets || []).map(e => ({ ...e, iconUrl: R(e.iconUrl, 'set') }));
+      WEAPONS = (src.weapons || []).map(w => ({ ...w, weaponType: w.weaponType || '직검', buffSummary: w.buffSummary || '', image: R(w.image, 'weapon') || DEFAULT_WEAPON_IMG }));
+      const raw = src.resonators || [];
+      const nameToId = new Map(raw.map(r => [r.name, r.id]));
+      RAW_RESONATORS = raw.map(r => normalizeResonator({ ...r, avatar: R(r.avatar, 'character'), sprite: R(r.sprite, 'character'),
+        echoSet: r.echoSet ? { ...r.echoSet, image: R(r.echoSet.image, 'echo') } : r.echoSet }, nameToId));
+      CIRCUITS = (src.circuits || []).map(c => ({ ...c, iconImage: R(c.iconImage, 'icon') }));
+      const th = src.theme || {};
+      adminConfig = { ...structuredClone(DEFAULT_ADMIN_CONFIG), ...th, logoImage: R(th.logoImage, 'general'),
+        customElementIcons: Object.fromEntries(Object.entries(th.customElementIcons || {}).map(([k, v]) => [k, R(v, 'general')])),
+        customWeaponStatIcons: Object.fromEntries(Object.entries(th.customWeaponStatIcons || {}).map(([k, v]) => [k, R(v, 'general')])) };
+      SEASON_BUFF_DEFAULT = src.settings?.seasonBuffResonatorId ?? null;
+      state.seasonBuffResonatorId = SEASON_BUFF_DEFAULT;
+    }
+
+    // 편집기에서 무언가 바꿀 때마다 호출 → 관리자 편집본 저장
+    function saveGameData() {
+      if (!IS_ADMIN) return;
+      storage.set(DRAFT_KEY, exportGameData());
+      updateAdminBar();
+    }
+
+    function updateAdminBar() {
+      const bar = document.getElementById('admin-bar'); if (!bar) return;
+      const hasDraft = !!localStorage.getItem(DRAFT_KEY);
+      document.getElementById('admin-bar-status').innerHTML = hasDraft
+        ? '<span class="text-amber-300">● 게시 안 된 수정 사항 있음</span>'
+        : '<span class="text-emerald-300">● 사이트 데이터와 같음</span>';
+      document.getElementById('admin-bar-discard').classList.toggle('hidden', !hasDraft);
+    }
+
+    function downloadGameData() {
+      const blob = new Blob([JSON.stringify(exportGameData(), null, 2) + '\n'], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'game-data.json'; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      openModal('publish-guide-modal');
+    }
+
+    function discardDraft() {
+      openConfirm('수정 취소', '게시하지 않은 수정 사항을 모두 버리고 현재 사이트 데이터로 되돌립니다.', () => { localStorage.removeItem(DRAFT_KEY); location.reload(); });
+    }
+
+    function loadData() { 
+      GROWTH_DATA = storage.get('wuwa_matrix_growth_data', {});
+    }
+    
+    function initGrowthDataFor(resId) {
+      if (!GROWTH_DATA[resId]) GROWTH_DATA[resId] = { isFavorite: false, activePresetId: '1', presets: [] };
+      let p = GROWTH_DATA[resId].presets;
+      if (!p || p.length !== 3) {
+         GROWTH_DATA[resId].presets = ['1', '2', '3'].map((id, i) => ({
+           id,
+           remarks: p?.[i]?.remarks || p?.[i]?.name || '',
+           skills: p?.[i]?.skills || {s1:1,s2:1,s3:1,s4:1,s5:1},
+           stats: p?.[i]?.stats || {current:{base:0,regen:0,cr:0,cd:0}}
+         }));
+      }
+      if (!GROWTH_DATA[resId].activePresetId) GROWTH_DATA[resId].activePresetId = '1';
+    }
+
+    function toggleFavorite(resId) {
+      initGrowthDataFor(resId);
+      GROWTH_DATA[resId].isFavorite = !GROWTH_DATA[resId].isFavorite;
+      storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+      renderGrowthTracker();
+    }
+
+    function toggleGrowthFavFilter() {
+      currentGrowthFilters.favOnly = !currentGrowthFilters.favOnly;
+      const btn = document.getElementById('growth-btn-fav');
+      btn.className = `p-2 rounded-xl border transition flex-shrink-0 ${currentGrowthFilters.favOnly ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'bg-[#121622] border-[#212a3d] text-slate-400'}`;
+      renderGrowthTracker();
+    }
+
+    function resetGrowthData() {
+      openConfirm('초기화', '모든 육성 현황 데이터를 초기화하시겠습니까?', () => {
+        GROWTH_DATA = {};
+        storage.remove('wuwa_matrix_growth_data');
+        renderGrowthTracker();
+        showToast('초기화되었습니다.');
+      });
+    }
+
+    function updateGrowthData(resId, presetId, category, field, value) {
+      if (!GROWTH_DATA[resId]) return;
+      const preset = GROWTH_DATA[resId].presets.find(p => p.id === presetId);
+      if (!preset) return;
+      if (category === 'skills') preset.skills[field] = parseInt(value) || 1;
+      else if (category === 'stats_current') preset.stats.current[field] = parseFloat(value) || 0;
+      else if (category === 'remarks') preset.remarks = value;
+      storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+      renderGrowthTracker(); 
+    }
+
+    function switchGrowthPresetTab(resId, presetId) {
+      if (!GROWTH_DATA[resId]) return;
+      GROWTH_DATA[resId].activePresetId = presetId;
+      storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+      renderGrowthTracker();
+    }
+
+
+
+    function applyAdminThemeToDOM() {
+      const root = document.documentElement;
+      root.style.setProperty('--color-point', adminConfig.colorPoint);
+      root.style.setProperty('--color-attack', adminConfig.colorAttack);
+      root.style.setProperty('--color-buff', adminConfig.colorBuff);
+      root.style.setProperty('--color-bg-base', adminConfig.colorBg);
+      root.style.setProperty('--font-family-base', adminConfig.fontFamily);
+      root.style.setProperty('--ui-scale', (adminConfig.uiScale / 100).toString());
+      
+      const logoBox = document.getElementById('app-header-logo-container');
+      if (logoBox) logoBox.innerHTML = adminConfig.logoImage ? `<img src="${adminConfig.logoImage}" class="w-full h-full object-contain" crossorigin="anonymous">` : `<span class="text-black font-black text-sm">WW</span>`;
+      ['point','attack','buff','bg'].forEach(id => { const el = document.getElementById(`cfg-color-${id}`); if(el) el.value = adminConfig[`color${id.charAt(0).toUpperCase() + id.slice(1)}`]; });
+      const cf = document.getElementById('cfg-font-family'), cs = document.getElementById('cfg-ui-scale'), cl = document.getElementById('cfg-icon-logo');
+      if (cf) cf.value = adminConfig.fontFamily;
+      if (cs) cs.value = adminConfig.uiScale;
+      if (cl) cl.value = toShortImageInput(adminConfig.logoImage || '', 'general');
+    }
+
+    function initAdminSettingsModal() { applyAdminThemeToDOM(); renderAdminIconsTab(); }
+
+    function switchAdminTab(tab) {
+      const isTheme = tab === 'theme';
+      document.getElementById('admin-tab-theme').classList.toggle('hidden', !isTheme);
+      document.getElementById('admin-tab-icons').classList.toggle('hidden', isTheme);
+      document.getElementById('tab-btn-theme').className = `px-3.5 py-1.5 rounded-xl font-bold text-xs ${isTheme ? 'bg-amber-500 text-black' : 'bg-[#161a25] text-slate-300 hover:bg-[#202738]'}`;
+      document.getElementById('tab-btn-icons').className = `px-3.5 py-1.5 rounded-xl font-bold text-xs ${!isTheme ? 'bg-amber-500 text-black' : 'bg-[#161a25] text-slate-300 hover:bg-[#202738]'}`;
+    }
+
+    function renderAdminIconsTab() {
+      document.getElementById('admin-wp-stat-icons-grid').innerHTML = Object.keys(STAT_META).map(key => {
+        const label = key === 'atk' ? STAT_META.atk.label : `주 옵션: ${STAT_META[key].label}`, curImg = adminConfig.customWeaponStatIcons?.[key] || '';
+        return `
+          <div class="p-2.5 rounded-xl bg-[#161a25] border border-slate-700/80 flex flex-col gap-2 shadow-sm transition hover:border-amber-500/50">
+            <div class="flex items-center justify-start gap-2.5 group">
+              <div class="relative w-9 h-9 rounded-lg bg-[#0a0d14] border border-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0">
+                ${curImg ? `<img src="${curImg}" class="w-full h-full object-contain pointer-events-none">` : getWeaponStatIconHtml(key, 'w-5 h-5')}
+                <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <i data-lucide="upload" class="w-3.5 h-3.5 text-amber-300"></i>
+                  <input type="file" accept="image/*" class="hidden" onchange="handleWpStatIconUpload(event, '${key}')">
+                </label>
+              </div>
+              <span class="font-bold text-white text-[11px] truncate">${label}</span>
+            </div>
+            <input type="text" value="${toShortImageInput(curImg, 'general')}" onchange="updateWpStatIconCustom('${key}', this.value)" placeholder="파일명 또는 URL" class="w-full bg-[#0a0d14] border border-slate-700 rounded py-1 px-2 text-[10px] text-white outline-none focus:border-amber-400">
+          </div>`;
+      }).join('');
+
+      document.getElementById('admin-element-icons-grid').innerHTML = Object.keys(DEFAULT_ELEMENT_META).map(key => {
+        const meta = DEFAULT_ELEMENT_META[key], curImg = adminConfig.customElementIcons[key] || '';
+        return `
+          <div class="p-3 rounded-xl bg-[#161a25] border border-slate-700/80 flex flex-col gap-2 shadow-sm transition hover:border-amber-500/50">
+            <div class="flex items-center justify-start gap-3 group">
+              <div class="relative w-10 h-10 rounded-lg bg-[#0a0d14] border border-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0">
+                ${curImg ? `<img src="${curImg}" class="w-full h-full object-contain pointer-events-none">` : `<div class="w-7 h-7">${getElementIconHtml(key)}</div>`}
+                <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <i data-lucide="upload" class="w-4 h-4 text-amber-300"></i>
+                  <input type="file" accept="image/*" class="hidden" onchange="handleElementIconUpload(event, '${key}')">
+                </label>
+              </div>
+              <span class="font-bold text-white text-xs">${meta.label}</span>
+            </div>
+            <input type="text" value="${toShortImageInput(curImg, 'general')}" onchange="updateElementIconCustom('${key}', this.value)" placeholder="파일명 또는 URL" class="w-full bg-[#0a0d14] border border-slate-700 rounded py-1 px-2 text-[10px] text-white outline-none focus:border-amber-400 mt-1">
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function updateWpStatIconCustom(type, val) {
+      if (!adminConfig.customWeaponStatIcons) adminConfig.customWeaponStatIcons = {};
+      adminConfig.customWeaponStatIcons[type] = resolveImageUrl(val, 'general');
+      renderAdminIconsTab();
+    }
+    function handleWpStatIconUpload(e, type) {
+      readImageFile(e, src => updateWpStatIconCustom(type, src), 128);
+    }
+
+    function updateElementIconCustom(elemKey, val) { adminConfig.customElementIcons[elemKey] = resolveImageUrl(val, 'general'); renderAdminIconsTab(); }
+    function handleElementIconUpload(e, elemKey) { readImageFile(e, src => updateElementIconCustom(elemKey, src), 128); }
+    
+    function updateLogoPreview(val) {
+      const resolved = resolveImageUrl(val, 'general');
+      adminConfig.logoImage = resolved;
+      const img = document.getElementById('preview-icon-logo'), txt = document.getElementById('preview-icon-logo-text');
+      img.classList.toggle('hidden', !resolved);
+      txt.classList.toggle('hidden', !!resolved);
+      if (resolved) img.src = resolved;
+    }
+
+    function handleAdminIconUpload(e, type) {
+      if (type !== 'logo') return;
+      readImageFile(e, src => { document.getElementById('cfg-icon-logo').value = src; updateLogoPreview(src); }, 256);
+    }
+
+    function saveAdminSettings() {
+      ['point','attack','buff','bg'].forEach(id => adminConfig[`color${id.charAt(0).toUpperCase() + id.slice(1)}`] = document.getElementById(`cfg-color-${id}`).value);
+      adminConfig.fontFamily = document.getElementById('cfg-font-family').value;
+      adminConfig.uiScale = parseInt(document.getElementById('cfg-ui-scale').value) || 100;
+      adminConfig.logoImage = resolveImageUrl(document.getElementById('cfg-icon-logo').value, 'general');
+      saveGameData();
+      applyAdminThemeToDOM();
+      closeModal('admin-settings-modal');
+      renderRoster(); renderParties();
+      refreshActiveView();
+      showToast('설정이 적용되었습니다.');
+    }
+
+    // 이 사이트가 브라우저에 저장한 모든 데이터(wuwa_*)를 지우고 새로고침 → 처음 상태로
+    function resetAllStoredData() {
+      openConfirm('전체 데이터 초기화', '이 브라우저에 저장된 편집본(게시 안 된 수정 사항), 보유 공명자, 육성 기록이 모두 삭제됩니다. 계속할까요?', () => {
+        Object.keys(localStorage).filter(k => k.startsWith('wuwa_') && k !== 'wuwa_admin_mode').forEach(k => localStorage.removeItem(k));
+        location.reload();
+      });
+    }
+
+    function resetAdminSettingsToDefault() { 
+      openConfirm('기본값 복원', '기본 설정으로 복원하시겠습니까?', () => {
+        adminConfig = structuredClone(DEFAULT_ADMIN_CONFIG);
+        saveGameData();
+        applyAdminThemeToDOM(); 
+        closeModal('admin-settings-modal'); 
+        renderRoster(); renderParties(); 
+        refreshActiveView();
+        showToast('기본값으로 복원되었습니다.');
+      }); 
+    }
+
+    function renderEchoSetEditor() {
+      document.getElementById('echo-set-editor-grid').innerHTML = ECHO_SETS.map(es => `
+        <div class="p-4 bg-[#161a25] rounded-xl border border-slate-700/80 flex flex-col gap-3 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="relative w-12 h-12 rounded-lg bg-[#0a0d14] border border-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0 group cursor-pointer">
+              ${es.iconUrl ? `<img src="${es.iconUrl}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="image" class="w-5 h-5 text-slate-500"></i>`}
+              <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <i data-lucide="upload" class="w-4 h-4 text-amber-300"></i>
+                <input type="file" accept="image/*" class="hidden" onchange="handleEchoSetIconUpload(event, '${es.id}')">
+              </label>
+            </div>
+            <input type="text" value="${esc(es.name)}" onchange="updateEchoSet('${es.id}', 'name', this.value)" class="flex-1 min-w-0 bg-[#0a0d14] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none" placeholder="세트 이름">
+          </div>
+          <div class="h-px bg-slate-700/80 w-full my-0.5"></div>
+          <div class="flex flex-col gap-1.5">
+            <input type="text" value="${toShortImageInput(es.iconUrl || '', 'set')}" onchange="updateEchoSet('${es.id}', 'iconUrl', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-3 py-1.5 text-[11px] text-white outline-none" placeholder="이미지 파일명 또는 URL">
+            <div class="flex justify-end pt-1">
+              <button onclick="deleteEchoSet('${es.id}')" class="px-2.5 py-1.5 rounded-lg hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition flex items-center gap-1 text-xs">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>삭제
+              </button>
+            </div>
+          </div>
+        </div>`).join('');
+      lucide.createIcons();
+    }
+
+    function updateEchoSet(id, field, value) {
+      const item = ECHO_SETS.find(e => e.id === id);
+      if (!item) return;
+      item[field] = field === 'iconUrl' ? resolveImageUrl(value, 'set') : value;
+      saveGameData();
+      if (field === 'iconUrl') renderEchoSetEditor();
+    }
+
+    function handleEchoSetIconUpload(e, esId) { readImageFile(e, src => updateEchoSet(esId, 'iconUrl', src), 128); }
+    function addEchoSet() { ECHO_SETS.push({ id: 'es_' + Date.now(), name: '', iconUrl: '' }); saveGameData(); renderEchoSetEditor(); }
+    function deleteEchoSet(id) { openConfirm('삭제', '삭제하시겠습니까?', () => { ECHO_SETS = ECHO_SETS.filter(e => e.id !== id); saveGameData(); renderEchoSetEditor(); }); }
+
+    function parseMainStat(statStr) {
+      if (!statStr || typeof statStr !== 'string') return { type: '공격력', val: '' };
+      // 긴 이름부터 비교해야 '크리티컬 피해'가 '크리티컬'로 잘못 잡히지 않음
+      for (const t of [...MAIN_STAT_TYPES].sort((a, b) => b.length - a.length)) {
+        if (statStr.startsWith(t)) {
+          const val = statStr.slice(t.length).replace('%', '').trim();
+          return { type: t, val };
+        }
+      }
+      return { type: '공격력', val: statStr.replace('%', '').trim() };
+    }
+
+    // refine: effect 속 **수치**들의 1~5재련 값. 개수가 안 맞으면(직접 수정한 경우 등) 원문 그대로 표시
+    function formatWeaponEffect(text, refine, level = 1) {
+      if (!text || !text.trim()) return '-';
+      let i = 0;
+      const boldCount = (text.match(/\*\*(.*?)\*\*/g) || []).length;
+      const bolds = [...text.matchAll(/\*\*(.*?)\*\*/g)].map(m => m[1]);
+      // 1재련 값이 원문과 같을 때만 재련 데이터 사용 (편집기에서 수치를 고쳤으면 원문 우선)
+      const useRefine = Array.isArray(refine) && refine.length === boldCount && bolds.every((b, k) => refine[k]?.[0] === b);
+      return esc(text).replace(/\*\*(.*?)\*\*/g, (_, v) => {
+        const arr = useRefine ? refine[i++] : null;
+        const val = arr ? arr[level - 1] ?? v : v;
+        const changes = arr && new Set(arr).size > 1;
+        return `<strong class="font-black ${changes ? 'text-amber-300' : 'text-slate-100'} drop-shadow-sm">${esc(val)}</strong>`;
+      });
+    }
+
+    function renderWeaponEditor() {
+
+      document.getElementById('weapon-editor-grid').innerHTML = WEAPONS.map(wp => {
+        const rank = rankOf(wp.rank), borderClass = rankStyle(rank).border;
+        const parsed = parseMainStat(wp.mainStat);
+        const curWpType = wp.weaponType || '직검';
+
+        return `
+          <div class="p-4 bg-[#161a25] rounded-xl border border-slate-700/85 flex flex-col gap-2.5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="relative w-12 h-12 rounded-lg bg-[#0a0d14] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 group cursor-pointer">
+                ${wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="sword" class="w-5 h-5 text-slate-500"></i>`}
+                <label class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <i data-lucide="upload" class="w-4 h-4 text-rose-300"></i>
+                  <input type="file" accept="image/*" class="hidden" onchange="handleWeaponEditorIconUpload(event, '${wp.id}')">
+                </label>
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+                <input type="text" value="${esc(wp.name)}" onchange="updateWeapon('${wp.id}', 'name', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-rose-400" placeholder="무기 이름">
+                <div class="grid grid-cols-2 gap-1.5">
+                  <select onchange="updateWeapon('${wp.id}', 'weaponType', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-rose-400 cursor-pointer">
+                    ${WEAPON_TYPES.map(wt => `<option value="${wt}" ${curWpType === wt ? 'selected' : ''}>${wt}</option>`).join('')}
+                  </select>
+                  <select onchange="updateWeapon('${wp.id}', 'rank', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-rose-400 cursor-pointer">
+                    ${[5, 4, 3, 2, 1].map(n => `<option value="${n}" ${rank === n ? 'selected' : ''}>${n}성</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <div class="w-24 flex-shrink-0">
+                <label class="block text-[11px] font-bold text-slate-300 mb-1">공격력</label>
+                <input type="text" value="${esc(wp.atk)}" onchange="updateWeapon('${wp.id}', 'atk', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold text-left outline-none focus:border-rose-400" placeholder="">
+              </div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[11px] font-bold text-slate-300 mb-1">주 옵션</label>
+                <div class="flex items-center gap-1">
+                  <select onchange="updateWeaponStatType('${wp.id}', this.value)" class="w-24 sm:w-28 bg-[#0a0d14] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-rose-400 cursor-pointer font-bold">
+                    ${MAIN_STAT_TYPES.map(st => `<option value="${st}" ${parsed.type === st ? 'selected' : ''} class="text-white bg-[#0a0d14]">${st}</option>`).join('')}
+                  </select>
+                  <div class="flex-1 relative flex items-center">
+                    <input type="text" value="${esc(parsed.val)}" onchange="updateWeaponStatVal('${wp.id}', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white font-bold outline-none focus:border-rose-400 pr-5" placeholder="">
+                    <span class="absolute right-1.5 text-[10px] text-slate-400 pointer-events-none font-bold">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-[11px] font-bold text-slate-300">고유 효과</label>
+              </div>
+              <textarea rows="2" onchange="updateWeapon('${wp.id}', 'effect', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-rose-400 resize-none" placeholder="">${esc(wp.effect)}</textarea>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-300 mb-1">주요 키워드</label>
+              <input type="text" value="${esc(wp.buffSummary)}" onchange="updateWeapon('${wp.id}', 'buffSummary', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-rose-400" placeholder="">
+            </div>
+
+            <div class="h-px bg-slate-700/80 w-full my-0.5"></div>
+            <div class="flex flex-col gap-1.5">
+              <input type="text" value="${esc(toShortImageInput(wp.image || '', 'weapon'))}" onchange="updateWeapon('${wp.id}', 'image', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-rose-400" placeholder="이미지 파일명 또는 URL">
+              <div class="flex justify-end pt-0.5">
+                <button onclick="deleteWeapon('${wp.id}')" class="px-2.5 py-1 rounded-lg hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition flex items-center gap-1 text-xs">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>삭제
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function updateWeaponStatType(id, type) {
+      const wp = WEAPONS.find(w => w.id === id);
+      if (!wp) return;
+      const parsed = parseMainStat(wp.mainStat);
+      updateWeapon(id, 'mainStat', `${type} ${parsed.val}%`);
+    }
+
+    function updateWeaponStatVal(id, val) {
+      const wp = WEAPONS.find(w => w.id === id);
+      if (!wp) return;
+      const parsed = parseMainStat(wp.mainStat);
+      updateWeapon(id, 'mainStat', `${parsed.type} ${val.trim()}%`);
+    }
+
+    function updateWeapon(id, field, value) {
+      const idx = WEAPONS.findIndex(w => w.id === id);
+      if (idx === -1) return;
+      const oldName = WEAPONS[idx].name;
+      if (field === 'image') WEAPONS[idx].image = resolveImageUrl(value, 'weapon');
+      else if (field === 'rank') WEAPONS[idx].rank = parseInt(value) || 5;
+      else WEAPONS[idx][field] = value;
+      saveGameData();
+
+      // 공명자는 무기를 이름으로만 참조하므로, 이름이 바뀐 경우에만 참조를 갱신
+      if (field === 'name' && oldName && oldName !== value) {
+        let altered = false;
+        RAW_RESONATORS.forEach(r => r.weapons?.forEach(rw => { if (rw.name === oldName) { rw.name = value; altered = true; } }));
+        if (altered) saveGameData();
+      }
+      if (field === 'image' || field === 'rank' || field === 'weaponType') renderWeaponEditor();
+      if (currentMainView === 'weapon') renderWeaponCodex();
+    }
+
+    function handleWeaponEditorIconUpload(e, wpId) {
+      readImageFile(e, src => updateWeapon(wpId, 'image', src), 256);
+    }
+
+    function addWeapon() {
+      WEAPONS.push({ id: 'wp_' + Date.now(), name: '', rank: 5, weaponType: '직검', image: DEFAULT_WEAPON_IMG, atk: '', mainStat: '공격력 0%', effect: '', buffSummary: '' });
+      saveGameData();
+      renderWeaponEditor();
+      if (currentMainView === 'weapon') renderWeaponCodex();
+    }
+
+    function deleteWeapon(id) {
+      openConfirm('삭제', '삭제하시겠습니까?', () => {
+        WEAPONS = WEAPONS.filter(w => w.id !== id);
+        saveGameData();
+        renderWeaponEditor();
+        if (currentMainView === 'weapon') renderWeaponCodex();
+      });
+    }
+
+    const WEAPON_TYPES_DEF = [{ id: 'all', label: '전체' }, ...WEAPON_TYPES.map(w => ({ id: w, label: w }))];
+
+    const WEAPON_RANKS_DEF = [
+      { id: 'all', label: '전체' },
+      { id: '5', label: '5★' },
+      { id: '4', label: '4★' },
+      { id: '3', label: '3★' },
+      { id: '2', label: '2★' },
+      { id: '1', label: '1★' }
+    ];
+
+    function renderWeaponFiltersBars() {
+      const typeBar = document.getElementById('weapon-type-filter-bar');
+      const rankBar = document.getElementById('weapon-rank-filter-bar');
+      if (typeBar) {
+        typeBar.innerHTML = WEAPON_TYPES_DEF.map(wt => `
+          <button onclick="setWeaponTypeFilter('${wt.id}')" class="py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition ${currentWeaponTypeFilter === wt.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${wt.label}</button>
+        `).join('');
+      }
+      if (rankBar) {
+        rankBar.innerHTML = WEAPON_RANKS_DEF.map(wr => `
+          <button onclick="setWeaponRankFilter('${wr.id}')" class="py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition ${currentWeaponRankFilter === wr.id ? 'bg-slate-700 text-white border border-slate-500 shadow-md' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${wr.label}</button>
+        `).join('');
+      }
+    }
+
+    function setWeaponTypeFilter(wtId) {
+      currentWeaponTypeFilter = wtId;
+      renderWeaponFiltersBars();
+      renderWeaponCodex();
+    }
+
+    function setWeaponRankFilter(wrId) {
+      currentWeaponRankFilter = wrId;
+      renderWeaponFiltersBars();
+      renderWeaponCodex();
+    }
+
+    function renderWeaponCodex() {
+      const grid = document.getElementById('weapon-codex-grid');
+      const searchQuery = (document.getElementById('weapon-search-input')?.value || '').trim().toLowerCase();
+      if (!grid) return;
+
+      let filtered = WEAPONS.filter(wp => {
+        const rank = rankOf(wp.rank);
+        if (currentWeaponTypeFilter !== 'all' && (wp.weaponType || '직검') !== currentWeaponTypeFilter) return false;
+        if (currentWeaponRankFilter !== 'all' && String(rank) !== currentWeaponRankFilter) return false;
+        if (searchQuery && ![(wp.name || ''), (wp.effect || ''), (wp.mainStat || ''), (wp.buffSummary || '')].some(s => s.toLowerCase().includes(searchQuery))) return false;
+        return true;
+      }).sort((a, b) => (b.rank || 5) - (a.rank || 5) || KO.compare(a.name || '', b.name || ''));
+
+      grid.innerHTML = filtered.map(wp => {
+        const rank = rankOf(wp.rank), rs = rankStyle(rank);
+        const rankBorderClass = rs.card, gradClass = rs.grad;
+        const parsed = parseMainStat(wp.mainStat);
+
+        const rankTagClass = rs.tag;
+        const typeTagClass = 'bg-[#181d28] border-slate-700/80 text-slate-400';
+
+        const summaryText = wp.buffSummary?.trim() || '';
+
+        return `
+          <div data-name="${esc(wp.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="bg-[#121622] border ${rankBorderClass} rounded-2xl p-4 flex flex-col justify-between h-full cursor-pointer transition-all active:scale-[0.98] shadow-xl group">
+            <div>
+              <div class="flex gap-3 border-b border-[#1e2638] pb-2.5 relative items-center">
+                <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center relative bg-gradient-to-b ${gradClass} to-transparent">
+                  <img loading="lazy" decoding="async" src="${wp.image || DEFAULT_WEAPON_IMG}" class="w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition duration-300 pointer-events-none" crossorigin="anonymous">
+                </div>
+                <div class="flex-1 min-w-0 flex flex-col items-start gap-1.5">
+                  <div class="w-full text-sm font-black text-white truncate" title="${esc(wp.name)}">${esc(wp.name)}</div>
+                  <div class="flex items-center gap-1 flex-shrink-0">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${rankTagClass}">${rank}★</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${typeTagClass}">${wp.weaponType || '직검'}</span>
+                  </div>
+                </div>
+              </div>
+              <!-- 스탯 영역과 버프 요약 사이 여백을 초록색 선 길이만큼 살짝 조절 (pt-2.5 적용) -->
+              <div class="pt-2.5 flex flex-col gap-1.5">
+                <div class="grid grid-cols-[2fr_3fr] gap-2">
+                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">공격력</span>
+                    <span class="text-xs font-black text-white font-mono whitespace-nowrap">${wp.atk || '-'}</span>
+                  </div>
+                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">${parsed.type}</span>
+                    <span class="text-xs font-black text-white font-mono whitespace-nowrap">${parsed.val}%</span>
+                  </div>
+                </div>
+                <div class="py-1 px-0.5 pb-0">
+                  <div class="text-[11px] text-slate-300 leading-relaxed line-clamp-2 w-full">${summaryText}</div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-500 text-sm">조건에 맞는 무기가 없습니다.</div>`;
+      }
+      lucide.createIcons();
+    }
+
+    function initCircuitEditorModal() {
+      renderCircuitEditorList();
+      if (CIRCUITS.length > 0) selectCircuitEditorItem(CIRCUITS[0].id);
+    }
+
+    function renderCircuitEditorList() {
+      document.getElementById('circuit-editor-items-list').innerHTML = CIRCUITS.map(c => `
+        <div onclick="selectCircuitEditorItem('${c.id}')" class="px-2.5 py-2 rounded-xl flex items-center justify-between cursor-pointer transition ${c.id === activeCircuitEditorId ? 'bg-cyan-500/20 border border-cyan-500/70 text-cyan-300 font-bold' : 'bg-[#121620] hover:bg-[#1a202e] border border-[#212a3d] text-slate-300'}">
+          <span class="text-sm truncate flex-1">${esc(c.name)}</span>
+        </div>`).join('');
+    }
+
+    function selectCircuitEditorItem(cId) {
+      activeCircuitEditorId = cId;
+      renderCircuitEditorList();
+      const c = CIRCUITS.find(item => item.id === cId);
+      if (!c) return;
+      document.getElementById('edit-circuit-id').value = c.id;
+      document.getElementById('edit-circuit-name').value = c.name || '';
+      document.getElementById('edit-circuit-desc').value = c.desc || '';
+      document.getElementById('edit-circuit-icon-url').value = toShortImageInput(c.iconImage || '', 'icon');
+      const box = document.getElementById('preview-circuit-icon-box');
+      box.innerHTML = c.iconImage ? `<img src="${c.iconImage}" class="w-full h-full object-contain">` : (c.iconSvg || `<span class="text-xs text-slate-500">기본</span>`);
+    }
+
+    function updateCircuitIconPreview(val) {
+      const resolved = resolveImageUrl(val, 'icon');
+      document.getElementById('preview-circuit-icon-box').innerHTML = resolved ? `<img src="${resolved}" class="w-full h-full object-contain">` : `<span class="text-xs text-slate-500">기본</span>`;
+    }
+
+    function handleCircuitIconUpload(e) {
+      readImageFile(e, src => {
+        document.getElementById('edit-circuit-icon-url').value = src;
+        document.getElementById('preview-circuit-icon-box').innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
+      }, 256);
+    }
+
+    function addNewCircuitItem() {
+      const newId = 'circuit_' + Date.now();
+      CIRCUITS.push({ id: newId, name: '새 강화 회로', desc: '설명을 입력하세요.', iconImage: '', iconSvg: `<svg viewBox="0 0 24 24" class="w-10 h-10 text-cyan-300 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="9"/></svg>` });
+      saveGameData();
+      selectCircuitEditorItem(newId);
+      renderParties();
+    }
+
+    function saveCurrentCircuitForm() {
+      const id = document.getElementById('edit-circuit-id').value;
+      const idx = CIRCUITS.findIndex(c => c.id === id);
+      if (idx === -1) return;
+      CIRCUITS[idx] = {
+        ...CIRCUITS[idx],
+        name: document.getElementById('edit-circuit-name').value.trim() || '회로 이름 없음',
+        desc: document.getElementById('edit-circuit-desc').value.trim() || '',
+        iconImage: resolveImageUrl(document.getElementById('edit-circuit-icon-url').value, 'icon')
+      };
+      saveGameData();
+      renderParties();
+      renderCircuitEditorList();
+      showToast('저장 완료');
+    }
+
+    function deleteCurrentCircuit() {
+      const id = document.getElementById('edit-circuit-id').value;
+      if (!CIRCUITS.find(item => item.id === id)) return;
+      openConfirm('삭제', `삭제하시겠습니까?`, () => {
+        state.parties.forEach(p => { if (p.circuitId === id) p.circuitId = null; });
+        CIRCUITS = CIRCUITS.filter(item => item.id !== id);
+        saveGameData();
+        activeCircuitEditorId = CIRCUITS[0]?.id || null;
+        renderCircuitEditorList();
+        if (activeCircuitEditorId) selectCircuitEditorItem(activeCircuitEditorId);
+        renderParties();
+      });
+    }
+
+    async function exportPartyDeckAsImage() {
+      const targetArea = document.getElementById('parties-capture-area'), saveBtn = document.getElementById('btn-save-image');
+      if (!targetArea || !window.htmlToImage) { showToast('이미지 저장 실패'); return; }
+      const origText = saveBtn.innerHTML; saveBtn.disabled = true; saveBtn.innerHTML = `<span>저장 중...</span>`;
+      try {
+        if (document.fonts?.ready) await document.fonts.ready;
+        const dataUrl = await window.htmlToImage.toPng(targetArea, { quality: 0.98, pixelRatio: 2, backgroundColor: '#06080d', filter: node => !node.classList?.contains('hide-on-export') });
+        const link = document.createElement('a'); link.download = '명조_파티편성.png'; link.href = dataUrl; link.click();
+        showToast('저장되었습니다.');
+      } catch { showToast('오류 발생'); } finally { saveBtn.disabled = false; saveBtn.innerHTML = origText; lucide.createIcons(); }
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container'), toast = document.createElement('div');
+      toast.className = 'px-3.5 py-2 rounded-xl bg-[#141824] border border-slate-700 shadow-2xl text-xs font-semibold text-white flex items-center gap-2 transform transition-all duration-200 translate-y-2 opacity-0 pointer-events-auto';
+      toast.innerHTML = `<span class="text-amber-400">●</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 250); }, 2000);
+    }
+
+    function createCustomDragGhost(imgSrc) {
+      document.getElementById('active-drag-ghost')?.remove();
+      const ghost = document.createElement('div');
+      ghost.id = 'active-drag-ghost';
+      ghost.className = 'drag-ghost-frame';
+      ghost.innerHTML = `<img src="${imgSrc}" crossorigin="anonymous">`;
+      document.body.appendChild(ghost);
+      return ghost;
+    }
+
+    function getMaxUsage(resonatorId) {
+      if (resonatorId === state.seasonBuffResonatorId) return 2;
+      return RAW_RESONATORS.find(item => item.id === resonatorId)?.role === 'support' ? 2 : 1;
+    }
+
+    function getDeployedPartyNumbers(resonatorId) {
+      return state.parties.reduce((acc, p, idx) => { if (p.slots.includes(resonatorId)) acc.push(idx + 1); return acc; }, []);
+    }
+
+    const FILTER_TABS_DEF = {
+      elements: [{ id: 'all', label: '전체' }, { id: 'spectro', label: '회절' }, { id: 'aero', label: '기류' }, { id: 'electro', label: '전도' }, { id: 'fusion', label: '용융' }, { id: 'glacio', label: '응결' }, { id: 'havoc', label: '인멸' }],
+      roles: [{ id: 'all', label: '전체' }, { id: 'main', label: '메인' }, { id: 'sub', label: '서브' }, { id: 'support', label: '서포터' }]
+    };
+
+    function renderFilterBars() {
+      document.getElementById('element-tabs-bar').innerHTML = FILTER_TABS_DEF.elements.map(t => `<button onclick="setElementFilter('${t.id}')" class="flex-1 py-1.5 px-1 rounded-lg font-bold text-xs whitespace-nowrap text-center ${state.selectedElement === t.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`).join('');
+      document.getElementById('role-tabs-bar').innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setRoleFilter('${r.id}')" class="flex-1 py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${state.selectedRole === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
+    }
+
+    function renderGrowthFilterBars() {
+      const eBar = document.getElementById('growth-element-bars'), rBar = document.getElementById('growth-role-bars');
+      if (eBar) eBar.innerHTML = FILTER_TABS_DEF.elements.map(t => `<button onclick="setGrowthElementFilter('${t.id}')" class="py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.element === t.id ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`).join('');
+      if (rBar) rBar.innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setGrowthRoleFilter('${r.id}')" class="py-1.5 px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.role === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
+    }
+
+    function setElementFilter(id) { state.selectedElement = id; renderFilterBars(); renderRoster(); }
+    function setRoleFilter(id) { state.selectedRole = id; renderFilterBars(); renderRoster(); }
+    function setGrowthElementFilter(id) { currentGrowthFilters.element = id; renderGrowthFilterBars(); renderGrowthTracker(); }
+    function setGrowthRoleFilter(id) { currentGrowthFilters.role = id; renderGrowthFilterBars(); renderGrowthTracker(); }
+
+    function renderRoster() {
+      const grid = document.getElementById('roster-grid');
+      const searchQuery = document.getElementById('roster-search-input').value.trim().toLowerCase();
+      const hideDeployed = document.getElementById('chk-hide-deployed').checked;
+      const depMap = new Map();
+      state.parties.forEach((p, i) => p.slots.forEach(id => { if (!id) return; const a = depMap.get(id) || []; if (!a.includes(i + 1)) a.push(i + 1); depMap.set(id, a); }));
+      const getDep = id => depMap.get(id) || [];
+      const resMap = new Map(RAW_RESONATORS.map(x => [x.id, x]));
+      
+      let filtered = RAW_RESONATORS.filter(r => {
+        if (state.selectedElement !== 'all' && r.element !== state.selectedElement) return false;
+        if (state.selectedRole !== 'all' && r.role !== state.selectedRole) return false;
+        if (!isOwned(r.id)) return false;
+        if (hideDeployed && getDep(r.id).length >= getMaxUsage(r.id)) return false;
+        if (searchQuery && ![(r.name || ''), (r.mainDmg || ''), resonatorKeywords(r).join(' ')].some(s => s.toLowerCase().includes(searchQuery))) return false;
+        return true;
+      }).sort(byName);
+
+      grid.innerHTML = filtered.map(r => {
+        const kwText = keywordsWithoutMainDmg(r).join(' · ');
+        const maxU = getMaxUsage(r.id), deployed = getDep(r.id), remaining = maxU - deployed.length, isDepleted = remaining <= 0;
+        const roleMeta = ROLE_META[r.role] || ROLE_META.main;
+        const pill = deployed.length > 0 ? `<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"><div class="px-2.5 py-0.5 rounded-full bg-[#f5a623]/95 text-black font-black text-xs shadow-lg border border-[#f5a623]">${deployed.map(n => String(n).padStart(2, '0')).join(', ')}</div></div>` : '';
+        return `
+          <div data-id="${r.id}" class="roster-card relative rounded-2xl p-1.5 flex flex-col justify-start transition-all select-none border group cursor-pointer ${isDepleted ? 'bg-[#0a0d13]/85 border-[#181f2b] opacity-35 grayscale cursor-not-allowed' : 'bg-[#10141f] border-[#1f2738] hover:border-amber-400 hover:bg-[#161c2b] hover:shadow-xl'}" ${!isDepleted ? 'draggable="true"' : ''}>
+            <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1.5">
+              <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-200" crossorigin="anonymous">
+              ${pill}
+              <div class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/85 border border-white/10 text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
+              <div class="absolute top-1 left-1 z-20 pointer-events-none w-7 h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
+              <div class="absolute top-1.5 right-1.5 z-20 pointer-events-none"><div class="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold border shadow-sm ${roleMeta.tagClass}">${roleMeta.label}</div></div>
+            </div>
+            <div class="w-full text-left space-y-0.5 px-1 pb-1">
+              <div class="text-[13px] font-black text-slate-100 truncate">${esc(r.name)}</div>
+              <div class="text-[11px] font-bold theme-attack-text truncate">${esc(r.mainDmg)}</div>
+              ${kwText ? `<div class="text-[11px] theme-buff-text truncate leading-tight" title="${esc(kwText)}">${esc(kwText)}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      grid.querySelectorAll('.roster-card').forEach(card => {
+        const resId = card.dataset.id;
+        const r = resMap.get(resId);
+        card.addEventListener('click', () => { if (!isDraggingCharacter) openDetailModal(resId); });
+        if (card.getAttribute('draggable') === 'true') {
+          card.addEventListener('dragstart', (e) => {
+            isDraggingCharacter = true;
+            e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'from-roster', resonatorId: resId }));
+            const ghost = createCustomDragGhost(r.avatar);
+            if (e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(ghost, 42, 42);
+            card.classList.add('opacity-40');
+          });
+          card.addEventListener('dragend', () => {
+            card.classList.remove('opacity-40');
+            document.getElementById('active-drag-ghost')?.remove();
+            setTimeout(() => isDraggingCharacter = false, 80);
+          });
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function renderParties() {
+      const container = document.getElementById('parties-container');
+      container.innerHTML = state.parties.map((party, pIdx) => {
+        const activeCircuit = CIRCUITS.find(c => c.id === party.circuitId);
+        const slotsHtml = party.slots.map((resId, sIdx) => {
+          if (!resId) {
+            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400/50 hover:bg-[#0f1422] cursor-pointer flex items-center justify-center h-[96px] sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i></div>`;
+          }
+          const r = RAW_RESONATORS.find(item => item.id === resId) || { name: '알 수 없음', avatar: '', mainDmg: '', buffSummary: '', element: 'spectro' };
+          return `
+            <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md group flex items-center p-2 sm:p-2.5 h-[96px] sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
+              <div class="absolute top-1.5 right-1.5 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="p-1 rounded bg-black/70 hover:bg-rose-900 text-slate-400 hover:text-white transition shadow"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
+              <div class="flex items-center gap-2.5 w-full h-full min-w-0">
+                <div class="relative h-full w-[56px] sm:w-[64px] rounded-lg overflow-hidden bg-[#0a0d14] border border-[#2b364d] flex-shrink-0 shadow-md">
+                  <img src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
+                  <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
+                </div>
+                <div class="min-w-0 flex-1 flex flex-col justify-center gap-1">
+                  <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
+                  <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
+                  <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        const circuitBoxHtml = activeCircuit ? `
+          <div class="relative group aspect-square ml-auto md:ml-0 h-[72px] md:h-[105px] w-[72px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-cyan-500/70 bg-[#0c1829] shadow-md flex items-center justify-center p-2 cursor-pointer" onclick="openCircuitModal(${pIdx})">
+            <div class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition z-10 hide-on-export"><button onclick="event.stopPropagation(); unsetCircuitDirect(${pIdx})" class="p-1 rounded bg-black/80 hover:bg-rose-900 text-slate-300 hover:text-white transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
+            <div class="flex items-center justify-center w-full h-full filter drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]">${getCircuitIconHtml(activeCircuit)}</div>
+          </div>` : `
+          <div class="aspect-square ml-auto md:ml-0 h-[72px] md:h-[105px] w-[72px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-dashed border-[#232c3f] bg-[#090c13] hover:border-cyan-500/50 hover:bg-[#0e1422] flex flex-col gap-1 items-center justify-center p-2 cursor-pointer text-slate-500" onclick="openCircuitModal(${pIdx})">
+            <i data-lucide="cpu" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-400">회로 선택</span>
+          </div>`;
+
+        return `
+          <div class="party-row bg-[#0d1017] border border-[#1a2130] rounded-2xl p-3 sm:p-3.5 flex flex-wrap md:flex-nowrap items-center gap-3 sm:gap-3.5 shadow-lg transition-all relative" data-pidx="${pIdx}">
+            <div class="flex items-center gap-3 sm:gap-3.5 flex-shrink-0 select-none">
+              <div class="party-handle w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#141b27] hover:bg-[#1c2538] border border-[#232f45] hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition cursor-grab active:cursor-grabbing" draggable="true">
+                <svg viewBox="0 0 24 24" class="w-5 h-5 stroke-current fill-none stroke-[2.2] stroke-linecap-round stroke-linejoin-round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+              </div>
+              <span class="text-2xl sm:text-3xl font-black text-slate-200 tracking-tight">${String(pIdx + 1).padStart(2, '0')}</span>
+            </div>
+            <div class="order-last md:order-none basis-full md:basis-auto grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-1 items-stretch min-w-0">${slotsHtml}</div>
+            ${circuitBoxHtml}
+            <button onclick="removeParty(${pIdx})" class="p-2 text-slate-500 hover:text-rose-400 transition flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 hide-on-export"><i data-lucide="x" class="w-5 h-5 stroke-[2.4]"></i></button>
+          </div>`;
+      }).join('');
+
+      container.querySelectorAll('.party-row').forEach(row => {
+        const pIdx = parseInt(row.dataset.pidx);
+        const handle = row.querySelector('.party-handle');
+        handle.addEventListener('dragstart', (e) => { draggedPartyIndex = pIdx; e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'party-reorder', index: pIdx })); row.classList.add('opacity-40'); });
+        handle.addEventListener('dragend', () => { draggedPartyIndex = null; row.classList.remove('opacity-40'); });
+        row.addEventListener('dragover', (e) => { if (draggedPartyIndex !== null) { e.preventDefault(); row.classList.add('drag-party-active'); } });
+        row.addEventListener('dragleave', () => row.classList.remove('drag-party-active'));
+        row.addEventListener('drop', (e) => {
+          if (draggedPartyIndex === null) return;
+          e.preventDefault();
+          row.classList.remove('drag-party-active');
+          if (draggedPartyIndex !== pIdx) {
+            const temp = state.parties[draggedPartyIndex];
+            state.parties[draggedPartyIndex] = state.parties[pIdx];
+            state.parties[pIdx] = temp;
+            draggedPartyIndex = null;
+            renderParties(); renderRoster();
+          }
+        });
+      });
+
+      container.querySelectorAll('.party-slot').forEach(slot => {
+        const pIdx = parseInt(slot.dataset.pidx), sIdx = parseInt(slot.dataset.sidx);
+        const resId = state.parties[pIdx].slots[sIdx];
+        if (resId) {
+          slot.addEventListener('dragstart', (e) => {
+            e.stopPropagation();
+            e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'from-slot', fromPartyIndex: pIdx, fromSlotIndex: sIdx, resonatorId: resId }));
+            const r = RAW_RESONATORS.find(item => item.id === resId);
+            const ghost = createCustomDragGhost(r?.avatar || '');
+            if (e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(ghost, 36, 36);
+            slot.classList.add('opacity-40');
+          });
+          slot.addEventListener('dragend', () => { slot.classList.remove('opacity-40'); document.getElementById('active-drag-ghost')?.remove(); });
+        }
+        slot.addEventListener('dragover', (e) => { if (draggedPartyIndex === null) { e.preventDefault(); e.stopPropagation(); slot.classList.add('drag-slot-active'); } });
+        slot.addEventListener('dragleave', () => slot.classList.remove('drag-slot-active'));
+        slot.addEventListener('drop', (e) => {
+          if (draggedPartyIndex !== null) return;
+          e.preventDefault(); e.stopPropagation();
+          slot.classList.remove('drag-slot-active');
+          const raw = e.dataTransfer.getData('text/plain');
+          if (!raw) return;
+          try { handleSlotDrop(JSON.parse(raw), pIdx, sIdx); } catch {}
+        });
+      });
+      lucide.createIcons();
+    }
+
+    function handleSlotDrop(data, targetPartyIdx, targetSlotIdx) {
+      if (data.type === 'from-roster') {
+        const resId = data.resonatorId, deployed = getDeployedPartyNumbers(resId), maxU = getMaxUsage(resId);
+        if (state.parties[targetPartyIdx].slots.includes(resId)) { showToast('중복 배치는 불가합니다.'); return; }
+        if (deployed.length >= maxU) { showToast(`최대 편성 횟수(${maxU}회) 소진`); return; }
+        state.parties[targetPartyIdx].slots[targetSlotIdx] = resId;
+      } else if (data.type === 'from-slot') {
+        const fromP = data.fromPartyIndex, fromS = data.fromSlotIndex, movingResId = data.resonatorId, targetResId = state.parties[targetPartyIdx].slots[targetSlotIdx];
+        if (fromP === targetPartyIdx && fromS === targetSlotIdx) return;
+        if (fromP !== targetPartyIdx) {
+          if (targetResId && state.parties[fromP].slots.includes(targetResId)) { showToast('대상 파티에 동일 공명자 존재'); return; }
+          if (!targetResId && state.parties[targetPartyIdx].slots.includes(movingResId)) { showToast('해당 파티에 동일 공명자 존재'); return; }
+        }
+        state.parties[fromP].slots[fromS] = targetResId;
+        state.parties[targetPartyIdx].slots[targetSlotIdx] = movingResId;
+      }
+      renderParties(); renderRoster();
+    }
+
+    function removeSlotCharacter(pIdx, sIdx, e) { if(e) e.stopPropagation(); state.parties[pIdx].slots[sIdx] = null; renderParties(); renderRoster(); }
+    function addNewParty() { state.parties.push({ id: 'p_' + Date.now(), slots: [null, null, null], circuitId: null }); renderParties(); }
+    function removeParty(pIdx) {
+      if (state.parties.length <= 1) { showToast('최소 1개는 유지해야 합니다.'); return; }
+      openConfirm('파티 제거', `파티 0${pIdx + 1}을(를) 제거하시겠습니까?`, () => { state.parties.splice(pIdx, 1); renderParties(); renderRoster(); });
+    }
+    function promptResetParties() { openConfirm('전체 초기화', '모든 배치를 초기화하시겠습니까?', () => { state.parties.forEach(p => { p.slots = [null, null, null]; p.circuitId = null; }); renderParties(); renderRoster(); }); }
+
+    // 세부 창 이름 옆 '버프' 버튼 → 위로 뜨는 말풍선(팝오버). 바깥을 누르면 닫힘
+    document.addEventListener('click', () => toggleDetailBuffs(false));
+    // force: true=열기, false=닫기, 생략=토글
+    function toggleDetailBuffs(force) {
+      const pop = document.getElementById('detail-modal-buffs-pop');
+      const open = force ?? pop.classList.contains('hidden');
+      pop.classList.toggle('hidden', !open);
+    }
+
+    function openDetailModal(resId) {
+      const char = RAW_RESONATORS.find(r => r.id === resId);
+      if (!char) return;
+      const roleMeta = ROLE_META[char.role] || ROLE_META.main;
+      document.getElementById('detail-modal-sprite').src = char.sprite || char.avatar;
+      document.getElementById('detail-modal-name').textContent = char.name;
+      document.getElementById('detail-modal-rarity').innerHTML = Array(char.rarity || 5).fill('<i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>').join('');
+      document.getElementById('detail-modal-title-element').innerHTML = `<div class="w-8 h-8 flex items-center justify-center drop-shadow-md mr-0.5">${getElementIconHtml(char.element)}</div>`;
+      document.getElementById('detail-modal-role-badge').textContent = roleMeta.label;
+      document.getElementById('detail-modal-role-badge').className = `px-2.5 py-1 rounded-lg text-xs font-bold border shadow-sm whitespace-nowrap ${roleMeta.tagClass}`;
+      
+      const dmgWrap = document.getElementById('detail-modal-maindmg-wrap'), buffWrap = document.getElementById('detail-modal-buff-wrap');
+      dmgWrap.classList.toggle('hidden', !char.mainDmg);
+      if (char.mainDmg) document.getElementById('detail-modal-maindmg').textContent = char.mainDmg;
+      buffWrap.innerHTML = keywordsWithoutMainDmg(char).map(k => `<div class="flex items-center px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/30 text-xs font-bold theme-buff-text shadow-sm whitespace-nowrap">${esc(k)}</div>`).join('');
+      const buffs = char.buffs || [];
+      document.getElementById('detail-modal-buffs-card').classList.toggle('hidden', !buffs.length);
+      document.getElementById('detail-modal-buffs-count').textContent = buffs.length || '';
+      document.getElementById('detail-modal-buffs-icon').src = resolveImageUrl('T_Iconpropertyredphysics_UI', 'icon');
+      toggleDetailBuffs(false);
+      document.getElementById('detail-modal-buffs').innerHTML = buffs.map(b => `
+        <div class="flex items-center gap-2 text-xs min-w-0">
+          <span class="px-1.5 py-0.5 rounded-md bg-[#1a2030] border border-slate-700 text-[10px] font-bold text-slate-300 whitespace-nowrap flex-shrink-0">${esc(b.source)}</span>
+          <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
+          <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
+          <span class="font-black ${b.target === '적' ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
+          ${b.duration ? `<span class="ml-auto text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">${esc(b.duration)}</span>` : ''}
+        </div>`).join('');
+
+      const echoData = char.echoSet || {};
+      const setList = (echoData.sets || []).filter(s => s?.name?.trim());
+      const setsHtml = setList.map(s => {
+        const meta = ECHO_SETS.find(es => es.name === s.name);
+        const isElem = s.name === GENERIC_SET_ELEM, generic = isElem || meta?.generic;
+        // 범용 속성 2세트는 캐릭터 속성으로 표시 (예: 응결 피해 +10%)
+        const label = isElem ? `${DEFAULT_ELEMENT_META[char.element]?.label || '속성'} 피해 +10%` : s.name;
+        const iconInner = isElem ? `<div class="w-8 h-8">${getElementIconHtml(char.element)}</div>`
+          : meta?.iconUrl ? `<img src="${meta.iconUrl}" class="w-8 h-8 object-contain drop-shadow-sm">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>`;
+        const big = setList.length === 1;
+        return `<div class="flex items-center gap-1.5 min-w-0">
+          <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center">${iconInner}</div>
+          <span class="${big ? 'text-base' : 'text-sm'} font-black ${generic ? 'text-slate-300' : 'text-slate-100'} break-keep">${esc(label)}</span>
+          <span class="flex-shrink-0 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[10px] font-black text-amber-400 leading-none">${s.count}세트</span>
+        </div>`;
+      }).join('<span class="text-slate-500 mx-1 text-base font-black">+</span>');
+      document.getElementById('detail-modal-echo-set').innerHTML = setsHtml || '<span class="text-base font-black text-slate-500">세트 없음</span>';
+      
+      document.getElementById('detail-modal-echo-main').textContent = echoData.mainEcho || '메인 에코';
+      document.getElementById('detail-modal-echo-img').src = echoData.image || DEFAULT_ECHO_IMG_URL;
+      
+      document.getElementById('detail-modal-echo-attributes').innerHTML = `<div class="flex flex-col justify-between w-full h-full py-0 gap-0">${(echoData.echoes || []).map(e => `<div class="flex items-center gap-2 min-w-0"><div class="border border-[#5f5646] text-[#e5cc98] font-bold text-xs w-6 h-6 flex items-center justify-center rounded flex-shrink-0 bg-[#161a25]/50">${e.cost}</div><span class="text-slate-500 text-xs">|</span><span class="font-bold text-slate-100 text-[13px] truncate pt-px">${e.stat}</span></div>`).join('')}</div>`;
+
+      const priority = char.skillPriority || SKILL_NAMES;
+      const spEl = document.getElementById('detail-modal-skill-priority');
+      spEl.innerHTML = priority.map((skill, sIdx) => `<div class="flex items-center gap-0.5 flex-shrink-0"><span class="px-2.5 py-1.5 rounded-lg bg-[#182030] border border-[#28354e] text-slate-200 font-bold text-xs shadow-sm whitespace-nowrap">${skill}</span>${sIdx < priority.length - 1 ? '<i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 flex-shrink-0 mx-0.5"></i>' : ''}</div>`).join('');
+      spEl.scrollLeft = 0;
+
+      const weaponsList = (char.weapons || []).filter(w => w?.name?.trim());
+      const wpEl = document.getElementById('detail-modal-weapons');
+      wpEl.innerHTML = weaponsList.length === 0 ? `<div class="w-full text-center text-sm text-slate-500 py-2">등록된 추천 무기가 없습니다.</div>` : weaponsList.map(w => {
+        const matched = findWeapon(w.name) || w;
+        const rs = rankStyle(matched.rank), borderClass = rs.border, gradClass = rs.grad;
+        return `
+          <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
+            <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
+              <img src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
+            </div>
+            <div class="border-t ${borderClass} py-1 px-1 bg-[#0e121a] flex items-center justify-center flex-shrink-0 z-10 relative overflow-hidden">
+              <span class="weapon-name-text font-extrabold text-[11px] sm:text-xs text-slate-200 block whitespace-nowrap text-center leading-tight">${esc(w.name)}</span>
+            </div>
+          </div>`;
+      }).join('');
+      wpEl.scrollLeft = 0;
+
+      const tmEl = document.getElementById('detail-modal-teammates');
+      const teammatesList = char.teammates || [];
+      tmEl.innerHTML = teammatesList.length === 0 ? `<div class="w-full text-center text-sm text-slate-500 py-2">등록된 추천 동료가 없습니다.</div>` : teammatesList.map(t => {
+        const target = RAW_RESONATORS.find(x => x.id === t.id);
+        if (!target) return '';
+        const targetId = target.id;
+        return `
+          <div onclick="openDetailModal('${targetId}')" class="rounded-xl bg-[#151a26] border border-[#232c40] p-1.5 pr-4 flex items-center gap-3 hover:border-amber-400/60 hover:bg-[#182030] transition shadow-sm flex-shrink-0 cursor-pointer active:scale-95">
+            <img src="${target.avatar}" draggable="false" class="w-12 h-12 rounded-lg object-cover border border-slate-700 flex-shrink-0 pointer-events-none" crossorigin="anonymous">
+            <div class="font-extrabold text-sm text-white whitespace-nowrap">${esc(target.name)}</div>
+          </div>`;
+      }).join('');
+      tmEl.scrollLeft = 0;
+
+      openModal('detail-modal');
+      requestAnimationFrame(fitWeaponNames);
+    }
+
+    let currentDetailWeapon = null;
+    function setWeaponDetailRefine(level) {
+      const wp = currentDetailWeapon; if (!wp) return;
+      const hasRefine = Array.isArray(wp.refine) && wp.refine.length > 0;
+      const bar = document.getElementById('wp-detail-refine');
+      if (bar) bar.innerHTML = hasRefine ? [1, 2, 3, 4, 5].map(n => `<button onclick="setWeaponDetailRefine(${n})" class="inline-flex items-center justify-center w-7 h-7 p-0 rounded-lg border text-[11px] leading-none tracking-normal font-black transition ${n === level ? 'bg-amber-500 border-amber-500 text-black' : 'bg-[#141926] border-slate-700 text-slate-400 hover:text-white'}">R${n}</button>`).join('') : '';
+      document.getElementById('wp-detail-effect').innerHTML = formatWeaponEffect(wp.effect, wp.refine, level);
+    }
+
+    function openWeaponDetailModal(weaponName) {
+      const wp = WEAPONS.find(w => w.name === weaponName);
+      if (!wp) return;
+      const borderClass = rankStyle(wp.rank).border;
+      
+      const imgBox = document.getElementById('wp-detail-img-box');
+      if (imgBox) {
+        imgBox.className = `w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#06080d] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner`;
+        imgBox.innerHTML = wp.image ? `<img src="${wp.image}" class="w-full h-full object-contain pointer-events-none" crossorigin="anonymous">` : `<i data-lucide="sword" class="w-8 h-8 text-slate-500"></i>`;
+      }
+      
+      const titleEl = document.getElementById('wp-detail-title');
+      if (titleEl) titleEl.textContent = wp.name;
+
+      const atkEl = document.getElementById('wp-detail-atk');
+      if (atkEl) atkEl.textContent = wp.atk || '-';
+      
+      const parsed = parseMainStat(wp.mainStat);
+      const statLabelEl = document.getElementById('wp-detail-stat-label');
+      if (statLabelEl) statLabelEl.textContent = parsed.type || '주 옵션';
+      const statValEl = document.getElementById('wp-detail-stat-val');
+      if (statValEl) statValEl.textContent = parsed.val ? `${parsed.val}%` : '-';
+      
+      const atkIconEl = document.getElementById('wp-detail-atk-icon');
+      if (atkIconEl) atkIconEl.innerHTML = getWeaponStatIconHtml('atk');
+      const statIconEl = document.getElementById('wp-detail-stat-icon');
+      if (statIconEl) statIconEl.innerHTML = getWeaponStatIconHtml(parsed.type);
+
+      currentDetailWeapon = wp;
+      setWeaponDetailRefine(1);
+
+
+      openModal('weapon-detail-modal');
+      lucide.createIcons();
+    }
+
+    function openCircuitModal(partyIdx) {
+      state.activeCircuitPartyIndex = partyIdx;
+      const curId = state.parties[partyIdx].circuitId;
+      document.getElementById('circuit-modal-party-label').innerText = `PARTY ${String(partyIdx + 1).padStart(2, '0')}`;
+      document.getElementById('circuit-list-container').innerHTML = CIRCUITS.map(c => `
+        <div onclick="selectCircuit('${c.id}')" class="p-3 rounded-xl border transition cursor-pointer flex items-center justify-between ${curId === c.id ? 'bg-cyan-950/60 border-cyan-400 shadow-md' : 'bg-[#121622] border-[#222b3d] hover:border-cyan-500/50 hover:bg-[#181f2f]'}">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-[#0e121a] border border-[#212838] flex items-center justify-center shrink-0 overflow-hidden">${getCircuitIconHtml(c)}</div>
+            <div class="space-y-1"><div class="font-bold text-sm text-white">${esc(c.name)}</div><div class="text-sm text-slate-300">${esc(c.desc)}</div></div>
+          </div>
+        </div>`).join('');
+      openModal('circuit-modal');
+    }
+
+    function selectCircuit(circuitId) {
+      if (state.activeCircuitPartyIndex !== null) {
+        state.parties[state.activeCircuitPartyIndex].circuitId = circuitId;
+        renderParties();
+      }
+      closeModal('circuit-modal');
+    }
+
+    function unsetCircuitDirect(pIdx) { state.parties[pIdx].circuitId = null; renderParties(); }
+
+    function updateFatigueLabel() {
+      const char = RAW_RESONATORS.find(r => r.id === state.seasonBuffResonatorId);
+      document.getElementById('fatigue-char-label').textContent = char ? char.name : '미지정';
+    }
+
+    function openFatigueModal() {
+      tempSelectedFatigueId = state.seasonBuffResonatorId;
+      renderFatigueModalList();
+      openModal('fatigue-modal');
+    }
+
+    function renderFatigueModalList() {
+      const sorted = [...RAW_RESONATORS].sort(byName);
+      document.getElementById('fatigue-char-list').innerHTML = sorted.map(r => {
+        const isSelected = tempSelectedFatigueId === r.id;
+        return `
+          <div onclick="selectTempFatigueResonator('${r.id}')" class="flex flex-col items-center p-1.5 rounded-xl border cursor-pointer transition select-none group relative ${isSelected ? 'bg-[#151c2a] border-amber-500/60 shadow-lg shadow-amber-500/10' : 'bg-[#0d1017] border-[#1d2331] hover:border-amber-400/50'}">
+            <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-[#090c13] border border-[#2a3449] mb-1.5">
+              <img src="${r.avatar}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
+              <div class="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center ${isSelected ? 'bg-amber-400 text-black' : 'bg-black/80 text-slate-500 border border-slate-700'} shadow z-10 pointer-events-none">
+                <i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>
+              </div>
+            </div>
+            <span class="text-xs font-black text-slate-100 block truncate text-center w-full mt-0.5">${esc(r.name)}</span>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function selectTempFatigueResonator(resId) {
+      tempSelectedFatigueId = resId;
+      renderFatigueModalList();
+    }
+
+    function applyFatigueModalSelection() {
+      if (tempSelectedFatigueId) {
+        state.seasonBuffResonatorId = tempSelectedFatigueId;
+        if (IS_ADMIN) { SEASON_BUFF_DEFAULT = tempSelectedFatigueId; saveGameData(); }  // 관리자가 바꾸면 사이트 기본값으로
+        const char = RAW_RESONATORS.find(r => r.id === tempSelectedFatigueId);
+        updateFatigueLabel();
+        closeModal('fatigue-modal');
+        renderRoster(); renderParties();
+        showToast(`추가 피로도: [${char?.name || tempSelectedFatigueId}] 적용`);
+      } else {
+        closeModal('fatigue-modal');
+      }
+    }
+
+    const isOwned = (id) => state.ownedResonators[id] !== false;
+
+    function initOwnership() {
+      state.ownedResonators = storage.get('wuwa_matrix_owned_chars', {});
+    }
+
+    function renderOwnershipList() {
+      const sorted = [...RAW_RESONATORS].sort(byName);
+      document.getElementById('owned-checklist-container').innerHTML = sorted.map(r => `
+        <div onclick="toggleSingleOwnershipCard('${r.id}')" class="flex flex-col items-center p-1.5 rounded-xl border cursor-pointer transition select-none group relative ${isOwned(r.id) ? 'bg-[#151c2a] border-amber-500/60 shadow-lg shadow-amber-500/10' : 'bg-[#0d1017] border-[#1d2331] hover:border-amber-400/50'}">
+          <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-[#090c13] border border-[#2a3449] mb-1.5">
+            <img loading="lazy" decoding="async" src="${r.avatar}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
+            <div class="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center ${isOwned(r.id) ? 'bg-amber-400 text-black' : 'bg-black/80 text-slate-500 border border-slate-700'} shadow z-10 pointer-events-none"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i></div>
+          </div>
+          <span class="text-xs font-black text-slate-100 block truncate text-center w-full mt-0.5">${esc(r.name)}</span>
+        </div>`).join('');
+      lucide.createIcons();
+    }
+
+    function toggleSingleOwnershipCard(id) { 
+      state.ownedResonators[id] = !isOwned(id); 
+      renderOwnershipList(); 
+    }
+
+    function setAllOwnership(val) { 
+      RAW_RESONATORS.forEach(r => state.ownedResonators[r.id] = val); 
+      renderOwnershipList(); 
+    }
+
+    function saveOwnershipModal() { 
+      storage.set('wuwa_matrix_owned_chars', state.ownedResonators); 
+      closeModal('owned-modal'); 
+      renderRoster(); 
+      refreshActiveView(); 
+    }
+
+    function openConfirm(title, msg, onOk) {
+      document.getElementById('confirm-modal-title').textContent = title;
+      document.getElementById('confirm-modal-message').textContent = msg;
+      const btnCancel = document.getElementById('confirm-btn-cancel'), btnOk = document.getElementById('confirm-btn-ok');
+      const close = () => { closeModal('confirm-modal'); btnCancel.onclick = null; btnOk.onclick = null; };
+      btnCancel.onclick = close;
+      btnOk.onclick = () => { close(); onOk(); };
+      openModal('confirm-modal');
+    }
+
+    // 저장된 공명자 데이터를 현재 형식으로 맞춤.
+    // 옛 버전 저장본(에코 cost4/3/1 형식, '일반 공격', 이름으로 된 동료, 무기 복사본 등)도 여기서 한 번에 변환
+    function normalizeResonator(r, nameToId = new Map()) {
+      let sp = Array.isArray(r.skillPriority) ? r.skillPriority.map(s => s === '일반 공격' ? '기본 공격' : s) : [];
+      sp = [...new Set(sp)].filter(s => SKILL_NAMES.includes(s));
+      SKILL_NAMES.forEach(s => { if (!sp.includes(s)) sp.push(s); });
+
+      const e = r.echoSet || {};
+      let echoSet;
+      if (e.sets) {
+        echoSet = { sets: e.sets, mainEcho: e.mainEcho || '', image: e.image || DEFAULT_ECHO_IMG_URL, echoes: e.echoes?.length === 5 ? e.echoes : [4, 3, 3, 1, 1].map(c => ({ cost: String(c), stat: '' })) };
+      } else { // 옛 형식: { name, mainEcho, cost: '4-3-3-1-1', cost4, cost3, cost1 }
+        const costs = (e.cost || '4-3-3-1-1').split('-');
+        const statFor = c => ({ 4: e.cost4, 3: e.cost3, 1: e.cost1 }[c] || '');
+        echoSet = {
+          sets: e.name ? [{ name: e.name.replace(/\s*[25]세트/g, '').trim(), count: 5 }] : [],
+          mainEcho: e.mainEcho || '', image: e.image || DEFAULT_ECHO_IMG_URL,
+          echoes: [0, 1, 2, 3, 4].map(i => { const c = costs[i] || '1'; return { cost: c, stat: statFor(c) }; })
+        };
+      }
+
+      return {
+        ...r,
+        weaponType: r.weaponType || '직검',
+        rarity: r.rarity || 5,
+        targetStats: r.targetStats || { ...defaultTargetStats },
+        skillPriority: sp,
+        echoSet,
+        buffs: Array.isArray(r.buffs) ? r.buffs : [],
+        // 무기는 이름만 참조 (예전 '기본 무기' 자리채움 항목은 제거)
+        weapons: (r.weapons || []).filter(w => w?.name?.trim() && !(w.name === '기본 무기' && !findWeapon(w.name))).map(w => ({ name: w.name })),
+        // 동료는 id로만 참조 (예전 이름 형식 변환)
+        teammates: (r.teammates || []).map(tm => ({ id: tm.id || nameToId.get(tm.name) || '' })).filter(tm => tm.id)
+      };
+    }
+
+
+    function renderSkillPriorityEditor() {
+      const list = document.getElementById('edit-skill-priority-list');
+      skillSortable?.destroy();
+      list.innerHTML = currentSkillPriority.map(skill => `
+        <div class="skill-item flex items-center gap-1.5 px-3 py-1.5 bg-[#171d2b] border border-slate-700 rounded-lg text-xs text-white shadow-sm flex-shrink-0 cursor-default" data-skill="${skill}">
+          <i data-lucide="grip-vertical" class="w-4 h-4 text-slate-500 cursor-grab active:cursor-grabbing hover:text-amber-400 skill-drag-handle"></i>
+          <span class="font-bold whitespace-nowrap select-none pointer-events-none">${skill}</span>
+        </div>`).join('');
+      lucide.createIcons();
+      skillSortable = new Sortable(list, {
+        animation: 150,
+        handle: '.skill-drag-handle',
+        onEnd: () => { currentSkillPriority = Array.from(list.querySelectorAll('.skill-item')).map(el => el.dataset.skill); }
+      });
+    }
+
+    function initVisualEditorModal() {
+      renderEditorCharList();
+      selectEditorResonator(activeEditorResonatorId || RAW_RESONATORS[0]?.id);
+    }
+
+    function renderEditorCharList() {
+      const search = (document.getElementById('editor-char-search').value || '').trim().toLowerCase();
+      const sorted = [...RAW_RESONATORS].sort(byName);
+      document.getElementById('editor-char-list').innerHTML = sorted.filter(r => (r.name || '').toLowerCase().includes(search)).map(r => `
+        <div onclick="selectEditorResonator('${r.id}')" class="px-2.5 py-2 rounded-xl flex items-center gap-2 cursor-pointer transition ${r.id === activeEditorResonatorId ? 'bg-slate-800 border border-slate-500 text-white font-bold' : 'bg-[#121620] hover:bg-[#1a202e] border border-[#212a3d] text-slate-300'}">
+          <img loading="lazy" decoding="async" src="${r.avatar}" class="w-6 h-6 rounded-md object-cover border border-slate-700" crossorigin="anonymous">
+          <span class="text-xs truncate flex-1">${esc(r.name)}</span>
+        </div>`).join('');
+    }
+
+    function renderEditorEchoSets() {
+      const container = document.getElementById('edit-echo-sets-container');
+      if (!currentEditEchoSets.length) {
+        container.innerHTML = `<div class="col-span-full py-3 text-center text-xs text-slate-500 bg-[#161a25]/50 rounded-xl border border-dashed border-slate-700/80">등록된 에코 세트가 없습니다.</div>`;
+        return;
+      }
+      container.innerHTML = currentEditEchoSets.map((s, i) => {
+        const curName = s.name || '', matched = ECHO_SETS.find(es => es.name === curName);
+        return `
+          <div class="flex items-center gap-2 p-2 rounded-xl bg-[#161a25] border border-slate-700/80">
+            <div class="w-7 h-7 rounded-lg bg-[#0a0d14] border border-slate-700 flex items-center justify-center flex-shrink-0">
+              ${matched?.iconUrl ? `<img src="${matched.iconUrl}" class="w-5 h-5 object-contain">` : `<i data-lucide="layers" class="w-4 h-4 text-slate-500"></i>`}
+            </div>
+            <select onchange="updateEditorEchoSetField(${i}, 'name', this.value)" class="flex-1 min-w-0 bg-[#10141f] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-cyan-400 cursor-pointer">
+              <option value="">세트 선택 안 함</option>
+              ${ECHO_SETS.map(es => `<option value="${esc(es.name)}" ${es.name === curName ? 'selected' : ''}>${esc(es.name)}</option>`).join('')}
+            </select>
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <input type="number" min="1" max="5" value="${s.count ?? 5}" oninput="updateEditorEchoSetField(${i}, 'count', parseInt(this.value) || 1)" class="w-11 bg-[#10141f] border border-slate-700 rounded-lg px-1.5 py-1.5 text-xs text-amber-400 font-bold text-center outline-none focus:border-cyan-400">
+              <span class="text-[11px] font-bold text-slate-400">세트</span>
+            </div>
+            <button type="button" onclick="removeEditorEchoSet(${i})" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function updateEditorEchoSetField(idx, field, val) {
+      if (currentEditEchoSets[idx]) {
+        currentEditEchoSets[idx][field] = val;
+        if (field === 'name') renderEditorEchoSets();
+      }
+    }
+    function addEditorEchoSet() { currentEditEchoSets.push({ name: ECHO_SETS[0]?.name || '', count: 5 }); renderEditorEchoSets(); }
+    function removeEditorEchoSet(idx) { currentEditEchoSets.splice(idx, 1); renderEditorEchoSets(); }
+
+    function handleResonatorWeaponTypeChange() { renderEditorWeapons(); }
+
+    function renderEditorWeapons() {
+      const container = document.getElementById('edit-weapons-container');
+      weaponsSortable?.destroy();
+      if (!currentEditWeapons.length) {
+        container.innerHTML = `<div class="col-span-full py-4 text-center text-xs text-slate-500 bg-[#161a25]/50 rounded-xl border border-dashed border-slate-700/80">등록된 추천 무기가 없습니다.</div>`;
+        return;
+      }
+      
+      const resWpType = document.getElementById('edit-weapontype')?.value || '직검';
+      const availableWeapons = WEAPONS.filter(wp => !resWpType || (wp.weaponType || '직검') === resWpType)
+        .sort(byName);
+
+      container.innerHTML = currentEditWeapons.map((w, i) => {
+        const curName = w.name || '';
+        const matched = findWeapon(curName);
+        const borderClass = rankStyle(matched?.rank).border;
+        const img = matched?.image || '';
+        
+        let weaponOptions = availableWeapons.map(wp => `<option value="${esc(wp.name)}" ${wp.name === curName ? 'selected' : ''}>${esc(wp.name)}</option>`).join('');
+        if (curName && !availableWeapons.some(wp => wp.name === curName)) {
+          weaponOptions = `<option value="${esc(curName)}" selected>${esc(curName)}</option>` + weaponOptions;
+        }
+
+        return `
+          <div class="weapon-item flex items-center gap-2 p-2 rounded-xl bg-[#161a25] border border-slate-700/80">
+            <i data-lucide="grip-vertical" class="w-4 h-4 text-slate-500 cursor-grab active:cursor-grabbing hover:text-amber-400 weapon-drag-handle flex-shrink-0"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#0a0d14] border ${borderClass} flex items-center justify-center overflow-hidden flex-shrink-0">
+              ${img ? `<img src="${img}" class="w-full h-full object-contain pointer-events-none">` : `<i data-lucide="sword" class="w-4 h-4 text-slate-500"></i>`}
+            </div>
+            <select onchange="updateEditorWeaponSelection(${i}, this.value)" class="flex-1 min-w-0 bg-[#10141f] border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-cyan-400 cursor-pointer">
+              <option value="">무기 선택 안 함</option>
+              ${weaponOptions}
+            </select>
+            <button type="button" onclick="removeEditorWeapon(${i})" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+
+      weaponsSortable = new Sortable(container, {
+        animation: 150,
+        handle: '.weapon-drag-handle',
+        draggable: '.weapon-item',
+        onEnd: (evt) => {
+          if (evt.oldIndex !== evt.newIndex) {
+            currentEditWeapons.splice(evt.newIndex, 0, currentEditWeapons.splice(evt.oldIndex, 1)[0]);
+            renderEditorWeapons();
+          }
+        }
+      });
+    }
+
+    function updateEditorWeaponSelection(idx, name) {
+      if (!currentEditWeapons[idx]) return;
+      const matched = findWeapon(name);
+      currentEditWeapons[idx] = { name: matched ? matched.name : name };
+      renderEditorWeapons();
+    }
+    function addEditorWeapon() {
+      const resWpType = document.getElementById('edit-weapontype')?.value || '직검';
+      const firstWp = WEAPONS.find(wp => (wp.weaponType || '직검') === resWpType);
+      currentEditWeapons.push({ name: firstWp?.name || '' });
+      renderEditorWeapons();
+    }
+    function removeEditorWeapon(idx) { currentEditWeapons.splice(idx, 1); renderEditorWeapons(); }
+
+    function renderEditorTeammates() {
+      const container = document.getElementById('edit-teammates-container');
+      teammatesSortable?.destroy();
+      if (!currentEditTeammates.length) {
+        container.innerHTML = `<div class="col-span-full py-4 text-center text-xs text-slate-500 bg-[#161a25]/50 rounded-xl border border-dashed border-slate-700/80">등록된 추천 파티 구성원이 없습니다.</div>`;
+        return;
+      }
+      const sorted = [...RAW_RESONATORS].sort(byName);
+      container.innerHTML = currentEditTeammates.map((t, i) => `
+        <div class="teammate-item p-3 rounded-xl bg-[#161a25] border border-slate-700/80 space-y-2 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5"><i data-lucide="grip-vertical" class="w-4 h-4 text-slate-500 cursor-grab active:cursor-grabbing hover:text-amber-400 teammate-drag-handle"></i><span class="text-xs font-bold text-slate-300">추천 동료 ${i + 1}</span></div>
+            <button type="button" onclick="removeEditorTeammate(${i})" class="p-1 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <select onchange="currentEditTeammates[${i}].id = this.value" class="w-full bg-[#10141f] border border-slate-700 rounded-xl px-2 py-2 text-xs text-white cursor-pointer">
+            <option value="">선택 안 함</option>
+            ${sorted.map(r => `<option value="${r.id}" ${r.id === t.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}
+          </select>
+        </div>`).join('');
+      lucide.createIcons();
+
+      teammatesSortable = new Sortable(container, {
+        animation: 150,
+        handle: '.teammate-drag-handle',
+        draggable: '.teammate-item',
+        onEnd: (evt) => {
+          if (evt.oldIndex !== evt.newIndex) {
+            currentEditTeammates.splice(evt.newIndex, 0, currentEditTeammates.splice(evt.oldIndex, 1)[0]);
+            renderEditorTeammates();
+          }
+        }
+      });
+    }
+
+    function renderEditorBuffs() {
+      const c = document.getElementById('edit-buffs-container');
+      if (!currentEditBuffs.length) { c.innerHTML = `<div class="py-3 text-center text-xs text-slate-500 bg-[#161a25]/50 rounded-xl border border-dashed border-slate-700/80">등록된 버프가 없습니다.</div>`; return; }
+      const sel = (i, f, opts) => `<select onchange="currentEditBuffs[${i}].${f} = this.value" class="bg-[#10141f] border border-slate-700 rounded-lg px-1.5 py-1.5 text-[11px] text-white">${opts.map(o => `<option ${currentEditBuffs[i][f] === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+      const inp = (i, f, ph, w) => `<input type="text" value="${esc(currentEditBuffs[i][f])}" placeholder="${ph}" onchange="currentEditBuffs[${i}].${f} = this.value.trim()" class="${w} min-w-0 bg-[#10141f] border border-slate-700 rounded-lg px-2 py-1.5 text-[11px] text-white">`;
+      c.innerHTML = currentEditBuffs.map((b, i) => `
+        <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-[#161a25] border border-slate-700/80">
+          ${sel(i, 'source', BUFF_SOURCES)}${sel(i, 'target', BUFF_TARGETS)}
+          ${inp(i, 'stat', '예: 일반 공격 피해', 'flex-1')}${inp(i, 'value', '38%', 'w-14')}
+          ${sel(i, 'verb', ['부스트', '증가', '감소'])}${inp(i, 'duration', '14초', 'w-12')}
+          <button type="button" onclick="currentEditBuffs.splice(${i}, 1); renderEditorBuffs()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+        </div>`).join('');
+      lucide.createIcons();
+    }
+    function addEditorBuff() { currentEditBuffs.push({ source: '반주 스킬', target: '다음 캐릭터', stat: '', value: '', verb: '부스트', duration: '' }); renderEditorBuffs(); }
+
+    function addEditorTeammate() { currentEditTeammates.push({ id: '' }); renderEditorTeammates(); }
+    function removeEditorTeammate(idx) { currentEditTeammates.splice(idx, 1); renderEditorTeammates(); }
+
+    function selectEditorResonator(charId) {
+      activeEditorResonatorId = charId;
+      renderEditorCharList();
+      const char = RAW_RESONATORS.find(r => r.id === charId);
+      if (!char) return;
+
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
+      setVal('edit-char-id', char.id);
+      setVal('edit-name', char.name);
+      setVal('edit-rarity', char.rarity || 5);
+      setVal('edit-element', char.element || 'spectro');
+      setVal('edit-role', char.role || 'main');
+      setVal('edit-weapontype', char.weaponType || '직검');
+      setVal('edit-maindmg', char.mainDmg);
+      setVal('edit-buffsummary', char.buffSummary);
+      setVal('edit-avatar-url', toShortImageInput(char.avatar || '', 'character'));
+      setVal('edit-sprite-url', toShortImageInput(char.sprite || '', 'character'));
+
+      const tStats = char.targetStats || defaultTargetStats;
+      setVal('edit-target-type', tStats.type);
+      setVal('edit-target-base', tStats.base);
+      setVal('edit-target-regen', tStats.regen);
+      setVal('edit-target-cr', tStats.cr);
+      setVal('edit-target-cd', tStats.cd);
+
+      const echo = char.echoSet || {};
+      currentEditEchoSets = (echo.sets?.length ? echo.sets : [{ name: '', count: 5 }]).map(s => ({ name: s.name || '', count: parseInt(s.count) || 5 }));
+      renderEditorEchoSets();
+
+      const echoImg = echo.image?.trim() || DEFAULT_ECHO_IMG_URL;
+      setVal('edit-echo-main', echo.mainEcho || '');
+      setVal('edit-echo-img-url', toShortImageInput(echoImg, 'echo'));
+      updatePreviewImage('preview-echo-img', echoImg, false, 'echo');
+      updatePreviewImage('preview-avatar', char.avatar, false, 'character');
+      updatePreviewImage('preview-sprite', char.sprite, true, 'character');
+      
+      const echoesList = echo.echoes;
+      document.getElementById('edit-echo-slots-container').innerHTML = [0,1,2,3,4].map(i => `
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] font-bold text-slate-500 w-8 text-center bg-[#10141f] rounded py-1.5 border border-slate-700">에코${i+1}</span>
+          <select id="edit-echo-cost-${i}" class="bg-[#171d2b] border border-slate-700 rounded-lg px-1.5 py-1.5 text-xs text-amber-400 font-bold w-12 text-center outline-none">
+            <option value="4" ${echoesList[i]?.cost==='4'?'selected':''}>4</option>
+            <option value="3" ${echoesList[i]?.cost==='3'?'selected':''}>3</option>
+            <option value="1" ${echoesList[i]?.cost==='1'?'selected':''}>1</option>
+          </select>
+          <input type="text" id="edit-echo-stat-${i}" value="${esc(echoesList[i]?.stat)}" placeholder="주 옵션" class="flex-1 bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+        </div>`).join('');
+
+      currentSkillPriority = [...char.skillPriority];
+      renderSkillPriorityEditor();
+      
+      currentEditWeapons = (char.weapons || []).map(w => ({ name: w.name || '' }));
+      renderEditorWeapons();
+
+      currentEditTeammates = (char.teammates || []).map(t => ({ id: t.id }));
+      currentEditBuffs = (char.buffs || []).map(b => ({ ...b }));
+      renderEditorBuffs();
+      renderEditorTeammates();
+      lucide.createIcons();
+    }
+
+    function handleImageFileUpload(event, targetType) {
+      const idMap = { avatar: 'edit-avatar-url', sprite: 'edit-sprite-url', echo: 'edit-echo-img-url' };
+      const prevMap = { avatar: 'preview-avatar', sprite: 'preview-sprite', echo: 'preview-echo-img' };
+      readImageFile(event, src => {
+        document.getElementById(idMap[targetType]).value = src;
+        updatePreviewImage(prevMap[targetType], src, targetType === 'sprite', targetType === 'echo' ? 'echo' : 'character');
+      }, targetType === 'sprite' ? 1024 : 256);
+    }
+
+    function addNewCustomResonator() {
+      const newId = 'custom_' + Date.now();
+      RAW_RESONATORS.push({
+        id: newId, name: '신규 공명자', element: 'spectro', role: 'main', weaponType: '직검', mainDmg: '공명 스킬', rarity: 5, buffSummary: '', buffs: [],
+        avatar: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=120&auto=format&fit=crop&q=80',
+        sprite: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=85',
+        echoSet: { sets: [{ name: '찬연한 광휘', count: 5 }], mainEcho: '용의 별', image: DEFAULT_ECHO_IMG_URL, echoes: [ {cost:'4', stat:'크리티컬'}, {cost:'3', stat:'피해 보너스'}, {cost:'3', stat:'피해 보너스'}, {cost:'1', stat:'공격력%'}, {cost:'1', stat:'공격력%'} ] },
+        skillPriority: [...SKILL_NAMES], weapons: [], teammates: [], targetStats: { ...defaultTargetStats }
+      });
+      saveGameData();
+      state.ownedResonators[newId] = true;
+      storage.set('wuwa_matrix_owned_chars', state.ownedResonators);
+      selectEditorResonator(newId);
+      renderRoster();
+      refreshActiveView();
+    }
+
+    function saveCurrentResonatorForm() {
+      const id = document.getElementById('edit-char-id').value;
+      const idx = RAW_RESONATORS.findIndex(r => r.id === id);
+      if (idx === -1) return;
+      
+      const newEchoes = [0,1,2,3,4].map(i => ({ cost: document.getElementById(`edit-echo-cost-${i}`).value, stat: document.getElementById(`edit-echo-stat-${i}`).value.trim() }));
+      RAW_RESONATORS[idx] = {
+        ...RAW_RESONATORS[idx],
+        name: document.getElementById('edit-name').value.trim() || '이름 없음',
+        rarity: parseInt(document.getElementById('edit-rarity').value) || 5,
+        element: document.getElementById('edit-element').value,
+        role: document.getElementById('edit-role').value,
+        weaponType: document.getElementById('edit-weapontype').value || '직검',
+        mainDmg: document.getElementById('edit-maindmg').value.trim(),
+        buffSummary: document.getElementById('edit-buffsummary').value.trim(),
+        avatar: resolveImageUrl(document.getElementById('edit-avatar-url').value, 'character') || RAW_RESONATORS[idx].avatar,
+        sprite: resolveImageUrl(document.getElementById('edit-sprite-url').value, 'character') || RAW_RESONATORS[idx].sprite,
+        echoSet: {
+          sets: currentEditEchoSets.filter(s => s?.name?.trim()).map(s => ({ name: s.name.trim(), count: parseInt(s.count) || 5 })),
+          mainEcho: document.getElementById('edit-echo-main').value.trim(),
+          image: resolveImageUrl(document.getElementById('edit-echo-img-url').value, 'echo') || DEFAULT_ECHO_IMG_URL,
+          echoes: newEchoes
+        },
+        skillPriority: currentSkillPriority,
+        weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => ({ name: w.name })),
+        teammates: currentEditTeammates.filter(t => t?.id?.trim()).map(t => ({ id: t.id.trim() })),
+        buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb, duration: (b.duration || '').trim() })),
+        targetStats: {
+          type: document.getElementById('edit-target-type').value,
+          base: parseFloat(document.getElementById('edit-target-base').value) || 0,
+          regen: parseFloat(document.getElementById('edit-target-regen').value) || 0,
+          cr: parseFloat(document.getElementById('edit-target-cr').value) || 0,
+          cd: parseFloat(document.getElementById('edit-target-cd').value) || 0
+        }
+      };
+      saveGameData();
+      renderRoster(); renderParties(); renderEditorCharList();
+      refreshActiveView();
+      showToast('저장 완료');
+    }
+
+    function deleteCurrentResonator() {
+      const id = document.getElementById('edit-char-id').value;
+      if (!RAW_RESONATORS.find(r => r.id === id)) return;
+      openConfirm('삭제', '삭제하시겠습니까?', () => {
+        state.parties.forEach(p => { p.slots = p.slots.map(sId => sId === id ? null : sId); });
+        RAW_RESONATORS = RAW_RESONATORS.filter(r => r.id !== id);
+        saveGameData();
+        activeEditorResonatorId = RAW_RESONATORS[0]?.id || null;
+        renderEditorCharList();
+        if (activeEditorResonatorId) selectEditorResonator(activeEditorResonatorId);
+        renderRoster(); renderParties();
+        refreshActiveView();
+      });
+    }
+
+    function resetAllDataToDefaultPrompt() { discardDraft(); }
+    
+    function utf8ToBase64(str) { return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode(parseInt(p1, 16)))); }
+    function base64ToUtf8(str) { return decodeURIComponent(Array.prototype.map.call(window.atob(str), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
+    
+    function openExportModal() { 
+      const isParty = currentMainView === 'party';
+      const payload = isParty 
+        ? { version: 'v_party_1', parties: state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId })) }
+        : { version: 'v_growth_1', growth: GROWTH_DATA };
+      document.getElementById('export-modal-title').innerHTML = `<i data-lucide="share-2" class="w-4 h-4 text-amber-400"></i><span>${isParty ? '파티' : '육성'} 데이터 내보내기</span>`;
+      document.getElementById('export-modal-desc').innerText = `현재 ${isParty ? '편성된 파티' : '공명자 육성 현황'} 데이터가 복사됩니다.`;
+      document.getElementById('export-base64-textarea').value = utf8ToBase64(JSON.stringify(payload)); 
+      openModal('export-modal');
+    }
+
+    function copyExportCode() {
+      const t = document.getElementById('export-base64-textarea');
+      const done = () => { showToast('복사되었습니다.'); closeModal('export-modal'); };
+      if (navigator.clipboard?.writeText) navigator.clipboard.writeText(t.value).then(done).catch(() => { t.select(); document.execCommand('copy'); done(); });
+      else { t.select(); document.execCommand('copy'); done(); }
+    }
+    
+    function openImportModal() { 
+      document.getElementById('import-base64-textarea').value = ''; 
+      document.getElementById('import-modal-title').innerHTML = `<i data-lucide="download" class="w-4 h-4 text-amber-400"></i><span>${currentMainView === 'party' ? '파티' : '육성'} 데이터 불러오기</span>`;
+      openModal('import-modal');
+    }
+    
+    function applyBase64Import() { 
+      const raw = document.getElementById('import-base64-textarea').value.trim();
+      if (!raw) return; 
+      try { 
+        const payload = JSON.parse(base64ToUtf8(raw)); 
+        if (currentMainView === 'party' && payload.version?.startsWith('v_party') && Array.isArray(payload.parties)) {
+          state.parties = payload.parties.map((p, idx) => ({ id: 'p_' + Date.now() + '_' + idx, slots: [p.slots[0] || null, p.slots[1] || null, p.slots[2] || null], circuitId: p.circuitId || null }));
+          renderParties(); renderRoster(); closeModal('import-modal'); showToast('파티 데이터를 불러왔습니다.');
+        } else if (currentMainView !== 'party' && payload.version?.startsWith('v_growth') && payload.growth) {
+          GROWTH_DATA = payload.growth;
+          storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+          renderGrowthTracker(); closeModal('import-modal'); showToast('육성 데이터를 불러왔습니다.');
+        } else {
+          showToast('올바른 데이터 형식이 아닙니다.');
+        }
+      } catch { showToast('코드가 올바르지 않습니다.'); } 
+    }
+
+    function populateGrowthPartyFilter() {
+      const sel = document.getElementById('growth-filter-party');
+      sel.innerHTML = `<option value="all" class="text-white">전체 보기</option>` + state.parties.map((_, idx) => `<option value="${idx}">파티 ${idx + 1}</option>`).join('');
+    }
+
+    function renderGrowthTracker() {
+      const container = document.getElementById('growth-cards-container');
+      const fElem = currentGrowthFilters.element, fRole = currentGrowthFilters.role;
+      const fParty = document.getElementById('growth-filter-party').value;
+      const fSearch = document.getElementById('growth-search-input').value.trim().toLowerCase();
+      
+      let filtered = RAW_RESONATORS.filter(r => {
+        if (fElem !== 'all' && r.element !== fElem) return false;
+        if (fRole !== 'all' && r.role !== fRole) return false;
+        if (!isOwned(r.id)) return false;
+        if (fParty !== 'all' && !state.parties[parseInt(fParty)]?.slots.includes(r.id)) return false;
+        if (fSearch && !(r.name || '').toLowerCase().includes(fSearch)) return false;
+        initGrowthDataFor(r.id);
+        if (currentGrowthFilters.favOnly && !GROWTH_DATA[r.id].isFavorite) return false;
+        return true;
+      }).sort(byName);
+
+      container.innerHTML = filtered.map(r => {
+        const elemIcon = getElementIconHtml(r.element), roleMeta = ROLE_META[r.role] || ROLE_META.main;
+        const targetStats = r.targetStats || defaultTargetStats, gData = GROWTH_DATA[r.id];
+        
+        let panesHtml = '', remarksHtml = '', isGraduated = false;
+        gData.presets.forEach(preset => {
+          if (gData.activePresetId !== preset.id) return; // 비활성 프리셋은 렌더링하지 않음
+          remarksHtml += `<input type="text" value="${esc(preset.remarks)}" onchange="updateGrowthData('${r.id}','${preset.id}','remarks','',this.value)" placeholder="비고 입력..." class="w-full bg-transparent border-0 border-b border-slate-700/50 rounded-none px-1 py-1 text-[11px] text-slate-300 outline-none focus:border-amber-400/80 placeholder-slate-600 transition-colors mt-1.5 ${gData.activePresetId === preset.id ? 'block' : 'hidden'}">`;
+
+          const makeSkill = (key, label) => {
+            const val = preset.skills[key] || 1;
+            return `<div class="flex flex-col gap-1"><span class="text-[10px] text-slate-400 text-center whitespace-nowrap">${label}</span><select onchange="updateGrowthData('${r.id}','${preset.id}','skills','${key}',this.value)" class="bg-[#1a2130] border border-slate-700 ${val === 10 ? 'text-yellow-400 font-black' : 'text-white font-bold'} text-xs rounded px-1 py-1 text-center outline-none cursor-pointer hover:border-amber-400 transition">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" class="text-white" ${n === val ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
+          };
+
+          let allStatsMet = true;
+          const makeStat = (key, label, tgt, isPct) => {
+            const cur = preset.stats.current[key] || 0, ratio = tgt > 0 ? cur / tgt : 0;
+            const isMet = ratio >= 0.9;
+            if (!isMet) allStatsMet = false;
+            const border = ratio >= 0.9 ? 'border-emerald-500' : (ratio >= 0.6 ? 'border-amber-500/80' : (ratio > 0 ? 'border-rose-500/80' : 'border-slate-700'));
+            const text = ratio >= 0.9 ? 'text-emerald-400' : (ratio >= 0.6 ? 'text-amber-300' : (ratio > 0 ? 'text-rose-400' : 'text-white'));
+            return `
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-1 px-0.5"><span class="text-[11px] font-bold text-slate-300 leading-none">${label}</span><span class="text-[10px] text-slate-500 leading-none">(${tgt}${isPct?'%':''})</span></div>
+                <div class="flex items-center bg-[#151b29] border ${border} rounded-lg px-2 py-1.5 transition-colors w-full">
+                  <input type="number" value="${cur}" onchange="updateGrowthData('${r.id}','${preset.id}','stats_current','${key}',this.value)" class="w-full bg-transparent text-xs font-bold ${text} text-left outline-none p-0 m-0 leading-none">
+                  ${isPct ? `<span class="text-[10px] ${text} ml-1 font-bold">%</span>` : ''}
+                </div>
+              </div>`;
+          };
+
+          const allSkillsMax = [1,2,3,4,5].every(i => preset.skills[`s${i}`] === 10);
+          if (gData.activePresetId === preset.id && allStatsMet && allSkillsMax) isGraduated = true;
+
+          panesHtml += `
+            <div class="flex flex-col ${gData.activePresetId === preset.id ? '' : 'hidden'}">
+              <div class="grid grid-cols-5 gap-1 mb-2">${SKILL_NAMES.map((label, i) => makeSkill(`s${i + 1}`, label)).join('')}</div>
+              <div class="grid grid-cols-2 gap-x-2.5 gap-y-2 pt-2.5 border-t border-[#1e2638]">
+                ${makeStat('base', targetStats.type === 'hp' ? 'HP' : (targetStats.type === 'def' ? '방어력' : '공격력'), targetStats.base, false)}
+                ${makeStat('regen', '공명 효율', targetStats.regen, true)}
+                ${makeStat('cr', '크리티컬', targetStats.cr, true)}
+                ${makeStat('cd', '크리티컬 피해', targetStats.cd, true)}
+              </div>
+            </div>`;
+        });
+
+        return `
+          <div class="bg-[#121622] border border-[#21293b] rounded-2xl p-4 flex flex-col transition-colors ${isGraduated ? 'card-graduated' : 'hover:border-amber-500/40'}">
+            <div class="flex gap-3 border-b border-[#1e2638] pb-2.5 relative">
+              <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 cursor-pointer hover:border-amber-400 transition relative group" onclick="openDetailModal('${r.id}')">
+                <button onclick="event.stopPropagation(); toggleFavorite('${r.id}')" class="absolute top-1 left-1 z-10 p-0.5 transition drop-shadow-md">
+                  <i data-lucide="star" class="w-4 h-4 ${gData.isFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-300/80 group-hover:text-white'} drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"></i>
+                </button>
+                <img loading="lazy" decoding="async" src="${r.avatar}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-300" crossorigin="anonymous">
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col justify-center">
+                <div class="flex items-center w-full">
+                  <div class="text-sm font-black text-white truncate mr-1">${esc(r.name)}</div>
+                  <div class="w-5 h-5 drop-shadow-md flex-shrink-0 mr-1.5">${elemIcon}</div>
+                  <div class="flex items-center gap-0.5">
+                    ${[1, 2, 3].map(num => `<button onclick="switchGrowthPresetTab('${r.id}', '${num}')" class="w-5 h-5 flex items-center justify-center rounded text-[11px] font-black transition-colors ${gData.activePresetId === String(num) ? 'bg-slate-700 text-white shadow-inner' : 'bg-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800'}">${num}</button>`).join('')}
+                  </div>
+                  <div class="ml-auto px-1.5 py-0.5 rounded text-[9px] font-extrabold border flex-shrink-0 ${roleMeta.tagClass}">${roleMeta.label}</div>
+                </div>
+                ${remarksHtml}
+              </div>
+            </div>
+            <div class="pt-1">${panesHtml}</div>
+          </div>`;
+      }).join('');
+      
+      if (!filtered.length) container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-500 text-sm">조건에 맞는 공명자가 없습니다.</div>`;
+      lucide.createIcons();
+    }
+
+    document.querySelectorAll('[id$="-modal"]').forEach(modal => {
+      let isBackdrop = false;
+      modal.addEventListener('mousedown', e => isBackdrop = (e.target === modal));
+      modal.addEventListener('mouseup', e => { if (isBackdrop && e.target === modal) closeModal(modal.id); });
+    });
+
+    window.addEventListener('DOMContentLoaded', boot);
+    async function boot() {
+      try {
+        const res = await fetch('data/game-data.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error(res.status);
+        SITE_DATA = await res.json();
+      } catch (e) {
+        document.getElementById('load-error').classList.remove('hidden');
+        console.error('game-data.json 불러오기 실패', e);
+        return;
+      }
+      const draft = IS_ADMIN ? storage.get(DRAFT_KEY, null) : null;
+      applyGameData(draft || SITE_DATA);
+      loadData();
+      applyAdminThemeToDOM();
+      initOwnership();
+      updateFatigueLabel();
+      renderFilterBars();
+      renderGrowthFilterBars();
+      renderRoster();
+      renderParties();
+      populateGrowthPartyFilter();
+      initDragToScroll();
+      if (IS_ADMIN) { document.getElementById('admin-bar').classList.remove('hidden'); updateAdminBar(); }
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
