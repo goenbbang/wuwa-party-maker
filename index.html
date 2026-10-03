@@ -35,6 +35,10 @@
     input[type="number"] { -moz-appearance: textfield; }
     /* 폼 요소 간격 통일: textarea/input의 baseline 여백(descender gap) 제거 */
     textarea { display: block; }
+    /* 스크롤 끝 늘어나는 효과 제거 + 창이 열려 있을 땐 뒤 페이지 고정 */
+    html, body { overscroll-behavior: none; }
+    [id$="-modal"], [id$="-modal"] * { overscroll-behavior: contain; }
+    html.modal-open, html.modal-open body { overflow: hidden; }
     input:not([type="checkbox"]):not([type="radio"]), select { vertical-align: middle; }
     .card-graduated { border-color: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
 
@@ -184,8 +188,10 @@
         <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
           <button onclick="promptResetParties()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1 whitespace-nowrap">초기화</button>
           <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs sm:text-sm font-black transition flex items-center gap-1.5 shadow-md active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-4 h-4 text-black"></i><span>이미지로 저장</span></button>
+          <div class="flex items-center gap-2 sm:gap-2.5">
           <button onclick="openExportModal()" class="whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i><span>내보내기</span></button>
           <button onclick="openImportModal()" class="whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i><span>불러오기</span></button>
+          </div>
         </div>
       </div>
       <div id="parties-capture-area" class="space-y-3.5 p-1 -mx-1 rounded-2xl bg-[#06080d]"><div id="parties-container" class="space-y-3.5"></div></div>
@@ -213,8 +219,8 @@
         
         <div class="flex items-center gap-2">
           <button onclick="resetGrowthData()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
-          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span class="hidden sm:inline">내보내기</span></button>
-          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span class="hidden sm:inline">불러오기</span></button>
+          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
+          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
         </div>
       </div>
       
@@ -248,10 +254,11 @@
   </main>
 
   <!-- 공명자 상세 모달 -->
-  <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-[#0d111a] w-full max-w-6xl rounded-3xl border border-slate-700/80 shadow-2xl relative max-h-[92vh] flex flex-col overflow-hidden">
+  <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-0 md:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-[#0d111a] w-full max-w-[960px] h-[100dvh] md:h-auto rounded-none md:rounded-3xl border-0 md:border border-slate-700/80 shadow-2xl relative max-h-[100dvh] md:max-h-[92vh] flex flex-col overflow-hidden">
+      <button onclick="closeModal('detail-modal')" aria-label="닫기" class="md:hidden absolute top-3 right-3 z-40 p-2 rounded-xl bg-black/55 backdrop-blur-sm border border-white/10 text-slate-100 active:scale-95"><i data-lucide="x" class="w-5 h-5"></i></button>
       <div class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
-        <div class="relative w-full md:w-[48%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[74vh] md:min-h-[300px] overflow-hidden">
+        <div class="relative w-full md:w-[42%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[74vh] md:min-h-[300px] overflow-hidden">
           <img id="detail-modal-sprite" src="" class="absolute inset-0 w-full h-full object-cover object-top transform scale-110 -translate-y-[7%] md:scale-[1.2] md:translate-y-2 pointer-events-none" crossorigin="anonymous">
           <div class="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-[#0d111a] via-[#0d111a]/80 to-transparent pointer-events-none z-0"></div>
           <div class="absolute bottom-0 left-0 w-full p-6 flex flex-col gap-2 z-10">
@@ -280,7 +287,7 @@
           </div>
         </div>
 
-        <div class="w-full md:w-[52%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
+        <div class="w-full md:w-[58%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-4">
             <div class="flex flex-col gap-2.5 border-b border-slate-800 pb-2.5">
               <div id="detail-modal-echo-tabs" class="hidden flex-wrap items-center gap-1.5"></div>
@@ -320,7 +327,7 @@
 
   <!-- 추천 무기 상세 정보 팝업 모달 -->
   <div id="weapon-detail-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
-    <div class="bg-[#0e121a] max-w-[680px] w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
+    <div class="bg-[#0e121a] max-w-[660px] w-full p-5 sm:p-6 rounded-3xl border border-slate-700 shadow-2xl relative flex flex-col gap-4">
       <button onclick="closeModal('weapon-detail-modal')" class="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       
       <!-- 모바일: 이름 맨 위 전체 폭 → 이미지 | 재련+옵션 / PC: 이미지 | 이름+재련 한 줄, 옵션 (이미지 높이와 위아래 맞춤) -->
@@ -945,6 +952,7 @@
       modal.classList.remove('hidden');
       requestAnimationFrame(() => modal.classList.remove('opacity-0'));
       if (!modalStack.includes(id)) { modalStack.push(id); if (!skipNextPop) armHistory(); }
+      document.documentElement.classList.add('modal-open');
       lucide.createIcons();
     }
 
@@ -952,6 +960,7 @@
       const modal = document.getElementById(id);
       if (!modal) return;
       const i = modalStack.indexOf(id); if (i >= 0) modalStack.splice(i, 1);
+      if (!modalStack.length) document.documentElement.classList.remove('modal-open');
       // 버튼·바깥 클릭으로 마지막 창을 닫았으면 쌓아 둔 기록도 정리
       if (!fromHistory && !modalStack.length && history.state?.wuwaModal) { skipNextPop = true; history.back(); }
       modal.classList.add('opacity-0');
@@ -1588,13 +1597,13 @@
               </div>
               <!-- 스탯 영역과 버프 요약 사이 여백을 초록색 선 길이만큼 살짝 조절 (pt-2.5 적용) -->
               <div class="hidden sm:flex pt-2.5 flex-col gap-1.5">
-                <div class="grid grid-cols-[2fr_3fr] gap-2">
-                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
-                    <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">공격력</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800" title="공격력">
+                    <span class="flex-shrink-0 opacity-80">${getWeaponStatIconHtml('atk', 'w-3.5 h-3.5')}</span>
                     <span class="text-xs font-black text-white font-mono whitespace-nowrap">${wp.atk || '-'}</span>
                   </div>
-                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
-                    <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">${parsed.type}</span>
+                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800" title="${esc(parsed.type)}">
+                    <span class="flex-shrink-0 opacity-80">${getWeaponStatIconHtml(parsed.type, 'w-3.5 h-3.5')}</span>
                     <span class="text-xs font-black text-white font-mono whitespace-nowrap">${parsed.val}%</span>
                   </div>
                 </div>
