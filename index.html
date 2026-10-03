@@ -255,10 +255,10 @@
 
   <!-- 공명자 상세 모달 -->
   <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-0 md:p-5 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-[#0d111a] w-full max-w-[960px] h-[100dvh] md:h-auto rounded-none md:rounded-3xl border-0 md:border border-slate-700/80 shadow-2xl relative max-h-[100dvh] md:max-h-[92vh] flex flex-col overflow-hidden">
+    <div class="bg-[#0d111a] w-full max-w-[1000px] h-[100dvh] md:h-auto rounded-none md:rounded-3xl border-0 md:border border-slate-700/80 shadow-2xl relative max-h-[100dvh] md:max-h-[92vh] flex flex-col overflow-hidden">
       <button onclick="closeModal('detail-modal')" aria-label="닫기" class="md:hidden absolute top-3 right-3 z-40 p-2 rounded-xl bg-black/55 backdrop-blur-sm border border-white/10 text-slate-100 active:scale-95"><i data-lucide="x" class="w-5 h-5"></i></button>
       <div class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
-        <div class="relative w-full md:w-[42%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[74vh] md:min-h-[300px] overflow-hidden">
+        <div class="relative w-full md:w-[45%] flex flex-col flex-shrink-0 bg-[#0d111a] border-b md:border-b-0 md:border-r border-slate-800 min-h-[74vh] md:min-h-[300px] overflow-hidden">
           <img id="detail-modal-sprite" src="" class="absolute inset-0 w-full h-full object-cover object-top transform scale-110 -translate-y-[7%] md:scale-[1.2] md:translate-y-2 pointer-events-none" crossorigin="anonymous">
           <div class="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-[#0d111a] via-[#0d111a]/80 to-transparent pointer-events-none z-0"></div>
           <div class="absolute bottom-0 left-0 w-full p-6 flex flex-col gap-2 z-10">
@@ -287,7 +287,7 @@
           </div>
         </div>
 
-        <div class="w-full md:w-[58%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
+        <div class="w-full md:w-[55%] flex flex-col gap-3.5 p-4 sm:p-5 bg-[#0d111a] md:overflow-y-auto [&>*]:flex-shrink-0 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
           <div class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-4">
             <div class="flex flex-col gap-2.5 border-b border-slate-800 pb-2.5">
               <div id="detail-modal-echo-tabs" class="hidden flex-wrap items-center gap-1.5"></div>
@@ -313,7 +313,8 @@
             <span class="text-base font-black text-white block mb-1.5">추천 무기</span>
             <div class="relative">
               <div id="detail-modal-weapons" onscroll="updateScrollHint(this)" class="flex flex-wrap md:flex-nowrap items-stretch gap-2.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
-              <button type="button" data-scroll-hint="detail-modal-weapons" onclick="const el = document.getElementById('detail-modal-weapons'); el.scrollBy({ left: el.clientWidth * 0.8, behavior: 'smooth' })" class="hidden absolute right-0 top-0 bottom-1 w-12 items-center justify-end pr-0.5 bg-gradient-to-l from-[#121622] via-[#121622]/85 to-transparent text-slate-300 hover:text-amber-300" aria-label="무기 더 보기"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+              <button type="button" data-scroll-hint="detail-modal-weapons" data-dir="-1" onclick="scrollWeapons(-1)" class="hidden absolute -left-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full bg-[#0b0f17]/90 border border-slate-600 text-slate-200 shadow-lg hover:border-amber-400 hover:text-amber-300 transition" aria-label="이전 무기"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+              <button type="button" data-scroll-hint="detail-modal-weapons" data-dir="1" onclick="scrollWeapons(1)" class="hidden absolute -right-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full bg-[#0b0f17]/90 border border-slate-600 text-slate-200 shadow-lg hover:border-amber-400 hover:text-amber-300 transition" aria-label="다음 무기"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
             </div>
           </div>
           <div id="detail-modal-teammates-box" class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
@@ -1597,13 +1598,13 @@
               </div>
               <!-- 스탯 영역과 버프 요약 사이 여백을 초록색 선 길이만큼 살짝 조절 (pt-2.5 적용) -->
               <div class="hidden sm:flex pt-2.5 flex-col gap-1.5">
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800" title="공격력">
-                    <span class="flex-shrink-0 opacity-80">${getWeaponStatIconHtml('atk', 'w-3.5 h-3.5')}</span>
+                <div class="grid grid-cols-[2fr_3fr] gap-2">
+                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">공격력</span>
                     <span class="text-xs font-black text-white font-mono whitespace-nowrap">${wp.atk || '-'}</span>
                   </div>
-                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800" title="${esc(parsed.type)}">
-                    <span class="flex-shrink-0 opacity-80">${getWeaponStatIconHtml(parsed.type, 'w-3.5 h-3.5')}</span>
+                  <div class="flex items-center justify-between min-w-0 px-2.5 py-1.5 rounded-lg bg-[#151b29] border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 truncate whitespace-nowrap mr-1.5">${parsed.type}</span>
                     <span class="text-xs font-black text-white font-mono whitespace-nowrap">${parsed.val}%</span>
                   </div>
                 </div>
@@ -2007,10 +2008,12 @@
 
     // 가로 스크롤 목록 오른쪽에 더 있으면 화살표 표시
     function updateScrollHint(el) {
-      const hint = document.querySelector(`[data-scroll-hint="${el.id}"]`); if (!hint) return;
-      const more = el.scrollWidth - el.clientWidth - el.scrollLeft > 4;
-      hint.classList.toggle('hidden', !more); hint.classList.toggle('flex', more);
+      document.querySelectorAll(`[data-scroll-hint="${el.id}"]`).forEach(btn => {
+        const show = btn.dataset.dir === '1' ? el.scrollWidth - el.clientWidth - el.scrollLeft > 4 : el.scrollLeft > 4;
+        btn.classList.toggle('hidden', !show); btn.classList.toggle('flex', show);
+      });
     }
+    function scrollWeapons(dir) { const el = document.getElementById('detail-modal-weapons'); el.scrollBy({ left: dir * 106 * 3, behavior: 'smooth' }); }
     window.addEventListener('resize', () => { const el = document.getElementById('detail-modal-weapons'); if (el) updateScrollHint(el); });
 
     // 에코 빌드 (메인딜/서브딜, 추천/대안 등 여러 개면 탭으로 전환)
@@ -2022,7 +2025,7 @@
       const tabsEl = document.getElementById('detail-modal-echo-tabs');
       if (builds.length > 1) {
         tabsEl.classList.remove('hidden'); tabsEl.classList.add('flex');
-        tabsEl.innerHTML = builds.map((b, i) => `<button onclick="renderDetailEcho(RAW_RESONATORS.find(r => r.id === '${char.id}'), ${i})" class="px-2.5 py-1 rounded-md border text-[11px] font-bold leading-none transition whitespace-nowrap ${i === idx ? 'bg-amber-500/15 border-amber-400/80 text-amber-300' : 'bg-transparent border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'}">${esc(echoBuildLabel(b, i))}</button>`).join('');
+        tabsEl.innerHTML = builds.map((b, i) => `<button onclick="renderDetailEcho(RAW_RESONATORS.find(r => r.id === '${char.id}'), ${i})" class="px-3 py-1 rounded-full border text-[11px] font-bold leading-tight transition whitespace-nowrap ${i === idx ? 'bg-[#f5a623] border-[#f5a623] text-black shadow-sm' : 'bg-[#121622] border-[#2a3347] text-slate-400 hover:text-slate-200 hover:border-slate-500'}">${esc(echoBuildLabel(b, i))}</button>`).join('');
       } else { tabsEl.classList.add('hidden'); tabsEl.classList.remove('flex'); tabsEl.innerHTML = ''; }
       const echoData = builds[idx] || {};
       const setList = (echoData.sets || []).filter(s => s?.name?.trim());
