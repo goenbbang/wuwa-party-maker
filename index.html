@@ -73,7 +73,13 @@
     /* 칸이 좁아 글자가 들어갈 자리가 없으면 프로필만 가운데에 */
     .party-slot { container-type: inline-size; }
     @container (max-width: 185px) { .slot-info { display: none !important; } .slot-ava { margin: 0 auto; } }
-    .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; }
+    /* 파티 편성표: 프로필 아래쪽 가운데에 모드 아이콘만 (어두운 그라데이션 위) */
+    .slot-mode { position: absolute; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; padding: 16px 0 4px; background: linear-gradient(to top, rgba(0, 0, 0, .88) 10%, rgba(0, 0, 0, .55) 55%, rgba(0, 0, 0, 0)); pointer-events: none; }
+    .slot-mode .mode-pair { pointer-events: auto; background: none; border: 0; padding: 0; }
+    .slot-mode .mode-pair img { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .9)); }
+    .slot-mode .mode-pair .on { filter: drop-shadow(0 0 3px #f5c451) drop-shadow(0 1px 2px rgba(0, 0, 0, .9)); }
+    .slot-mode .mode-pair .off { opacity: .4; }
+    .slot-mode .mode-pair i { color: #cbd5e1; }
     .buff-line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; word-break: keep-all; }
     /* 수치가 '최대 N%'일 때 아랫줄은 조건 강화가 아니라 보충 설명이라 한 단계 흐리게 */
     .buff-note.sub { color: #94a3b8; font-weight: 500; }
@@ -1908,9 +1914,7 @@
             <div class="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1 sm:mb-1.5">
               <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-200" crossorigin="anonymous">
               ${pill}
-              <div class="absolute bottom-0.5 left-0.5 sm:bottom-1.5 sm:left-1.5 px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
-              ${buffModes(r).length > 1 ? `<div class="roster-mode">${modePairHtml(r, { click: true })}</div>` : ''}
-              <div class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 z-20 pointer-events-none w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
+              <div class="absolute bottom-0.5 left-0.5 sm:bottom-1.5 sm:left-1.5 px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>              <div class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 z-20 pointer-events-none w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
               <div class="absolute top-1.5 right-1.5 z-20 pointer-events-none hidden sm:block"><div class="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold border shadow-sm ${roleMeta.tagClass}">${roleMeta.label}</div></div>
             </div>
             <div class="w-full text-center sm:text-left space-y-0.5 px-0 sm:px-1 pb-0.5 sm:pb-1">
@@ -1959,9 +1963,10 @@
                 <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')" title="눌러서 세부 정보 보기" class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
                   <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
+                  ${buffModes(r).length > 1 ? `<div class="slot-mode">${modePairHtml(r, { mid: true, click: true })}</div>` : ''}
                 </div>
                 <div class="slot-info hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
-                  <div class="flex flex-wrap items-center min-w-0 pr-5" style="gap:2px 6px"><span class="text-sm font-black text-white truncate" style="min-width:3.2em;flex:0 1 auto">${esc(r.name)}</span><span class="flex-shrink-0" draggable="false">${modePairHtml(r, { mid: true, click: true })}</span></div>
+                  <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
                   <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
                 </div>
