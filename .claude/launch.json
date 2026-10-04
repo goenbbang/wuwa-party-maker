@@ -1,1 +1,0 @@
-{"version":"0.0.1","configurations":[{"name":"site-preview","runtimeExecutable":"powershell","runtimeArgs":["-NoProfile","-ExecutionPolicy","Bypass","-File","C:\\Users\\KUN\\AppData\\Local\\Temp\\claude\\E--KUN-Edit-Develop-Web-----------wuwa-party-maker\\cbeba8b0-9cf6-43d9-83b1-9f1bbaa76432\\scratchpad\\serve.ps1"],"port":8765}]}
