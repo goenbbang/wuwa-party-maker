@@ -1976,11 +1976,10 @@
                 <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')" title="눌러서 세부 정보 보기" class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
                   <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
-                  ${buffModes(r).length > 1 ? `<div class="roster-mode">${modePairHtml(r, { click: true })}</div>` : ''}
                 </div>
                 <div class="slot-info hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
                   <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
-                  <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
+                  <div class="flex items-center justify-between min-w-0" style="gap:6px"><span class="truncate px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap" style="min-width:0">${esc(r.mainDmg || '기본 공격')}</span><span class="flex-shrink-0" style="line-height:0">${modePairHtml(r, { click: true })}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
                 </div>
               </div>
