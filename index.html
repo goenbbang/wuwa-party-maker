@@ -1081,7 +1081,7 @@
           customElementIcons: Object.fromEntries(Object.entries(adminConfig.customElementIcons || {}).map(([k, v]) => [k, g(v)])),
           customWeaponStatIcons: Object.fromEntries(Object.entries(adminConfig.customWeaponStatIcons || {}).map(([k, v]) => [k, g(v)]))
         },
-        resonators: RAW_RESONATORS.map(r => ({ ...r, avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
+        resonators: RAW_RESONATORS.map(r => ({ ...r, buffs: (r.buffs || []).map(({ duration, ...b }) => b), avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
         weapons: WEAPONS.map(w => ({ ...w, image: s(w.image, 'weapon') })),
         echoSets: ECHO_SETS.map(e => ({ ...e, iconUrl: s(e.iconUrl, 'set') })),
         circuits: CIRCUITS.map(c => ({ ...c, iconImage: s(c.iconImage, 'icon') }))
@@ -2082,7 +2082,6 @@
           <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
           <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
           <span class="font-black ${b.target === '적' ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
-          ${b.duration ? `<span class="ml-auto text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">${esc(b.duration)}</span>` : ''}
         </div>`).join('');
 
       renderDetailEcho(char, 0);
@@ -2540,12 +2539,12 @@
         <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-[#161a25] border border-slate-700/80">
           ${sel(i, 'source', BUFF_SOURCES)}${sel(i, 'target', BUFF_TARGETS)}
           ${inp(i, 'stat', '예: 일반 공격 피해', 'flex-1')}${inp(i, 'value', '38%', 'w-14')}
-          ${sel(i, 'verb', ['부스트', '증가', '감소'])}${inp(i, 'duration', '14초', 'w-12')}
+          ${sel(i, 'verb', ['부스트', '증가', '감소'])}
           <button type="button" onclick="currentEditBuffs.splice(${i}, 1); renderEditorBuffs()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
         </div>`).join('');
       lucide.createIcons();
     }
-    function addEditorBuff() { currentEditBuffs.push({ source: '반주 스킬', target: '다음 캐릭터', stat: '', value: '', verb: '부스트', duration: '' }); renderEditorBuffs(); }
+    function addEditorBuff() { currentEditBuffs.push({ source: '반주 스킬', target: '다음 캐릭터', stat: '', value: '', verb: '부스트' }); renderEditorBuffs(); }
 
     function addEditorTeammate() { currentEditTeammates.push({ id: '' }); renderEditorTeammates(); }
     function removeEditorTeammate(idx) { currentEditTeammates.splice(idx, 1); renderEditorTeammates(); }
@@ -2705,7 +2704,7 @@
         skillPriority: currentSkillPriority,
         weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => ({ name: w.name, ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null && w.pct !== '' ? { pct: Number(w.pct) } : {}) })),
         teammates: currentEditTeammates.filter(t => t?.id?.trim()).map(t => ({ id: t.id.trim() })),
-        buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb, duration: (b.duration || '').trim() })),
+        buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb })),
         targetStats: {
           type: document.getElementById('edit-target-type').value,
           base: parseFloat(document.getElementById('edit-target-base').value) || 0,

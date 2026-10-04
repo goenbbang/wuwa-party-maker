@@ -23,7 +23,7 @@
       "rarity": 4,
       "mainDmg": "공명 해방",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "38%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "38%", "verb": "부스트"}],
       "avatar": "Sanhua/T_IconRoleHead256_7_UI",
       "sprite": "Sanhua/T_IconRole_Pile_shanhua_UI",
       "echoSet": {
@@ -58,7 +58,7 @@
       "rarity": 4,
       "mainDmg": "협동 공격",
       "buffSummary": "협동 공격",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": "6초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"}],
       "avatar": "Baizhi/T_IconRoleHead256_6_UI",
       "sprite": "Baizhi/T_IconRole_Pile_bailian_UI",
       "echoSet": {
@@ -168,8 +168,8 @@
       "mainDmg": "일반 공격",
       "buffSummary": "협동 공격, 공명 해방 차지",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "응결 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "응결 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트"}
       ],
       "avatar": "Zhezhi/T_IconRoleHead256_27_UI",
       "sprite": "Zhezhi/T_IconRole_Pile_zhezhi_UI",
@@ -215,7 +215,7 @@
       "rarity": 4,
       "mainDmg": "공명 스킬",
       "buffSummary": "공진 수치 파괴",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "협동 공격 피해", "value": "100%", "verb": "부스트", "duration": "28초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "협동 공격 피해", "value": "100%", "verb": "부스트"}],
       "avatar": "Youhu/T_IconRoleHead256_31_UI",
       "sprite": "Youhu/T_IconRole_Pile_Youhu_UI",
       "echoSet": {
@@ -297,8 +297,8 @@
       "mainDmg": "공명 해방",
       "buffSummary": "서리",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "응결 피해", "value": "20%", "verb": "부스트", "duration": "20초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "30%", "verb": "부스트", "duration": ""}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "응결 피해", "value": "20%", "verb": "부스트"},
+        {"source": "고유 스킬", "target": "적", "stat": "냉해 효과 받는 피해", "value": "최대 60%", "verb": "부스트"}
       ],
       "avatar": "Hiyuki/T_IconRoleHead256_67_UI",
       "sprite": "Hiyuki/T_IconRole_Pile_FeiXue_UI",
@@ -335,10 +335,11 @@
       "mainDmg": "일반 공격",
       "buffSummary": "에코 어빌리티 피해, 서리",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "60%", "verb": "부스트", "duration": "30초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "에코 어빌리티 피해", "value": "50%", "verb": "부스트", "duration": "14초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "에코 어빌리티 피해", "value": "25%", "verb": "증가", "duration": "30초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "크리티컬 피해", "value": "10%", "verb": "증가", "duration": ""}
+        {"source": "반주 스킬", "target": "적", "stat": "서리 효과 받는 피해", "value": "60%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "에코 어빌리티 피해", "value": "50%", "verb": "부스트"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "에코 어빌리티 피해", "value": "25%", "verb": "증가"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "에코 어빌리티 크리티컬 피해", "value": "최대 40%", "verb": "증가"},
+        {"source": "고유 스킬", "target": "적", "stat": "응결 피해 저항", "value": "8%", "verb": "감소"}
       ],
       "avatar": "Lucilla/T_IconRoleHead256_66_UI",
       "sprite": "Lucilla/T_IconRole_Pile_luosela_UI",
@@ -404,8 +405,11 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "서리",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트", "duration": "30초"},
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "방어력 무시", "value": "6%", "verb": "", "duration": "30초"}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공격력", "value": "최대 50%", "verb": "증가"},
+        {"source": "반주 스킬", "target": "등장 캐릭터", "stat": "입히는 피해", "value": "최대 12%", "verb": "증가"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 피해 방어력 무시", "value": "6%", "verb": ""},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 저항 무시", "value": "12%", "verb": ""}
       ],
       "avatar": "Suisui/T_IconRoleHead256_71_UI",
       "sprite": "Suisui/T_IconRole_Pile_SuiSui_UI",
@@ -531,7 +535,7 @@
       "rarity": 4,
       "mainDmg": "공명 해방",
       "buffSummary": "협동 공격",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "38%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "38%", "verb": "부스트"}],
       "avatar": "Mortefi/T_IconRoleHead256_13_UI",
       "sprite": "Mortefi/T_IconRole_Pile_baer_UI",
       "echoSet": {
@@ -577,8 +581,8 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트", "duration": "10초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트", "duration": "10초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트"}
       ],
       "avatar": "Changli/T_IconRoleHead256_26_UI",
       "sprite": "Changli/T_IconRole_Pile_changli_UI",
@@ -615,8 +619,8 @@
       "mainDmg": "일반 공격",
       "buffSummary": "",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트"}
       ],
       "avatar": "Brant/T_IconRoleHead256_44_UI",
       "sprite": "Brant/T_IconRole_Pile_Bulante_UI",
@@ -663,8 +667,10 @@
       "mainDmg": "공명 해방",
       "buffSummary": "",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "공격력", "value": "최대 18%", "verb": "증가"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "용융 피해", "value": "최대 20%", "verb": "증가"}
       ],
       "avatar": "Lupa/T_IconRoleHead256_46_UI",
       "sprite": "Lupa/T_IconRole_Pile_lupa_UI",
@@ -736,8 +742,10 @@
       "mainDmg": "공명 해방",
       "buffSummary": "조화 파동 대응, 조화 밀집 대응, 부조화 수치 누적 효율",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트", "duration": "30초"},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "방어력", "value": "20%", "verb": "증가", "duration": "25초"}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "방어력", "value": "20%", "verb": "증가"},
+        {"source": "공명 회로", "target": "파티 전체", "stat": "입히는 피해", "value": "최대 40%", "verb": "증가"},
+        {"source": "공명 회로", "target": "파티 전체", "stat": "부조화 수치 누적 효율", "value": "50%", "verb": "증가"}
       ],
       "avatar": "Mornye/T_IconRoleHead256_61_UI",
       "sprite": "Mornye/T_IconRole_Pile_Moning_UI",
@@ -783,7 +791,7 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "조화 파동 대응, 불꽃",
-      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "10%", "verb": "부스트", "duration": "20초"}],
+      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "10%", "verb": "부스트"}],
       "avatar": "Aemeath/T_IconRoleHead256_53_UI",
       "sprite": "Aemeath/T_IconRole_Pile_Aimisi_UI",
       "echoSet": {
@@ -819,8 +827,9 @@
       "mainDmg": "공명 해방",
       "buffSummary": "견인, 불꽃, 조화도 파괴 증폭, 조화 밀집 대응",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": "16초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "용융 피해", "value": "30%", "verb": "증가", "duration": ""}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "용융 피해", "value": "30%", "verb": "증가"},
+        {"source": "반주 스킬", "target": "적", "stat": "불꽃 효과 받는 피해", "value": "60%", "verb": "부스트"}
       ],
       "avatar": "Denia/T_IconRoleHead256_64_UI",
       "sprite": "Denia/T_IconRole_Pile_daniya_UI",
@@ -965,8 +974,8 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "협동 공격",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전도 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전도 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트"}
       ],
       "avatar": "Yinlin/T_IconRoleHead256_17_UI",
       "sprite": "Yinlin/T_IconRole_Pile_yinlin_UI",
@@ -1162,7 +1171,7 @@
       "rarity": 5,
       "mainDmg": "강공격",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": ""}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"}],
       "avatar": "Augusta/T_IconRoleHead256_51_UI",
       "sprite": "Augusta/T_IconRole_Pile_aogusita_UI",
       "echoSet": {
@@ -1192,8 +1201,8 @@
       "mainDmg": "기본 공격",
       "buffSummary": "전자",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": "30초"},
-        {"source": "공명 회로", "target": "파티 전체", "stat": "공명 스킬 피해", "value": "10%", "verb": "증가", "duration": ""}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "공명 스킬 피해", "value": "최대 25%", "verb": "증가"}
       ],
       "avatar": "Buling/T_IconRoleHead256_58_UI",
       "sprite": "Buling/T_IconRole_Pile_Buling_UI",
@@ -1224,8 +1233,10 @@
       "mainDmg": "일반 공격",
       "buffSummary": "조화도 파괴 증폭, 해킹 대응",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": "14초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "공격력", "value": "20%", "verb": "증가", "duration": "30초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "최대 35%", "verb": "부스트"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "공격력", "value": "20%", "verb": "증가"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "조화도 파괴 증폭", "value": "30pt", "verb": "증가"}
       ],
       "avatar": "Rebecca/T_IconRoleHead256_69_UI",
       "sprite": "Rebecca/T_IconRole_Pile_LiBeiKa_UI",
@@ -1291,7 +1302,7 @@
       "rarity": 5,
       "mainDmg": "공명 스킬",
       "buffSummary": "전자",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "25%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "25%", "verb": "부스트"}],
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_zhujue_UI",
       "echoSet": {
@@ -1321,9 +1332,8 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "합일, 전자, 협동 공격",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "20%", "verb": "부스트", "duration": "30초"},
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전도 피해", "value": "20%", "verb": "부스트", "duration": "20초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "전도 피해", "value": "25%", "verb": "증가", "duration": "30초"}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전도 피해", "value": "20%", "verb": "부스트"}
       ],
       "avatar": "Hsin/T_IconRoleHead256_75_UI",
       "sprite": "Hsin/T_IconRole_Pile_Xin_UI",
@@ -1354,9 +1364,9 @@
       "mainDmg": "일반 공격",
       "buffSummary": "합일",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전도 피해", "value": "20%", "verb": "부스트", "duration": "8초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트", "duration": "8초"},
-        {"source": "고유 스킬", "target": "다음 캐릭터", "stat": "전도 피해", "value": "30%", "verb": "증가", "duration": "8초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전도 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트"},
+        {"source": "고유 스킬", "target": "다음 캐릭터", "stat": "전도 피해", "value": "30%", "verb": "증가"}
       ],
       "avatar": "Suoming/T_IconRoleHead256_76_UI",
       "sprite": "Suoming/T_IconRole_Pile_SuoMing_UI",
@@ -1431,7 +1441,7 @@
       "rarity": 4,
       "mainDmg": "기본 공격",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "기류 피해", "value": "23%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "기류 피해", "value": "23%", "verb": "부스트"}],
       "avatar": "Aalto/T_IconRoleHead256_12_UI",
       "sprite": "Aalto/T_IconRole_Pile_qiushui_UI",
       "echoSet": {
@@ -1534,7 +1544,7 @@
       "rarity": 5,
       "mainDmg": "강공격",
       "buffSummary": "견인",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "38%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "38%", "verb": "부스트"}],
       "avatar": "Jianxin/T_IconRoleHead256_23_UI",
       "sprite": "Jianxin/T_IconRole_Pile_jiexin_UI",
       "echoSet": {
@@ -1630,7 +1640,10 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "견인, 풍식",
-      "buffs": [{"source": "기본 공격", "target": "파티 전체", "stat": "기류 피해", "value": "24%", "verb": "증가", "duration": ""}],
+      "buffs": [
+        {"source": "기본 공격", "target": "파티 전체", "stat": "기류 피해", "value": "24%", "verb": "증가"},
+        {"source": "반주 스킬", "target": "적", "stat": "풍식 효과 받는 피해", "value": "100%", "verb": "부스트"}
+      ],
       "avatar": "Ciaccona/T_IconRoleHead256_37_UI",
       "sprite": "Ciaccona/T_IconRole_Pile_xiakong_UI",
       "echoSet": {
@@ -1694,7 +1707,10 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "풍식, 견인",
-      "buffs": [{"source": "반주 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "17.5%", "verb": "부스트", "duration": "20초"}],
+      "buffs": [
+        {"source": "반주 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "17.5%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "적", "stat": "풍식 효과 받는 피해", "value": "50%", "verb": "부스트"}
+      ],
       "avatar": "Cartethyia/T_IconRoleHead256_40_UI",
       "sprite": "Cartethyia/T_IconRole_Pile_katixiya_UI",
       "echoSet": {
@@ -1723,7 +1739,10 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "50%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "50%", "verb": "부스트"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "전체 피해", "value": "최대 40%", "verb": "부스트"}
+      ],
       "avatar": "Iuno/T_IconRoleHead256_48_UI",
       "sprite": "Iuno/T_IconRole_Pile_younuo_UI",
       "echoSet": {
@@ -1769,8 +1788,9 @@
       "mainDmg": "강공격",
       "buffSummary": "",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "에코 어빌리티 피해", "value": "50%", "verb": "부스트", "duration": "14초"},
-        {"source": "공명 회로", "target": "파티 전체", "stat": "에코 어빌리티 피해", "value": "30%", "verb": "증가", "duration": "30초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "에코 어빌리티 피해", "value": "50%", "verb": "부스트"},
+        {"source": "공명 회로", "target": "파티 전체", "stat": "에코 어빌리티 피해", "value": "30%", "verb": "증가"},
+        {"source": "공명 해방", "target": "등장 캐릭터", "stat": "크리티컬 피해", "value": "최대 30%", "verb": "증가"}
       ],
       "avatar": "Qiuyuan/T_IconRoleHead256_56_UI",
       "sprite": "Qiuyuan/T_IconRole_Pile_Qiuyuan_UI",
@@ -1822,7 +1842,10 @@
       "rarity": 5,
       "mainDmg": "에코 어빌리티",
       "buffSummary": "견인, 에코 어빌리티 피해",
-      "buffs": [],
+      "buffs": [
+        {"source": "고유 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "최대 18%", "verb": "증가"},
+        {"source": "고유 스킬", "target": "등장 캐릭터", "stat": "에코 어빌리티 피해", "value": "최대 18%", "verb": "증가"}
+      ],
       "avatar": "Sigrika/T_IconRoleHead256_65_UI",
       "sprite": "Sigrika/T_IconRole_Pile_xigelika_UI",
       "echoSet": {
@@ -1945,8 +1968,8 @@
       "mainDmg": "협동 공격",
       "buffSummary": "협동 공격",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": "30초"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "공격력", "value": "20%", "verb": "증가", "duration": "20초"}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "공격력", "value": "20%", "verb": "증가"}
       ],
       "avatar": "Verina/T_IconRoleHead256_3_UI",
       "sprite": "Verina/T_IconRole_Pile_jueyuan_UI",
@@ -1976,7 +1999,7 @@
       "rarity": 4,
       "mainDmg": "일반 공격",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "38%", "verb": "부스트", "duration": "10초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "38%", "verb": "부스트"}],
       "avatar": "Lumi/T_IconRoleHead256_30_UI",
       "sprite": "Lumi/T_IconRole_Pile_dengdeng_UI",
       "echoSet": {
@@ -2022,9 +2045,9 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "견인",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": ""},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "크리티컬", "value": "최대 12.5%", "verb": "증가", "duration": ""},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "크리티컬 피해", "value": "최대 25%", "verb": "증가", "duration": ""}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "크리티컬", "value": "최대 12.5%", "verb": "증가"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "크리티컬 피해", "value": "최대 25%", "verb": "증가"}
       ],
       "avatar": "Shorekeeper/T_IconRoleHead256_28_UI",
       "sprite": "Shorekeeper/T_IconRole_Pile_Shouanren_UI",
@@ -2071,8 +2094,8 @@
       "mainDmg": "공명 해방",
       "buffSummary": "광학",
       "buffs": [
-        {"source": "반주 스킬", "target": "적", "stat": "회절 피해 저항", "value": "10%", "verb": "감소", "duration": "30초"},
-        {"source": "반주 스킬", "target": "적", "stat": "광학 효과 받는 피해", "value": "100%", "verb": "부스트", "duration": "30초"}
+        {"source": "반주 스킬", "target": "적", "stat": "회절 피해 저항", "value": "10%", "verb": "감소"},
+        {"source": "반주 스킬", "target": "적", "stat": "광학 효과 받는 피해", "value": "100%", "verb": "부스트"}
       ],
       "avatar": "Phoebe/T_IconRoleHead256_45_UI",
       "sprite": "Phoebe/T_IconRole_Pile_Feibi_UI",
@@ -2118,7 +2141,7 @@
       "rarity": 5,
       "mainDmg": "강공격",
       "buffSummary": "광학",
-      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "회절 피해", "value": "20%", "verb": "부스트", "duration": "20초"}],
+      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "회절 피해", "value": "20%", "verb": "부스트"}],
       "avatar": "Zani/T_IconRoleHead256_38_UI",
       "sprite": "Zani/T_IconRole_Pile_zanni_UI",
       "echoSet": {
@@ -2147,7 +2170,7 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "암흑",
-      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "방어력 무시", "value": "18%", "verb": "", "duration": ""}],
+      "buffs": [{"source": "공명 회로", "target": "적", "stat": "방어력 무시", "value": "18%", "verb": ""}],
       "avatar": "Chisa/T_IconRoleHead256_57_UI",
       "sprite": "Chisa/T_IconRole_Pile_Qianxiao_UI",
       "echoSet": {
@@ -2199,9 +2222,10 @@
       "mainDmg": "일반 공격",
       "buffSummary": "조화 파동 대응, 조화 밀집 대응, 조화도 파괴 증폭",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트", "duration": "14초"},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "전체 피해", "value": "24%", "verb": "증가", "duration": "30초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "전체 피해", "value": "24%", "verb": "증가"},
+        {"source": "공명 회로", "target": "파티 전체", "stat": "조화도 파괴 증폭", "value": "40pt", "verb": "증가"}
       ],
       "avatar": "Lynae/T_IconRoleHead256_60_UI",
       "sprite": "Lynae/T_IconRole_Pile_Linnai_UI",
@@ -2275,9 +2299,10 @@
       "mainDmg": "강공격",
       "buffSummary": "해킹 대응",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "20%", "verb": "부스트", "duration": "3초"},
-        {"source": "공명 해방", "target": "적", "stat": "방어력", "value": "5%", "verb": "감소", "duration": "30초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "등장 캐릭터", "stat": "전체 피해", "value": "20%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "적", "stat": "방어력", "value": "5%", "verb": "감소"},
+        {"source": "공명 해방", "target": "적", "stat": "받는 피해", "value": "5%", "verb": "증가"}
       ],
       "avatar": "Lucy/T_IconRoleHead256_68_UI",
       "sprite": "Lucy/T_IconRole_Pile_luxi_UI",
@@ -2313,7 +2338,7 @@
       "rarity": 4,
       "mainDmg": "공명 해방",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "38%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "38%", "verb": "부스트"}],
       "avatar": "Taoqi/T_IconRoleHead256_9_UI",
       "sprite": "Taoqi/T_IconRole_Pile_taohua_UI",
       "echoSet": {
@@ -2358,7 +2383,7 @@
       "rarity": 4,
       "mainDmg": "공명 스킬",
       "buffSummary": "",
-      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "23%", "verb": "부스트", "duration": "14초"}],
+      "buffs": [{"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "23%", "verb": "부스트"}],
       "avatar": "Danjin/T_IconRoleHead256_10_UI",
       "sprite": "Danjin/T_IconRole_Pile_micai_UI",
       "echoSet": {
@@ -2491,8 +2516,9 @@
       "mainDmg": "강공격",
       "buffSummary": "견인",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "공격력", "value": "최대 200pt", "verb": "증가"}
       ],
       "avatar": "Roccia/T_IconRoleHead256_33_UI",
       "sprite": "Roccia/T_IconRole_Pile_luokeke_UI",
@@ -2546,8 +2572,8 @@
       "mainDmg": "일반 공격",
       "buffSummary": "협동 공격",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 스킬 피해", "value": "25%", "verb": "부스트"}
       ],
       "avatar": "Cantarella/T_IconRoleHead256_34_UI",
       "sprite": "Cantarella/T_IconRole_Pile_kanteleila_UI",
@@ -2600,8 +2626,8 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "20%", "verb": "부스트", "duration": "14초"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "25%", "verb": "부스트", "duration": "14초"}
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "인멸 피해", "value": "20%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "25%", "verb": "부스트"}
       ],
       "avatar": "Phrolova/T_IconRoleHead256_41_UI",
       "sprite": "Phrolova/T_IconRole_Pile_fuluoluo_UI",
@@ -2637,7 +2663,7 @@
       "rarity": 5,
       "mainDmg": "강공격",
       "buffSummary": "암흑, 견인",
-      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "인멸 피해", "value": "20%", "verb": "부스트", "duration": ""}],
+      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "인멸 피해", "value": "20%", "verb": "부스트"}],
       "avatar": "Yangyang_Xuanling/T_IconRoleHead256_70_UI",
       "sprite": "Yangyang_Xuanling/T_IconRole_Pile_XuanLing_UI",
       "echoSet": {
