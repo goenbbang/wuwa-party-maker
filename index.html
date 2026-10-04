@@ -74,6 +74,8 @@
     @container (max-width: 185px) { .slot-info { display: none !important; } .slot-ava { margin: 0 auto; } }
     .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; }
     .buff-line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; word-break: keep-all; }
+    /* 수치가 '최대 N%'일 때 아랫줄은 조건 강화가 아니라 보충 설명이라 한 단계 흐리게 */
+    .buff-note.sub { color: #94a3b8; font-weight: 500; }
     .buff-note { margin-top: 2px; font-size: 12px; font-weight: 700; color: #f1f5f9; line-height: 1.4; word-break: keep-all; }
     /* 추천 무기 좌우 넘김: 가장자리 그라데이션 위에 화살표만 */
     .wp-edge { position: absolute; top: 0; bottom: 4px; width: 44px; align-items: center; color: #e2e8f0; cursor: pointer; z-index: 5; transition: color .15s; }
@@ -2171,7 +2173,9 @@
               <span class="font-black ${isEnemyReduction(b) ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
               ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap">(${esc(b.note)})</span>` : ''}
             </div>
-            ${b.note && b.note.length > 8 ? `<div class="buff-note">${esc(b.note).replace(/\d+(?:\.\d+)?(?:%|pt|스택)/g, m => `<span class="font-black ${isEnemyReduction(b) ? 'text-rose-300' : 'theme-buff-text'}">${m}</span>`)}</div>` : ''}
+            ${b.note && b.note.length > 8 ? (/^최대/.test(b.value || '')
+              ? `<div class="buff-note sub">${esc(b.note)}</div>`
+              : `<div class="buff-note">${esc(b.note).replace(/\d+(?:\.\d+)?(?:%|pt|스택)/g, m => `<span class="font-black ${isEnemyReduction(b) ? 'text-rose-300' : 'theme-buff-text'}">${m}</span>`)}</div>`) : ''}
           </div>
         </div>`).join('');
     }
