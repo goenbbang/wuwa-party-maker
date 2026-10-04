@@ -66,8 +66,9 @@
     .mode-pair.big img { width: 34px; height: 34px; }
     .mode-pair.big i { font-size: 15px; }
     .mode-box { position: absolute; top: 14px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 10px; }
-    .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #cbd5e1; text-shadow: 0 1px 3px #000; }
-    .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 1px 3px #000; }
+    /* 밝은 스프라이트(흰 머리 등) 위에서도 읽히도록 그림자를 넓고 진하게 */
+    .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #e2e8f0; text-shadow: 0 0 3px #000, 0 0 6px #000, 0 0 10px rgba(0, 0, 0, .8), 0 1px 2px #000; }
+    .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 0 3px #000, 0 0 6px #000, 0 0 10px rgba(0, 0, 0, .8), 0 1px 2px #000; }
     /* 파티 편성표 프로필: 넓은 화면에서는 카드 높이에 맞춘 정사각형 */
     @media (min-width: 640px) { .slot-ava { width: auto; aspect-ratio: 1 / 1; } }
     /* 칸이 좁아 글자가 들어갈 자리가 없으면 프로필만 가운데에 */
