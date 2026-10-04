@@ -1043,6 +1043,15 @@
       ownedResonators: {}, 
       activeCircuitPartyIndex: null 
     };
+    // 파티 편성은 이 브라우저에 저장해 새로고침해도 유지 (파티를 다시 그릴 때마다 저장)
+    const PARTY_KEY = 'wuwa_matrix_parties';
+    function saveParties() { storage.set(PARTY_KEY, state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId }))); }
+    function loadParties() {
+      const saved = storage.get(PARTY_KEY, null);
+      if (!Array.isArray(saved) || !saved.length) return;
+      const ids = new Set(RAW_RESONATORS.map(r => r.id)), cids = new Set(CIRCUITS.map(c => c.id));
+      state.parties = saved.map((p, i) => ({ id: `p_${Date.now()}_${i}`, slots: [0, 1, 2].map(k => (ids.has(p?.slots?.[k]) ? p.slots[k] : null)), circuitId: cids.has(p?.circuitId) ? p.circuitId : null }));
+    }
     let tempSelectedFatigueId = null, SEASON_BUFF_DEFAULT = null;
     let draggedPartyIndex = null, isDraggingCharacter = false;
     let adminConfig = structuredClone(DEFAULT_ADMIN_CONFIG);
@@ -1962,6 +1971,7 @@
 
     function renderParties() {
       const container = document.getElementById('parties-container');
+      saveParties();
       container.innerHTML = state.parties.map((party, pIdx) => {
         const activeCircuit = CIRCUITS.find(c => c.id === party.circuitId);
         const slotsHtml = party.slots.map((resId, sIdx) => {
@@ -1979,7 +1989,7 @@
                 </div>
                 <div class="slot-info hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
                   <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
-                  <div class="flex items-center justify-between min-w-0" style="gap:6px"><span class="truncate px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap" style="min-width:0">${esc(r.mainDmg || '기본 공격')}</span><span class="flex-shrink-0" style="line-height:0">${modePairHtml(r, { click: true })}</span></div>
+                  <div class="flex items-center justify-between min-w-0" style="gap:6px"><span class="truncate px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap" style="min-width:0">${esc(r.mainDmg || '기본 공격')}</span><span class="flex-shrink-0" style="line-height:0">${modePairHtml(r, { mid: true, click: true })}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
                 </div>
               </div>
@@ -3040,6 +3050,7 @@
       loadData();
       applyAdminThemeToDOM();
       initOwnership();
+      loadParties();
       updateFatigueLabel();
       renderFilterBars();
       renderGrowthFilterBars();
