@@ -9,7 +9,7 @@
     "colorBg": "#06080d",
     "fontFamily": "\"Pretendard Variable\", Pretendard, sans-serif",
     "uiScale": 100,
-    "logoImage": "",
+    "logoImage": "logo.png",
     "customElementIcons": {},
     "customWeaponStatIcons": {}
   },
