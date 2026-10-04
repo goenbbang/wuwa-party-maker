@@ -168,7 +168,7 @@
     <div class="flex items-center gap-6">
       <div class="flex items-center gap-3">
         <div id="app-header-logo-container" class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md shadow-amber-500/20 bg-gradient-to-br from-amber-500 to-amber-600">
-          <span class="text-black font-black text-sm">WW</span>
+          <img src="images/logo.png" alt="" class="w-full h-full object-contain" crossorigin="anonymous">
         </div>
         <h1 class="text-base sm:text-lg font-black tracking-tight text-white select-none whitespace-nowrap">공명자 관리기록부</h1>
       </div>
@@ -1301,7 +1301,8 @@
       root.style.setProperty('--ui-scale', (adminConfig.uiScale / 100).toString());
       
       const logoBox = document.getElementById('app-header-logo-container');
-      if (logoBox) logoBox.innerHTML = adminConfig.logoImage ? `<img loading="lazy" decoding="async" src="${adminConfig.logoImage}" class="w-full h-full object-contain" crossorigin="anonymous">` : `<span class="text-black font-black text-sm">WW</span>`;
+      // 이미 같은 로고가 그려져 있으면 다시 그리지 않음 (새로고침 때 깜빡임 방지)
+      if (logoBox && !(adminConfig.logoImage && logoBox.querySelector('img')?.src === new URL(adminConfig.logoImage, location.href).href)) logoBox.innerHTML = adminConfig.logoImage ? `<img loading="lazy" decoding="async" src="${adminConfig.logoImage}" class="w-full h-full object-contain" crossorigin="anonymous">` : `<span class="text-black font-black text-sm">WW</span>`;
       ['point','attack','buff','bg'].forEach(id => { const el = document.getElementById(`cfg-color-${id}`); if(el) el.value = adminConfig[`color${id.charAt(0).toUpperCase() + id.slice(1)}`]; });
       const cf = document.getElementById('cfg-font-family'), cs = document.getElementById('cfg-ui-scale'), cl = document.getElementById('cfg-icon-logo');
       if (cf) cf.value = adminConfig.fontFamily;
