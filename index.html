@@ -82,7 +82,12 @@
     .wp-edge:hover { color: #fbbf24; }
     .wp-edge.l { left: -4px; justify-content: flex-start; background: linear-gradient(90deg, #121622 25%, rgba(18, 22, 34, 0)); }
     .wp-edge.r { right: -4px; justify-content: flex-end; background: linear-gradient(270deg, #121622 25%, rgba(18, 22, 34, 0)); }
-    .circuit-sub { font-size: 10px; font-weight: 600; color: #64748b; letter-spacing: .02em; margin-top: 1px; }
+    /* 회로 선택 카드: 아이콘 칸이 카드 높이를 꽉 채우는 정사각형 */
+    .circuit-ic { align-self: stretch; width: 72px; min-height: 72px; border-color: rgba(226, 232, 240, .55) !important; background: #0a0d14; }
+    .circuit-ic img, .circuit-ic svg { width: 54px !important; height: 54px !important; }
+    .circuit-text { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; }
+    .circuit-title { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .circuit-line { font-size: 12px; color: #cbd5e1; line-height: 1.45; word-break: keep-all; }
 
     html:not(.is-admin) .admin-only { display: none !important; }
     html.is-admin body { padding-bottom: 72px; }  /* 관리자 바에 내용이 가려지지 않게 */
@@ -307,7 +312,7 @@
                   <img id="detail-modal-buffs-icon" src="" alt="" class="w-5 h-5 object-contain pointer-events-none" crossorigin="anonymous">
                   <span id="detail-modal-buffs-count" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-sky-500 text-[10px] leading-[18px] font-black text-black text-center"></span>
                 </button>
-                <div id="detail-modal-buffs-pop" onclick="event.stopPropagation()" style="width:min(400px,84vw)" class="hidden absolute bottom-full right-0 mb-2.5 z-30 p-3 rounded-xl bg-[#121622]/95 border border-slate-600 shadow-2xl backdrop-blur-md origin-bottom-right">
+                <div id="detail-modal-buffs-pop" onclick="event.stopPropagation()" style="width:max-content;min-width:230px;max-width:min(400px,84vw)" class="hidden absolute bottom-full right-0 mb-2.5 z-30 p-3 rounded-xl bg-[#121622]/95 border border-slate-600 shadow-2xl backdrop-blur-md origin-bottom-right">
                   <div class="text-[11px] font-black text-slate-300 mb-2">파티 버프 · 디버프</div>
                   <div id="detail-modal-buffs" class="flex flex-col gap-1.5"></div>
                   <div class="absolute -bottom-1.5 right-3 w-3 h-3 rotate-45 bg-[#121622] border-r border-b border-slate-600"></div>
@@ -536,9 +541,7 @@
           <input type="hidden" id="edit-circuit-id">
           <div class="bg-[#121622] rounded-2xl p-4 border border-slate-800 space-y-3.5">
             <div class="grid grid-cols-1 gap-3.5">
-              <div><label class="block text-xs font-bold text-slate-300 mb-1">회로 명칭</label><input type="text" id="edit-circuit-name" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>
-              <div><label class="block text-xs font-bold text-slate-300 mb-1">영문 부제 <span class="font-medium text-slate-500">(없으면 비움)</span></label><input type="text" id="edit-circuit-sub" placeholder="예: General Enhancement" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>
-              <div><label class="block text-xs font-bold text-slate-300 mb-1">효과 상세 설명</label><textarea id="edit-circuit-desc" rows="3" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl p-3 text-xs text-white resize-none"></textarea></div>
+              <div><label class="block text-xs font-bold text-slate-300 mb-1">회로 명칭</label><input type="text" id="edit-circuit-name" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>              <div><label class="block text-xs font-bold text-slate-300 mb-1">효과 상세 설명 <span class="font-medium text-slate-500">(효과 하나당 한 줄)</span></label><textarea id="edit-circuit-desc" rows="3" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl p-3 text-xs text-white resize-none"></textarea></div>
             </div>
             <div class="pt-2 border-t border-slate-800 mt-3.5">
               <label class="block text-xs font-bold text-slate-300 mb-1">회로 아이콘</label>
@@ -1737,7 +1740,6 @@
       if (!c) return;
       document.getElementById('edit-circuit-id').value = c.id;
       document.getElementById('edit-circuit-name').value = c.name || '';
-      document.getElementById('edit-circuit-sub').value = c.sub || '';
       document.getElementById('edit-circuit-desc').value = c.desc || '';
       document.getElementById('edit-circuit-icon-url').value = toShortImageInput(c.iconImage || '', 'icon');
       const box = document.getElementById('preview-circuit-icon-box');
@@ -1771,7 +1773,6 @@
       CIRCUITS[idx] = {
         ...CIRCUITS[idx],
         name: document.getElementById('edit-circuit-name').value.trim() || '회로 이름 없음',
-        sub: document.getElementById('edit-circuit-sub').value.trim(),
         desc: document.getElementById('edit-circuit-desc').value.trim() || '',
         iconImage: resolveImageUrl(document.getElementById('edit-circuit-icon-url').value, 'icon')
       };
@@ -2297,9 +2298,9 @@
       document.getElementById('circuit-modal-party-label').innerText = `파티 ${String(partyIdx + 1).padStart(2, '0')}`;
       document.getElementById('circuit-list-container').innerHTML = CIRCUITS.map(c => `
         <div onclick="selectCircuit('${c.id}')" class="p-3 rounded-xl border transition cursor-pointer flex items-center justify-between ${curId === c.id ? 'bg-cyan-950/60 border-cyan-400 shadow-md' : 'bg-[#121622] border-[#222b3d] hover:border-cyan-500/50 hover:bg-[#181f2f]'}">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-[#0e121a] border border-[#212838] flex items-center justify-center shrink-0 overflow-hidden">${getCircuitIconHtml(c)}</div>
-            <div class="space-y-1"><div><div class="font-bold text-sm text-white">${esc(c.name)}</div>${c.sub ? `<div class="circuit-sub">${esc(c.sub)}</div>` : ''}</div><div class="text-xs text-slate-300 leading-snug break-keep">${esc(c.desc)}</div></div>
+          <div class="flex items-stretch gap-3">
+            <div class="circuit-ic rounded-lg bg-[#0e121a] border border-[#212838] flex items-center justify-center shrink-0 overflow-hidden">${getCircuitIconHtml(c)}</div>
+            <div class="circuit-text"><div class="circuit-title">${esc(c.name)}</div>${String(c.desc || '').split('\n').filter(l => l.trim()).map(l => `<div class="circuit-line">${esc(l.trim())}</div>`).join('')}</div>
           </div>
         </div>`).join('');
       openModal('circuit-modal');

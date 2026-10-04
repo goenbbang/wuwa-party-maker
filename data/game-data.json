@@ -4633,36 +4633,32 @@
   ],
   "circuits": [
     {
+      "id": "c_heavy",
+      "name": "공용 강화",
+      "iconImage": "IconProperty/T_Iconpropertyredattack_UI",
+      "iconSvg": "",
+      "desc": "적이 받는 피해가 최종적으로 20% 증가\n적이 받는 강공격 피해가 최종적으로 20% 증가"
+    },
+    {
       "id": "c_anomaly",
       "name": "이상 효과 강화",
-      "sub": "Enhancement: Negative Status",
       "iconImage": "IconProperty/T_Iconpropertyredice_UI",
       "iconSvg": "",
-      "desc": "캐릭터가 이상 효과 추가 시, 목표가 받는 피해를 최종적으로 25% 증가시키고, 30초간 지속된다. 적군이 받는 서리 효과의 피해가 최종적으로 80% 증가된다."
+      "desc": "캐릭터가 이상 효과 추가 시, 목표가 받는 피해를 최종적으로 25% 증가시키고 30초간 지속\n적이 받는 서리 효과의 피해가 최종적으로 80% 증가"
     },
     {
       "id": "c_echo",
       "name": "에코 어빌리티 강화",
-      "sub": "Enhancement: Echo Skill",
       "iconImage": "IconProperty/T_IconpropertyLuokekeBuff1_UI",
       "iconSvg": "",
-      "desc": "아군 에코 어빌리티의 피해가 최종적으로 30% 증가되고, 인멸 피해가 최종적으로 20% 증가되며, 공명 스킬 피해가 최종적으로 20% 증가된다."
+      "desc": "아군 에코 어빌리티의 피해가 최종적으로 30% 증가\n인멸 피해가 최종적으로 20% 증가되며, 공명 스킬 피해가 최종적으로 20% 증가"
     },
     {
       "id": "c_tune",
       "name": "조화도 파괴 강화",
-      "sub": "Enhancement: Tune Break",
       "iconImage": "IconProperty/T_Iconpropertyredcrit_UI",
       "iconSvg": "",
-      "desc": "캐릭터가 조화도 · 이탈 상태 추가 시, 파티 전체의 피해가 최종적으로 25% 증가되며, 30초간 지속된다. 캐릭터가 조화 밀집 · 이탈 상태 추가 시, 피해가 최종적으로 30% 증가되며, 15초간 지속된다."
-    },
-    {
-      "id": "c_heavy",
-      "name": "공용 강화",
-      "sub": "General Enhancement",
-      "iconImage": "IconProperty/T_Iconpropertyredattack_UI",
-      "iconSvg": "",
-      "desc": "적군이 받는 피해가 최종적으로 20% 증가되고, 적군이 받는 강공격 피해가 최종적으로 20% 증가된다."
+      "desc": "캐릭터가 조화도 · 이탈 상태 추가 시, 파티 전체의 피해가 최종적으로 25% 증가하며 30초간 지속\n캐릭터가 조화 밀집 · 이탈 상태 추가 시, 피해가 최종적으로 30% 증가하며 15초간 지속"
     }
   ]
 }
