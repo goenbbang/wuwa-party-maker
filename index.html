@@ -67,7 +67,13 @@
     .mode-box { position: absolute; top: 14px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 10px; }
     .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #cbd5e1; text-shadow: 0 1px 3px #000; }
     .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 1px 3px #000; }
+    /* 파티 편성표 프로필: 넓은 화면에서는 카드 높이에 맞춘 정사각형 */
+    @media (min-width: 640px) { .slot-ava { width: auto; aspect-ratio: 1 / 1; } }
+    /* 칸이 좁아 글자가 들어갈 자리가 없으면 프로필만 가운데에 */
+    .party-slot { container-type: inline-size; }
+    @container (max-width: 185px) { .slot-info { display: none !important; } .slot-ava { margin: 0 auto; } }
     .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; }
+    .buff-line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; word-break: keep-all; }
     .buff-note { margin-top: 2px; font-size: 12px; font-weight: 700; color: #f1f5f9; line-height: 1.4; word-break: keep-all; }
     /* 추천 무기 좌우 넘김: 가장자리 그라데이션 위에 화살표만 */
     .wp-edge { position: absolute; top: 0; bottom: 4px; width: 44px; align-items: center; color: #e2e8f0; cursor: pointer; z-index: 5; transition: color .15s; }
@@ -299,7 +305,7 @@
                   <img id="detail-modal-buffs-icon" src="" alt="" class="w-5 h-5 object-contain pointer-events-none" crossorigin="anonymous">
                   <span id="detail-modal-buffs-count" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-sky-500 text-[10px] leading-[18px] font-black text-black text-center"></span>
                 </button>
-                <div id="detail-modal-buffs-pop" onclick="event.stopPropagation()" class="hidden absolute bottom-full right-0 mb-2.5 z-30 w-[min(340px,80vw)] p-3 rounded-xl bg-[#121622]/95 border border-slate-600 shadow-2xl backdrop-blur-md origin-bottom-right">
+                <div id="detail-modal-buffs-pop" onclick="event.stopPropagation()" style="width:min(400px,84vw)" class="hidden absolute bottom-full right-0 mb-2.5 z-30 p-3 rounded-xl bg-[#121622]/95 border border-slate-600 shadow-2xl backdrop-blur-md origin-bottom-right">
                   <div class="text-[11px] font-black text-slate-300 mb-2">파티 버프 · 디버프</div>
                   <div id="detail-modal-buffs" class="flex flex-col gap-1.5"></div>
                   <div class="absolute -bottom-1.5 right-3 w-3 h-3 rotate-45 bg-[#121622] border-r border-b border-slate-600"></div>
@@ -855,7 +861,9 @@
       let stat = (b.stat || '').trim(); if (!stat) return '';
       const at = ATTACK_TYPES.find(a => stat === `${a} 피해`);
       if (at) stat = at === '에코 어빌리티' ? '에코 피해' : at;
-      return `${b.target === '적' ? '적 ' : ''}${stat} ${b.verb ?? '증가'}`.trim();
+      // 카드에서는 짧게: '서리 효과 받는 피해' → '서리 피해', '에코 어빌리티 크리티컬 피해' → '에코 크리티컬 피해'
+      stat = stat.replace(/^(.+) 효과 받는 피해$/, '$1 피해').replace(/^에코 어빌리티 /, '에코 ');
+      return `${stat} ${b.verb ?? '증가'}`.trim();
     }
     // 키워드 입력은 ',' 또는 '·' 로 구분 (중복 제거). 저장할 때는 ', ' 로 통일
     const splitKeywords = (s) => [...new Set(String(s ?? '').split(/[,·]/).map(k => k.trim()).filter(Boolean))];
@@ -884,6 +892,24 @@
       renderRoster(); renderParties();
       if (detailCharId === resId) renderDetailMode(r);
     }
+    // 키워드 묶음: core(딜러 유형·이상 효과) / elem(속성·이상 효과 피해) / atk(공격 유형) / tune(조화도) / dmg(전체·받는 피해) / shred(방깎·저항) / crit / atkstat
+    const KEYWORD_CORE = ['조화 파동', '조화 밀집', '서리', '불꽃', '전자', '풍식', '광학', '암흑', '합일', '해킹 대응'];
+    function keywordGroup(k) {
+      if (KEYWORD_CORE.includes(k)) return 'core';
+      if (/(방어력|저항) (감소|무시)|방어력 무시/.test(k)) return 'shred';
+      if (/^(응결|용융|전도|기류|회절|인멸|서리|불꽃|전자|풍식|광학|암흑) 피해/.test(k)) return 'elem';
+      if (/^(일반 공격|강공격|공명 스킬|공명 해방|협동 공격|에코 )/.test(k)) return 'atk';
+      if (/조화도|부조화|조화 밀집 · 간섭|해킹/.test(k)) return 'tune';
+      if (/^(전체 피해|입히는 피해|받는 피해)/.test(k)) return 'dmg';
+      if (/크리티컬/.test(k)) return 'crit';
+      if (/^공격력/.test(k)) return 'atkstat';
+      return 'other';
+    }
+    const KEYWORD_ORDER = {
+      main: ['core', 'elem', 'atk', 'tune', 'dmg', 'shred', 'crit', 'atkstat'],
+      sub: ['core', 'elem', 'atk', 'tune', 'dmg', 'shred', 'crit', 'atkstat'],
+      support: ['dmg', 'shred', 'elem', 'atk', 'crit', 'atkstat', 'tune', 'core']
+    };
     function resonatorKeywords(r, allModes = false) {
       const modes = buffModes(r), cur = currentMode(r);
       // 직접 적은 키워드 중 다른 모드 이름으로 시작하는 것(예: '조화 밀집 대응')은 그 모드일 때만
@@ -895,7 +921,10 @@
         const k = buffKeyword(b), statKey = k.replace(/ (부스트|증가|감소)$/, '');
         if (k && !seen.has(statKey) && !list.includes(k)) { seen.add(statKey); list.push(k); }
       });
-      return list;
+      // 역할별로 파티 편성에 중요한 키워드가 앞에 오게 (카드에서 말줄임돼도 보이도록)
+      const order = KEYWORD_ORDER[r.role] || KEYWORD_ORDER.main;
+      const rank = (k) => { const i = order.indexOf(keywordGroup(k)); return i === -1 ? order.length : i; };
+      return list.map((k, i) => [k, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(x => x[0]);
     }
     const keywordsWithoutMainDmg = (r) => resonatorKeywords(r).filter(k => k !== r.mainDmg && k !== `${r.mainDmg} 피해`);
     const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '조화도 파괴', '공명 체인'];
@@ -1922,11 +1951,11 @@
             <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md group flex items-center p-0 sm:p-2.5 aspect-square sm:aspect-auto sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
               <div class="absolute top-1.5 right-1.5 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="p-1 rounded bg-black/70 hover:bg-rose-900 text-slate-400 hover:text-white transition shadow"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
               <div class="flex items-center gap-0 sm:gap-2.5 w-full h-full min-w-0">
-                <div class="relative h-full w-full sm:w-[64px] rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md">
+                <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')" title="눌러서 세부 정보 보기" class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
                   <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
                 </div>
-                <div class="hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
+                <div class="slot-info hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
                   <div class="flex flex-wrap items-center min-w-0 pr-5" style="gap:2px 6px"><span class="text-sm font-black text-white truncate" style="min-width:3.2em;flex:0 1 auto">${esc(r.name)}</span><span class="flex-shrink-0" draggable="false">${modePairHtml(r, { mid: true, click: true })}</span></div>
                   <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
@@ -2135,14 +2164,14 @@
       document.getElementById('detail-modal-buffs').innerHTML = buffs.map(b => `
         <div class="flex items-start gap-2 text-xs min-w-0">
           <span class="px-1.5 py-0.5 rounded-md bg-[#1a2030] border border-slate-700 text-[10px] font-bold text-slate-300 whitespace-nowrap flex-shrink-0">${esc(b.source)}</span>
+          <span class="text-slate-400 whitespace-nowrap flex-shrink-0" style="padding-top:2px">${esc(b.target)}</span>
           <div class="min-w-0 flex-1" style="padding-top:2px">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
-              <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
+            <div class="buff-line">
+              <span class="font-bold text-slate-100">${esc(b.stat)}</span>
               <span class="font-black ${isEnemyReduction(b) ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
-              ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">(${esc(b.note)})</span>` : ''}
+              ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap">(${esc(b.note)})</span>` : ''}
             </div>
-            ${b.note && b.note.length > 8 ? `<div class="buff-note">${esc(b.note)}</div>` : ''}
+            ${b.note && b.note.length > 8 ? `<div class="buff-note">${esc(b.note).replace(/\d+(?:\.\d+)?(?:%|pt|스택)/g, m => `<span class="font-black ${isEnemyReduction(b) ? 'text-rose-300' : 'theme-buff-text'}">${m}</span>`)}</div>` : ''}
           </div>
         </div>`).join('');
     }
