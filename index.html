@@ -67,14 +67,16 @@
     .mode-pair.big i { font-size: 15px; }
     .mode-box { position: absolute; top: 14px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 10px; }
     /* 밝은 스프라이트(흰 머리 등) 위에서도 읽히도록 그림자를 넓고 진하게 */
-    .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #e2e8f0; text-shadow: 0 0 3px #000, 0 0 6px #000, 0 0 10px rgba(0, 0, 0, .8), 0 1px 2px #000; }
-    .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 0 3px #000, 0 0 6px #000, 0 0 10px rgba(0, 0, 0, .8), 0 1px 2px #000; }
+    .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #e2e8f0; text-shadow: 0 0 5px rgba(0, 0, 0, .9), 0 0 12px rgba(0, 0, 0, .8), 0 0 22px rgba(0, 0, 0, .65), 0 0 34px rgba(0, 0, 0, .45); }
+    .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 0 5px rgba(0, 0, 0, .9), 0 0 12px rgba(0, 0, 0, .8), 0 0 22px rgba(0, 0, 0, .65), 0 0 34px rgba(0, 0, 0, .45); }
     /* 파티 편성표 프로필: 넓은 화면에서는 카드 높이에 맞춘 정사각형 */
     @media (min-width: 640px) { .slot-ava { width: auto; aspect-ratio: 1 / 1; } }
     /* 칸이 좁아 글자가 들어갈 자리가 없으면 프로필만 가운데에 */
     .party-slot { container-type: inline-size; }
     @container (max-width: 185px) { .slot-info { display: none !important; } .slot-ava { margin: 0 auto; } }
-    /* 카드용 모드 버튼: 현재 모드 아이콘 하나만 동그랗게. 누르면 다른 모드로 */
+    /* 카드용 모드 알약: 프로필 이미지 오른쪽 아래 */
+    .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; line-height: 0; }
+    /* (예비) 현재 모드 아이콘 하나만 동그랗게 */
     .mode-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: rgba(10, 13, 20, .92); border: 1px solid #f5c451; cursor: pointer; flex-shrink: 0; transition: box-shadow .15s; }
     .mode-dot:hover { box-shadow: 0 0 6px rgba(245, 196, 81, .7); }
     .mode-dot img { width: 14px; height: 14px; object-fit: contain; pointer-events: none; }
@@ -1924,11 +1926,12 @@
             <div class="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1 sm:mb-1.5">
               <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-200" crossorigin="anonymous">
               ${pill}
-              <div class="absolute bottom-0.5 left-0.5 sm:bottom-1.5 sm:left-1.5 px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>              <div class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 z-20 pointer-events-none w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
+              <div class="absolute bottom-0.5 left-0.5 sm:bottom-1.5 sm:left-1.5 px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
+              ${buffModes(r).length > 1 ? `<div class="roster-mode">${modePairHtml(r, { click: true })}</div>` : ''}              <div class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 z-20 pointer-events-none w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
               <div class="absolute top-1.5 right-1.5 z-20 pointer-events-none hidden sm:block"><div class="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold border shadow-sm ${roleMeta.tagClass}">${roleMeta.label}</div></div>
             </div>
             <div class="w-full text-center sm:text-left space-y-0.5 px-0 sm:px-1 pb-0.5 sm:pb-1">
-              <div class="roster-name"><span class="text-[10px] sm:text-[13px] font-black text-slate-100 truncate" style="min-width:0">${esc(r.name)}</span>${modeDotHtml(r, true)}</div>
+              <div class="roster-name"><span class="text-[10px] sm:text-[13px] font-black text-slate-100 truncate" style="min-width:0">${esc(r.name)}</span></div>
               <div class="hidden sm:block text-[11px] font-bold theme-attack-text truncate">${esc(r.mainDmg)}</div>
               ${kwText ? `<div class="hidden sm:block text-[11px] theme-buff-text truncate leading-tight" title="${esc(kwText)}">${esc(kwText)}</div>` : ''}
             </div>
@@ -1972,9 +1975,11 @@
               <div class="flex items-center gap-0 sm:gap-2.5 w-full h-full min-w-0">
                 <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')" title="눌러서 세부 정보 보기" class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
                   <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
-                  <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>                </div>
+                  <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
+                  ${buffModes(r).length > 1 ? `<div class="roster-mode">${modePairHtml(r, { click: true })}</div>` : ''}
+                </div>
                 <div class="slot-info hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
-                  <div class="flex items-center min-w-0 pr-5" style="gap:6px"><span class="text-sm font-black text-white truncate" style="min-width:0">${esc(r.name)}</span>${modeDotHtml(r)}</div>
+                  <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
                   <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
                 </div>
