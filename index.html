@@ -58,14 +58,22 @@
     .mode-pair .on { filter: drop-shadow(0 0 3px #f5c451); }
     .mode-pair.click { cursor: pointer; }
     .mode-pair.click:hover { border-color: #f5c451; }
-    .mode-pair.big { gap: 6px; padding: 5px 10px; }
-    .mode-pair.big img { width: 24px; height: 24px; }
-    .mode-pair.big i { font-size: 12px; }
-    .mode-box { position: absolute; top: 12px; left: 12px; z-index: 20; display: flex; align-items: center; gap: 8px; }
-    .mode-box small { display: block; font-size: 10px; font-weight: 700; color: #cbd5e1; text-shadow: 0 1px 3px #000; }
-    .mode-box strong { display: block; font-size: 13px; font-weight: 900; color: #f5c451; text-shadow: 0 1px 3px #000; }
+    .mode-pair.mid { gap: 4px; padding: 3px 8px; }
+    .mode-pair.mid img { width: 20px; height: 20px; }
+    .mode-pair.mid i { font-size: 11px; }
+    .mode-pair.big { gap: 9px; padding: 7px 14px; }
+    .mode-pair.big img { width: 34px; height: 34px; }
+    .mode-pair.big i { font-size: 15px; }
+    .mode-box { position: absolute; top: 14px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 10px; }
+    .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #cbd5e1; text-shadow: 0 1px 3px #000; }
+    .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 1px 3px #000; }
     .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; }
-    .buff-note { margin-top: -3px; padding-left: 4px; font-size: 10px; color: #64748b; line-height: 1.35; word-break: keep-all; }
+    .buff-note { font-size: 12px; font-weight: 700; color: #f1f5f9; line-height: 1.4; word-break: keep-all; }
+    /* 추천 무기 좌우 넘김: 가장자리 그라데이션 위에 화살표만 */
+    .wp-edge { position: absolute; top: 0; bottom: 4px; width: 44px; align-items: center; color: #e2e8f0; cursor: pointer; z-index: 5; transition: color .15s; }
+    .wp-edge:hover { color: #fbbf24; }
+    .wp-edge.l { left: -4px; justify-content: flex-start; background: linear-gradient(90deg, #121622 25%, rgba(18, 22, 34, 0)); }
+    .wp-edge.r { right: -4px; justify-content: flex-end; background: linear-gradient(270deg, #121622 25%, rgba(18, 22, 34, 0)); }
     .circuit-sub { font-size: 10px; font-weight: 600; color: #64748b; letter-spacing: .02em; margin-top: 1px; }
 
     html:not(.is-admin) .admin-only { display: none !important; }
@@ -333,8 +341,8 @@
             <span class="text-base font-black text-white block mb-1.5">추천 무기</span>
             <div class="relative">
               <div id="detail-modal-weapons" onscroll="updateScrollHint(this)" class="flex flex-wrap md:flex-nowrap items-stretch gap-2.5 pt-0.5 overflow-x-auto no-scrollbar w-full pb-1 cursor-grab active:cursor-grabbing select-none"></div>
-              <button type="button" data-scroll-hint="detail-modal-weapons" data-dir="-1" onclick="scrollWeapons(-1)" class="hidden absolute -left-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full bg-[#0b0f17]/90 border border-slate-600 text-slate-200 shadow-lg hover:border-amber-400 hover:text-amber-300 transition" aria-label="이전 무기"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-              <button type="button" data-scroll-hint="detail-modal-weapons" data-dir="1" onclick="scrollWeapons(1)" class="hidden absolute -right-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full bg-[#0b0f17]/90 border border-slate-600 text-slate-200 shadow-lg hover:border-amber-400 hover:text-amber-300 transition" aria-label="다음 무기"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              <button type="button" data-scroll-hint="detail-modal-weapons" data-dir="-1" onclick="scrollWeapons(-1)" class="hidden wp-edge l" aria-label="이전 무기"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+              <button type="button" data-scroll-hint="detail-modal-weapons" data-dir="1" onclick="scrollWeapons(1)" class="hidden wp-edge r" aria-label="다음 무기"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
             </div>
           </div>
           <div id="detail-modal-teammates-box" class="bg-[#121622] rounded-2xl p-4 border border-[#21293b] space-y-2 overflow-hidden">
@@ -853,19 +861,19 @@
     const splitKeywords = (s) => [...new Set(String(s ?? '').split(/[,·]/).map(k => k.trim()).filter(Boolean))];
     const normalizeKeywords = (s) => splitKeywords(s).join(', ');
     // 공명 모드가 있는 공명자(에이메스·데니아 등)는 고른 모드의 버프·키워드만 보여 줌. 모드가 비어 있는 버프는 항상 표시
-    const MODE_ICONS = { '서리': 'T_Iconpropertyblueice_UI', '불꽃': 'T_Iconpropertybluehot_UI', '전자': 'T_Iconpropertybluemine_UI', '에코': 'T_Iconpropertyabsorbup_UI', '조화 밀집': 'T_IconComBuff01', '조화 파동': 'T_IconComBuff03', '합일': 'T_IconComBuff08' };
+    const MODE_ICONS = { '서리': 'T_IconElementIce1_UI', '불꽃': 'T_IconElementFire1_UI', '전자': 'T_IconElementThunder1_UI', '에코': 'T_Iconpropertyabsorbup_UI', '조화 밀집': 'T_IconComBuff01', '조화 파동': 'T_IconComBuff03', '합일': 'T_IconComBuff08' };
     const MODE_KEY = 'wuwa_buff_modes';
     let selectedModes = storage.get(MODE_KEY, {});
     const buffModes = (r) => [...new Set((r.buffs || []).map(b => (b.mode || '').trim()).filter(Boolean))];
     const currentMode = (r) => { const m = buffModes(r); return m.includes(selectedModes[r.id]) ? selectedModes[r.id] : (m[0] || ''); };
-    function modePairHtml(r, { big = false, click = false } = {}) {
+    function modePairHtml(r, { big = false, mid = false, click = false } = {}) {
       const modes = buffModes(r);
       if (modes.length < 2) return '';
       const cur = currentMode(r);
       const icon = (m) => MODE_ICONS[m]
         ? `<img src="${resolveImageUrl(MODE_ICONS[m], 'icon')}" alt="${esc(m)}" class="${m === cur ? 'on' : 'off'}" crossorigin="anonymous">`
         : `<b class="${m === cur ? 'on' : 'off'}">${esc(m.slice(0, 2))}</b>`;
-      return `<span class="mode-pair${big ? ' big' : ''}${click ? ' click' : ''}" title="공명 모드: ${esc(modes.join(' / '))}${click ? ' (눌러서 전환)' : ''}"${click ? ` onclick="event.stopPropagation(); cycleMode('${r.id}')"` : ''}>${modes.map(icon).join('<i>⇄</i>')}</span>`;
+      return `<span class="mode-pair${big ? ' big' : ''}${mid ? ' mid' : ''}${click ? ' click' : ''}" title="공명 모드: ${esc(modes.join(' / '))}${click ? ' (눌러서 전환)' : ''}"${click ? ` onclick="event.stopPropagation(); cycleMode('${r.id}')"` : ''}>${modes.map(icon).join('<i>⇄</i>')}</span>`;
     }
     function cycleMode(resId) {
       const r = RAW_RESONATORS.find(x => x.id === resId);
@@ -1919,8 +1927,8 @@
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
                 </div>
                 <div class="hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
-                  <div class="text-sm font-black text-white truncate pr-5">${esc(r.name)}</div>
-                  <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span> ${modePairHtml(r)}</div>
+                  <div class="flex flex-wrap items-center min-w-0 pr-5" style="gap:2px 6px"><span class="text-sm font-black text-white truncate" style="min-width:3.2em;flex:0 1 auto">${esc(r.name)}</span><span class="flex-shrink-0" draggable="false">${modePairHtml(r, { mid: true, click: true })}</span></div>
+                  <div class="min-w-0"><span class="inline-block max-w-full truncate align-top px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold theme-attack-text whitespace-nowrap">${esc(r.mainDmg || '기본 공격')}</span></div>
                   <div class="text-[11px] theme-buff-text font-medium leading-snug line-clamp-2 break-keep">${esc(keywordsWithoutMainDmg(r).join(' · '))}</div>
                 </div>
               </div>
@@ -2129,7 +2137,7 @@
           <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
           <span class="font-black ${b.target === '적' ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
           ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">(${esc(b.note)})</span>` : ''}
-        </div>${b.note && b.note.length > 8 ? `<div class="buff-note">└ ${esc(b.note)}</div>` : ''}`).join('');
+        </div>${b.note && b.note.length > 8 ? `<div class="buff-note">${esc(b.note)}</div>` : ''}`).join('');
     }
 
     function openDetailModal(resId) {
