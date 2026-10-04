@@ -571,8 +571,8 @@
                 </div>
                 <div><label class="block text-xs font-bold text-slate-300 mb-1">주 공격 유형</label><input type="text" id="edit-maindmg" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></div>
                 <div class="sm:col-span-2">
-                  <label class="block text-xs font-bold text-slate-300 mb-1">특수 키워드 <span class="font-medium text-slate-500">(특수 판정·메커니즘, · 로 구분)</span></label>
-                  <input type="text" id="edit-buffsummary" placeholder="예: 협동 공격 · 견인" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                  <label class="block text-xs font-bold text-slate-300 mb-1">특수 키워드 <span class="font-medium text-slate-500">(특수 판정·메커니즘, 쉼표(,)로 구분)</span></label>
+                  <input type="text" id="edit-buffsummary" placeholder="예: 협동 공격, 견인" class="w-full bg-[#171d2b] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
                 </div>
                 <div class="sm:col-span-2">
                   <div class="flex items-center justify-between mb-1">
@@ -827,8 +827,11 @@
       if (at) stat = at === '에코 어빌리티' ? '에코 피해' : at;
       return `${b.target === '적' ? '적 ' : ''}${stat} ${b.verb ?? '증가'}`.trim();
     }
+    // 키워드 입력은 ',' 또는 '·' 로 구분 (중복 제거). 저장할 때는 ', ' 로 통일
+    const splitKeywords = (s) => [...new Set(String(s ?? '').split(/[,·]/).map(k => k.trim()).filter(Boolean))];
+    const normalizeKeywords = (s) => splitKeywords(s).join(', ');
     function resonatorKeywords(r) {
-      const list = (r.buffSummary || '').split(/[·,]/).map(s => s.trim()).filter(Boolean);
+      const list = splitKeywords(r.buffSummary);
       // 같은 스탯이 '부스트'와 '증가' 둘 다 있으면 카드에는 하나만 (상세는 세부 창 버프 목록에서)
       const seen = new Set();
       [...(r.buffs || [])].sort((a, b) => (a.verb === '부스트' ? 0 : 1) - (b.verb === '부스트' ? 0 : 1)).forEach(b => {
@@ -1448,8 +1451,8 @@
             </div>
 
             <div>
-              <label class="block text-[11px] font-bold text-slate-300 mb-1">주요 키워드</label>
-              <input type="text" value="${esc(wp.buffSummary)}" onchange="updateWeapon('${wp.id}', 'buffSummary', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-rose-400" placeholder="">
+              <label class="block text-[11px] font-bold text-slate-300 mb-1">주요 키워드 <span class="font-medium text-slate-500">(쉼표(,)로 구분)</span></label>
+              <input type="text" value="${esc(wp.buffSummary)}" onchange="this.value = normalizeKeywords(this.value); updateWeapon('${wp.id}', 'buffSummary', this.value)" class="w-full bg-[#0a0d14] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-rose-400" placeholder="예: 공격력 증가, 강공격 피해 증가">
             </div>
 
             <div class="h-px bg-slate-700/80 w-full my-0.5"></div>
@@ -1579,7 +1582,7 @@
         const rankTagClass = rs.tag;
         const typeTagClass = 'bg-[#181d28] border-slate-700/80 text-slate-400';
 
-        const summaryText = wp.buffSummary?.trim() || '';
+        const summaryText = esc(splitKeywords(wp.buffSummary).join(' · '));
 
         return `
           <div data-name="${esc(wp.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="bg-[#121622] border ${rankBorderClass} rounded-xl sm:rounded-2xl p-1.5 sm:p-4 flex flex-col justify-between h-full cursor-pointer transition-all active:scale-[0.98] shadow-xl group">
@@ -2560,7 +2563,7 @@
       setVal('edit-role', char.role || 'main');
       setVal('edit-weapontype', char.weaponType || '직검');
       setVal('edit-maindmg', char.mainDmg);
-      setVal('edit-buffsummary', char.buffSummary);
+      setVal('edit-buffsummary', normalizeKeywords(char.buffSummary));
       setVal('edit-avatar-url', toShortImageInput(char.avatar || '', 'character'));
       setVal('edit-sprite-url', toShortImageInput(char.sprite || '', 'character'));
 
@@ -2694,7 +2697,7 @@
         role: document.getElementById('edit-role').value,
         weaponType: document.getElementById('edit-weapontype').value || '직검',
         mainDmg: document.getElementById('edit-maindmg').value.trim(),
-        buffSummary: document.getElementById('edit-buffsummary').value.trim(),
+        buffSummary: normalizeKeywords(document.getElementById('edit-buffsummary').value),
         avatar: resolveImageUrl(document.getElementById('edit-avatar-url').value, 'character') || RAW_RESONATORS[idx].avatar,
         sprite: resolveImageUrl(document.getElementById('edit-sprite-url').value, 'character') || RAW_RESONATORS[idx].sprite,
         echoSet: currentEchoBuilds[0],
