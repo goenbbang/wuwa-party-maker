@@ -68,7 +68,7 @@
     .mode-box small { display: block; font-size: 11px; font-weight: 700; color: #cbd5e1; text-shadow: 0 1px 3px #000; }
     .mode-box strong { display: block; font-size: 16px; font-weight: 900; color: #f5c451; text-shadow: 0 1px 3px #000; }
     .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; }
-    .buff-note { font-size: 12px; font-weight: 700; color: #f1f5f9; line-height: 1.4; word-break: keep-all; }
+    .buff-note { margin-top: 2px; font-size: 12px; font-weight: 700; color: #f1f5f9; line-height: 1.4; word-break: keep-all; }
     /* 추천 무기 좌우 넘김: 가장자리 그라데이션 위에 화살표만 */
     .wp-edge { position: absolute; top: 0; bottom: 4px; width: 44px; align-items: center; color: #e2e8f0; cursor: pointer; z-index: 5; transition: color .15s; }
     .wp-edge:hover { color: #fbbf24; }
@@ -2121,6 +2121,8 @@
       lucide.createIcons();
     }
 
+    // 버프 수치 색: 적의 무언가를 깎는 것(감소 · 방어력/저항 무시)은 빨간색, 나머지는 파란색
+    const isEnemyReduction = (b) => b.verb === '감소' || /무시/.test(b.stat || '');
     // 세부 창에서 모드에 따라 달라지는 부분(모드 알약 · 키워드 · 버프 목록)만 다시 그림
     let detailCharId = null;
     function renderDetailMode(char) {
@@ -2131,13 +2133,18 @@
       document.getElementById('detail-modal-buffs-card').classList.toggle('hidden', !buffs.length);
       document.getElementById('detail-modal-buffs-count').textContent = buffs.length || '';
       document.getElementById('detail-modal-buffs').innerHTML = buffs.map(b => `
-        <div class="flex items-center gap-2 text-xs min-w-0">
+        <div class="flex items-start gap-2 text-xs min-w-0">
           <span class="px-1.5 py-0.5 rounded-md bg-[#1a2030] border border-slate-700 text-[10px] font-bold text-slate-300 whitespace-nowrap flex-shrink-0">${esc(b.source)}</span>
-          <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
-          <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
-          <span class="font-black ${b.target === '적' ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
-          ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">(${esc(b.note)})</span>` : ''}
-        </div>${b.note && b.note.length > 8 ? `<div class="buff-note">${esc(b.note)}</div>` : ''}`).join('');
+          <div class="min-w-0 flex-1" style="padding-top:2px">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
+              <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
+              <span class="font-black ${isEnemyReduction(b) ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
+              ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">(${esc(b.note)})</span>` : ''}
+            </div>
+            ${b.note && b.note.length > 8 ? `<div class="buff-note">${esc(b.note)}</div>` : ''}
+          </div>
+        </div>`).join('');
     }
 
     function openDetailModal(resId) {
