@@ -406,7 +406,7 @@
       "buffs": [
         {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공격력", "value": "최대 50%", "verb": "증가"},
-        {"source": "반주 스킬", "target": "등장 캐릭터", "stat": "입히는 피해", "value": "최대 12%", "verb": "증가"},
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "최대 12%", "verb": "증가"},
         {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 피해 방어력 무시", "value": "6%", "verb": ""},
         {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 저항 무시", "value": "12%", "verb": ""},
         {"source": "공명 해방", "target": "적", "stat": "이상 효과 스택 최대치", "value": "3스택", "verb": "증가"}
@@ -669,7 +669,7 @@
       "buffs": [
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "용융 피해", "value": "20%", "verb": "부스트"},
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "일반 공격 피해", "value": "25%", "verb": "부스트"},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "공격력", "value": "최대 18%", "verb": "증가"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "공격력", "value": "최대 18%", "verb": "증가", "note": "기본 6%, 변주 스킬 발동마다 6% 추가"},
         {"source": "공명 해방", "target": "파티 전체", "stat": "용융 피해", "value": "최대 20%", "verb": "증가"}
       ],
       "avatar": "Lupa/T_IconRoleHead256_46_UI",
@@ -744,7 +744,7 @@
       "buffs": [
         {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
         {"source": "공명 해방", "target": "파티 전체", "stat": "방어력", "value": "20%", "verb": "증가"},
-        {"source": "공명 회로", "target": "파티 전체", "stat": "입히는 피해", "value": "최대 40%", "verb": "증가"},
+        {"source": "공명 회로", "target": "적", "stat": "받는 피해", "value": "최대 40%", "verb": "증가"},
         {"source": "공명 회로", "target": "파티 전체", "stat": "부조화 수치 누적 효율", "value": "50%", "verb": "증가"},
         {"source": "조화도 파괴", "target": "적", "stat": "조화 밀집 · 간섭 스택 최대치", "value": "1스택", "verb": "증가"}
       ],
@@ -1208,7 +1208,7 @@
       "buffSummary": "전자",
       "buffs": [
         {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
-        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "공명 스킬 피해", "value": "최대 25%", "verb": "증가"}
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "공명 스킬 피해", "value": "10%", "verb": "증가", "note": "천지인 합일 상태에서 25%"}
       ],
       "avatar": "Buling/T_IconRoleHead256_58_UI",
       "sprite": "Buling/T_IconRole_Pile_Buling_UI",
@@ -1240,7 +1240,7 @@
       "buffSummary": "해킹 대응",
       "buffs": [
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "최대 35%", "verb": "부스트"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "최대 35%", "verb": "부스트", "note": "0.2초마다 0.5%씩 누적, 루시는 즉시 최대"},
         {"source": "고유 스킬", "target": "파티 전체", "stat": "공격력", "value": "20%", "verb": "증가"},
         {"source": "고유 스킬", "target": "파티 전체", "stat": "조화도 파괴 증폭", "value": "30pt", "verb": "증가"}
       ],
