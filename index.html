@@ -791,6 +791,7 @@
 
     // ── 공용 상수 (여러 곳에 흩어져 있던 목록을 한 곳으로) ──
     const IMG_PREFIX = { character: 'characters/', weapon: 'weapons/', echo: 'echoes/', set: 'sets/', icon: 'icons/' };
+    const ICON_DIRS = [[/^T_ChipIcon/i, 'IconChip'], [/^T_Iconproperty/i, 'IconProperty'], [/^T_RogueSkill/i, 'IconRogueSkill'], [/^T_IconComBuff/i, 'IconFightBuff'], [/^T_IconDevice|^T_IconJiaBeiLiNaM/i, 'IconDevice'], [/^T_IconLevelBuff/i, 'IconLevelBuff'], [/^T_IconRogueFettersBuff/i, 'IconRogueFettersBuff'], [/^T_IconElement/i, 'IconElementRound']];
     const SKILL_NAMES = ['기본 공격', '공명 스킬', '공명 회로', '공명 해방', '변주 스킬']; // 육성 탭 s1~s5 순서 & 기본 스킬 우선순위
     const WEAPON_TYPES = ['직검', '대검', '권총', '권갑', '증폭기'];
     const STAT_META = {
@@ -841,7 +842,7 @@
       return list;
     }
     const keywordsWithoutMainDmg = (r) => resonatorKeywords(r).filter(k => k !== r.mainDmg && k !== `${r.mainDmg} 피해`);
-    const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '공명 체인'];
+    const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '조화도 파괴', '공명 체인'];
     const BUFF_TARGETS = ['다음 캐릭터', '파티 전체', '등장 캐릭터', '자신', '적'];
     const byName = (a, b) => KO.compare(a.name || '', b.name || '');
     const findWeapon = (name) => WEAPONS.find(w => w.name === name);
@@ -884,6 +885,11 @@
       const ext = /\.(png|jpg|jpeg|webp|gif|svg)$/i.test(val) ? '' : IMG_EXT;
       const prefix = IMG_PREFIX[type] || '';
       if (prefix) val = val.replace(new RegExp(`^${prefix}`, 'i'), '');
+      // 아이콘은 종류별 하위 폴더에 있음. 파일명만 입력해도 이름 앞부분으로 폴더를 찾아 줌
+      if (type === 'icon' && !val.includes('/')) {
+        const dir = ICON_DIRS.find(([re]) => re.test(val));
+        if (dir) val = `${dir[1]}/${val}`;
+      }
       return `${GITHUB_IMG_BASE}${prefix}${val}${ext}`;
     }
 
@@ -2056,6 +2062,28 @@
       lucide.createIcons();
     }
 
+    // 공명 모드가 있는 공명자(에이메스·데니아 등)는 모드별로 버프를 나눠 봄. 모드가 비어 있는 버프는 항상 표시
+    const MODE_ICONS = { '서리': 'T_Iconpropertyblueice_UI', '불꽃': 'T_Iconpropertybluehot_UI', '전자': 'T_Iconpropertybluemine_UI', '에코': 'T_Iconpropertyabsorbup_UI', '조화 밀집': 'T_IconComBuff01', '조화 파동': 'T_IconComBuff03', '합일': 'T_IconComBuff08' };
+    const buffModes = (r) => [...new Set((r.buffs || []).map(b => (b.mode || '').trim()).filter(Boolean))];
+    function renderDetailBuffs(char, mode) {
+      const buffs = char.buffs || [], modes = buffModes(char);
+      const cur = modes.includes(mode) ? mode : modes[0];
+      const tabs = modes.length ? `
+        <div class="flex flex-wrap gap-1 mb-1">${modes.map(m => `
+          <button type="button" data-mode="${esc(m)}" onclick="renderDetailBuffs(RAW_RESONATORS.find(r => r.id === '${char.id}'), this.dataset.mode)" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border text-[10px] font-bold transition ${m === cur ? 'bg-sky-500/20 border-sky-400 text-white' : 'bg-[#1a2030] border-slate-700 text-slate-400 hover:text-slate-200'}">
+            ${MODE_ICONS[m] ? `<img src="${resolveImageUrl(MODE_ICONS[m], 'icon')}" alt="" class="w-3.5 h-3.5 object-contain pointer-events-none" crossorigin="anonymous">` : ''}${esc(m)}
+          </button>`).join('')}
+        </div>` : '';
+      document.getElementById('detail-modal-buffs').innerHTML = tabs + buffs.filter(b => !b.mode || b.mode === cur).map(b => `
+        <div class="flex items-center gap-2 text-xs min-w-0">
+          <span class="px-1.5 py-0.5 rounded-md bg-[#1a2030] border border-slate-700 text-[10px] font-bold text-slate-300 whitespace-nowrap flex-shrink-0">${esc(b.source)}</span>
+          <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
+          <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
+          <span class="font-black ${b.target === '적' ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
+          ${b.note && b.note.length <= 8 ? `<span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">(${esc(b.note)})</span>` : ''}
+        </div>${b.note && b.note.length > 8 ? `<div class="-mt-1 pl-1 text-[10px] text-slate-500 leading-snug break-keep">└ ${esc(b.note)}</div>` : ''}`).join('');
+    }
+
     function openDetailModal(resId) {
       const char = RAW_RESONATORS.find(r => r.id === resId);
       if (!char) return;
@@ -2076,13 +2104,7 @@
       document.getElementById('detail-modal-buffs-count').textContent = buffs.length || '';
       document.getElementById('detail-modal-buffs-icon').src = resolveImageUrl('T_Iconpropertyredphysics_UI', 'icon');
       toggleDetailBuffs(false);
-      document.getElementById('detail-modal-buffs').innerHTML = buffs.map(b => `
-        <div class="flex items-center gap-2 text-xs min-w-0">
-          <span class="px-1.5 py-0.5 rounded-md bg-[#1a2030] border border-slate-700 text-[10px] font-bold text-slate-300 whitespace-nowrap flex-shrink-0">${esc(b.source)}</span>
-          <span class="text-slate-400 whitespace-nowrap flex-shrink-0">${esc(b.target)}</span>
-          <span class="font-bold text-slate-100 truncate">${esc(b.stat)}</span>
-          <span class="font-black ${b.target === '적' ? 'text-rose-300' : 'theme-buff-text'} whitespace-nowrap">${esc(b.value)} ${esc(b.verb)}</span>
-        </div>`).join('');
+      renderDetailBuffs(char);
 
       renderDetailEcho(char, 0);
 
@@ -2536,11 +2558,16 @@
       const sel = (i, f, opts) => `<select onchange="currentEditBuffs[${i}].${f} = this.value" class="bg-[#10141f] border border-slate-700 rounded-lg px-1.5 py-1.5 text-[11px] text-white">${opts.map(o => `<option ${currentEditBuffs[i][f] === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
       const inp = (i, f, ph, w) => `<input type="text" value="${esc(currentEditBuffs[i][f])}" placeholder="${ph}" onchange="currentEditBuffs[${i}].${f} = this.value.trim()" class="${w} min-w-0 bg-[#10141f] border border-slate-700 rounded-lg px-2 py-1.5 text-[11px] text-white">`;
       c.innerHTML = currentEditBuffs.map((b, i) => `
-        <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-[#161a25] border border-slate-700/80">
-          ${sel(i, 'source', BUFF_SOURCES)}${sel(i, 'target', BUFF_TARGETS)}
-          ${inp(i, 'stat', '예: 일반 공격 피해', 'flex-1')}${inp(i, 'value', '38%', 'w-14')}
-          ${sel(i, 'verb', ['부스트', '증가', '감소'])}
-          <button type="button" onclick="currentEditBuffs.splice(${i}, 1); renderEditorBuffs()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+        <div class="flex flex-col gap-1.5 p-1.5 rounded-xl bg-[#161a25] border border-slate-700/80">
+          <div class="flex items-center gap-1.5">
+            ${sel(i, 'source', BUFF_SOURCES)}${sel(i, 'target', BUFF_TARGETS)}
+            ${inp(i, 'stat', '예: 일반 공격 피해', 'flex-1')}${inp(i, 'value', '38%', 'w-14')}
+            ${sel(i, 'verb', ['부스트', '증가', '감소', ''])}
+            <button type="button" onclick="currentEditBuffs.splice(${i}, 1); renderEditorBuffs()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <div class="flex items-center gap-1.5">
+            ${inp(i, 'mode', '공명 모드 (예: 불꽃, 없으면 비움)', 'flex-1')}${inp(i, 'note', '비고 (예: 최대 4스택)', 'flex-1')}
+          </div>
         </div>`).join('');
       lucide.createIcons();
     }
@@ -2704,7 +2731,7 @@
         skillPriority: currentSkillPriority,
         weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => ({ name: w.name, ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null && w.pct !== '' ? { pct: Number(w.pct) } : {}) })),
         teammates: currentEditTeammates.filter(t => t?.id?.trim()).map(t => ({ id: t.id.trim() })),
-        buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb })),
+        buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb, ...(b.mode?.trim() ? { mode: b.mode.trim() } : {}), ...(b.note?.trim() ? { note: b.note.trim() } : {}) })),
         targetStats: {
           type: document.getElementById('edit-target-type').value,
           base: parseFloat(document.getElementById('edit-target-base').value) || 0,

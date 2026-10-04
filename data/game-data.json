@@ -297,8 +297,7 @@
       "mainDmg": "공명 해방",
       "buffSummary": "서리",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "응결 피해", "value": "20%", "verb": "부스트"},
-        {"source": "고유 스킬", "target": "적", "stat": "냉해 효과 받는 피해", "value": "최대 60%", "verb": "부스트"}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "응결 피해", "value": "20%", "verb": "부스트"}
       ],
       "avatar": "Hiyuki/T_IconRoleHead256_67_UI",
       "sprite": "Hiyuki/T_IconRole_Pile_FeiXue_UI",
@@ -335,11 +334,11 @@
       "mainDmg": "일반 공격",
       "buffSummary": "에코 어빌리티 피해, 서리",
       "buffs": [
-        {"source": "반주 스킬", "target": "적", "stat": "서리 효과 받는 피해", "value": "60%", "verb": "부스트"},
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "에코 어빌리티 피해", "value": "50%", "verb": "부스트"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "에코 어빌리티 피해", "value": "25%", "verb": "증가"},
-        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "에코 어빌리티 크리티컬 피해", "value": "최대 40%", "verb": "증가"},
-        {"source": "고유 스킬", "target": "적", "stat": "응결 피해 저항", "value": "8%", "verb": "감소"}
+        {"source": "반주 스킬", "target": "적", "stat": "서리 효과 받는 피해", "value": "60%", "verb": "부스트", "mode": "서리"},
+        {"source": "고유 스킬", "target": "적", "stat": "응결 피해 저항", "value": "8%", "verb": "감소", "mode": "서리"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "에코 어빌리티 피해", "value": "50%", "verb": "부스트", "mode": "에코"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "에코 어빌리티 피해", "value": "25%", "verb": "증가", "mode": "에코"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "에코 어빌리티 크리티컬 피해", "value": "10%", "verb": "증가", "mode": "에코", "note": "최대 4스택"}
       ],
       "avatar": "Lucilla/T_IconRoleHead256_66_UI",
       "sprite": "Lucilla/T_IconRole_Pile_luosela_UI",
@@ -408,8 +407,9 @@
         {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공격력", "value": "최대 50%", "verb": "증가"},
         {"source": "반주 스킬", "target": "등장 캐릭터", "stat": "입히는 피해", "value": "최대 12%", "verb": "증가"},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 피해 방어력 무시", "value": "6%", "verb": ""},
-        {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 저항 무시", "value": "12%", "verb": ""}
+        {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 피해 방어력 무시", "value": "6%", "verb": "", "note": "장판 안"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "인멸 저항 무시", "value": "12%", "verb": "", "note": "장판 안"},
+        {"source": "공명 해방", "target": "적", "stat": "이상 효과 스택 최대치", "value": "3스택", "verb": "증가", "note": "장판 안"}
       ],
       "avatar": "Suisui/T_IconRoleHead256_71_UI",
       "sprite": "Suisui/T_IconRole_Pile_SuiSui_UI",
@@ -745,7 +745,8 @@
         {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
         {"source": "공명 해방", "target": "파티 전체", "stat": "방어력", "value": "20%", "verb": "증가"},
         {"source": "공명 회로", "target": "파티 전체", "stat": "입히는 피해", "value": "최대 40%", "verb": "증가"},
-        {"source": "공명 회로", "target": "파티 전체", "stat": "부조화 수치 누적 효율", "value": "50%", "verb": "증가"}
+        {"source": "공명 회로", "target": "파티 전체", "stat": "부조화 수치 누적 효율", "value": "50%", "verb": "증가"},
+        {"source": "조화도 파괴", "target": "적", "stat": "조화 밀집 · 간섭 스택 최대치", "value": "1스택", "verb": "증가"}
       ],
       "avatar": "Mornye/T_IconRoleHead256_61_UI",
       "sprite": "Mornye/T_IconRole_Pile_Moning_UI",
@@ -791,7 +792,10 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "조화 파동 대응, 불꽃",
-      "buffs": [{"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "10%", "verb": "부스트"}],
+      "buffs": [
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "10%", "verb": "부스트", "mode": "조화 파동", "note": "조화 파동 · 이탈 추가 시 20%"},
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "10%", "verb": "부스트", "mode": "불꽃", "note": "불꽃 효과 추가 시 20%"}
+      ],
       "avatar": "Aemeath/T_IconRoleHead256_53_UI",
       "sprite": "Aemeath/T_IconRole_Pile_Aimisi_UI",
       "echoSet": {
@@ -827,9 +831,11 @@
       "mainDmg": "공명 해방",
       "buffSummary": "견인, 불꽃, 조화도 파괴 증폭, 조화 밀집 대응",
       "buffs": [
-        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
-        {"source": "고유 스킬", "target": "파티 전체", "stat": "용융 피해", "value": "30%", "verb": "증가"},
-        {"source": "반주 스킬", "target": "적", "stat": "불꽃 효과 받는 피해", "value": "60%", "verb": "부스트"}
+        {"source": "반주 스킬", "target": "적", "stat": "불꽃 효과 받는 피해", "value": "60%", "verb": "부스트", "mode": "불꽃"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "용융 피해", "value": "30%", "verb": "증가", "mode": "불꽃"},
+        {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트", "mode": "조화 밀집", "note": "조화 밀집 · 이탈 추가 시 40%"},
+        {"source": "고유 스킬", "target": "파티 전체", "stat": "조화도 파괴 증폭", "value": "10pt", "verb": "증가", "mode": "조화 밀집"},
+        {"source": "조화도 파괴", "target": "적", "stat": "조화 밀집 · 간섭 스택 최대치", "value": "1스택", "verb": "증가"}
       ],
       "avatar": "Denia/T_IconRoleHead256_64_UI",
       "sprite": "Denia/T_IconRole_Pile_daniya_UI",
@@ -1332,8 +1338,8 @@
       "mainDmg": "공명 스킬",
       "buffSummary": "합일, 전자, 협동 공격",
       "buffs": [
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "20%", "verb": "부스트"},
-        {"source": "반주 스킬", "target": "파티 전체", "stat": "전도 피해", "value": "20%", "verb": "부스트"}
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "20%", "verb": "부스트", "mode": "합일"},
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전도 피해", "value": "20%", "verb": "부스트", "mode": "전자"}
       ],
       "avatar": "Hsin/T_IconRoleHead256_75_UI",
       "sprite": "Hsin/T_IconRole_Pile_Xin_UI",
@@ -1707,10 +1713,7 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "풍식, 견인",
-      "buffs": [
-        {"source": "반주 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "17.5%", "verb": "부스트"},
-        {"source": "공명 해방", "target": "적", "stat": "풍식 효과 받는 피해", "value": "50%", "verb": "부스트"}
-      ],
+      "buffs": [{"source": "반주 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "17.5%", "verb": "부스트"}],
       "avatar": "Cartethyia/T_IconRoleHead256_40_UI",
       "sprite": "Cartethyia/T_IconRole_Pile_katixiya_UI",
       "echoSet": {
@@ -1741,7 +1744,7 @@
       "buffSummary": "",
       "buffs": [
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "강공격 피해", "value": "50%", "verb": "부스트"},
-        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "전체 피해", "value": "최대 40%", "verb": "부스트"}
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "전체 피해", "value": "4%", "verb": "부스트", "note": "최대 10스택"}
       ],
       "avatar": "Iuno/T_IconRoleHead256_48_UI",
       "sprite": "Iuno/T_IconRole_Pile_younuo_UI",
@@ -1843,8 +1846,8 @@
       "mainDmg": "에코 어빌리티",
       "buffSummary": "견인, 에코 어빌리티 피해",
       "buffs": [
-        {"source": "고유 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "최대 18%", "verb": "증가"},
-        {"source": "고유 스킬", "target": "등장 캐릭터", "stat": "에코 어빌리티 피해", "value": "최대 18%", "verb": "증가"}
+        {"source": "고유 스킬", "target": "등장 캐릭터", "stat": "기류 피해", "value": "3%", "verb": "증가", "note": "최대 6스택"},
+        {"source": "고유 스킬", "target": "등장 캐릭터", "stat": "에코 어빌리티 피해", "value": "3%", "verb": "증가", "note": "최대 6스택"}
       ],
       "avatar": "Sigrika/T_IconRoleHead256_65_UI",
       "sprite": "Sigrika/T_IconRole_Pile_xigelika_UI",
@@ -2170,7 +2173,10 @@
       "rarity": 5,
       "mainDmg": "공명 해방",
       "buffSummary": "암흑",
-      "buffs": [{"source": "공명 회로", "target": "적", "stat": "방어력 무시", "value": "18%", "verb": ""}],
+      "buffs": [
+        {"source": "공명 회로", "target": "적", "stat": "방어력 무시", "value": "18%", "verb": ""},
+        {"source": "반주 스킬", "target": "적", "stat": "이상 효과 스택 최대치", "value": "3스택", "verb": "증가"}
+      ],
       "avatar": "Chisa/T_IconRoleHead256_57_UI",
       "sprite": "Chisa/T_IconRole_Pile_Qianxiao_UI",
       "echoSet": {
@@ -2225,7 +2231,8 @@
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "전체 피해", "value": "15%", "verb": "부스트"},
         {"source": "반주 스킬", "target": "다음 캐릭터", "stat": "공명 해방 피해", "value": "25%", "verb": "부스트"},
         {"source": "공명 해방", "target": "파티 전체", "stat": "전체 피해", "value": "24%", "verb": "증가"},
-        {"source": "공명 회로", "target": "파티 전체", "stat": "조화도 파괴 증폭", "value": "40pt", "verb": "증가"}
+        {"source": "공명 회로", "target": "파티 전체", "stat": "조화도 파괴 증폭", "value": "40pt", "verb": "증가"},
+        {"source": "조화도 파괴", "target": "적", "stat": "조화 밀집 · 간섭 스택 최대치", "value": "1스택", "verb": "증가"}
       ],
       "avatar": "Lynae/T_IconRoleHead256_60_UI",
       "sprite": "Lynae/T_IconRole_Pile_Linnai_UI",
