@@ -38,7 +38,8 @@
     textarea { display: block; }
     /* 스크롤 끝 늘어나는 효과 제거 + 창이 열려 있을 땐 뒤 페이지 고정 */
     html, body { overscroll-behavior: none; }
-    [id$="-modal"], [id$="-modal"] * { overscroll-behavior: contain; }
+    /* 창 안의 모든 요소에 걸면, 넘침을 숨긴 카드(overflow:hidden) 위에서 휠이 목록으로 전달되지 않음 → 창과 실제 스크롤 영역에만 */
+    [id$="-modal"], [id$="-modal"] .overflow-y-auto, [id$="-modal"] .overflow-x-auto { overscroll-behavior: contain; }
     html.modal-open, html.modal-open body { overflow: hidden; }
     input:not([type="checkbox"]):not([type="radio"]), select { vertical-align: middle; }
     .card-graduated { border-color: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
@@ -75,7 +76,10 @@
     .party-slot { container-type: inline-size; }
     @container (max-width: 185px) { .slot-info { display: none !important; } .slot-ava { margin: 0 auto; } }
     /* 카드용 모드 알약: 프로필 이미지 오른쪽 아래 */
-    .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; line-height: 0; }
+    /* 사용 횟수 배지(왼쪽 아래)와 같은 여백: 좁은 화면 2px, 넓은 화면 6px */
+    /* 휴대폰 폭에서는 프로필이 40px대라 사용 횟수 배지와 겹쳐서 숨김 (세부 창에서 전환) */
+    .roster-mode { position: absolute; right: 6px; bottom: 6px; z-index: 20; line-height: 0; display: none; }
+    @media (min-width: 640px) { .roster-mode { display: block; } }
     /* (예비) 현재 모드 아이콘 하나만 동그랗게 */
     .mode-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: rgba(10, 13, 20, .92); border: 1px solid #f5c451; cursor: pointer; flex-shrink: 0; transition: box-shadow .15s; }
     .mode-dot:hover { box-shadow: 0 0 6px rgba(245, 196, 81, .7); }
