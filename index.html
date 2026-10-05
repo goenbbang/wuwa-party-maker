@@ -78,7 +78,9 @@
     /* 카드용 모드 알약: 프로필 이미지 오른쪽 아래 */
     /* 사용 횟수 배지(왼쪽 아래)와 같은 여백: 좁은 화면 2px, 넓은 화면 6px */
     /* 휴대폰 폭에서는 프로필이 40px대라 사용 횟수 배지와 겹쳐서 숨김 (세부 창에서 전환) */
-    .roster-mode { position: absolute; right: 6px; bottom: 6px; z-index: 20; line-height: 0; display: none; }
+    .roster-count { left: 2px; bottom: 2px; }
+    @media (min-width: 640px) { .roster-count { left: 3px; bottom: 3px; } }
+    .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; line-height: 0; display: none; }
     @media (min-width: 640px) { .roster-mode { display: block; } }
     /* (예비) 현재 모드 아이콘 하나만 동그랗게 */
     .mode-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: rgba(10, 13, 20, .92); border: 1px solid #f5c451; cursor: pointer; flex-shrink: 0; transition: box-shadow .15s; }
@@ -1939,7 +1941,7 @@
             <div class="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1 sm:mb-1.5">
               <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-200" crossorigin="anonymous">
               ${pill}
-              <div class="absolute bottom-0.5 left-0.5 sm:bottom-1.5 sm:left-1.5 px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
+              <div class="roster-count absolute px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
               ${buffModes(r).length > 1 ? `<div class="roster-mode">${modePairHtml(r, { click: true })}</div>` : ''}              <div class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 z-20 pointer-events-none w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${getElementIconHtml(r.element)}</div>
               <div class="absolute top-1.5 right-1.5 z-20 pointer-events-none hidden sm:block"><div class="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold border shadow-sm ${roleMeta.tagClass}">${roleMeta.label}</div></div>
             </div>
