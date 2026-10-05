@@ -82,6 +82,13 @@
     @media (min-width: 640px) { .roster-count { left: 3px; bottom: 3px; } }
     .roster-mode { position: absolute; right: 3px; bottom: 3px; z-index: 20; line-height: 0; display: none; }
     @media (min-width: 640px) { .roster-mode { display: block; } }
+    /* 프로필이 작은 화면 폭에서는 사용 횟수 배지와 겹치지 않게 알약을 줄임 */
+    .roster-ava { container-type: inline-size; }
+    @container (max-width: 95px) {
+      .roster-mode .mode-pair { padding: 2px 3px; gap: 1px; }
+      .roster-mode .mode-pair img { width: 11px; height: 11px; }
+      .roster-mode .mode-pair i { display: none; }
+    }
     /* (예비) 현재 모드 아이콘 하나만 동그랗게 */
     .mode-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: rgba(10, 13, 20, .92); border: 1px solid #f5c451; cursor: pointer; flex-shrink: 0; transition: box-shadow .15s; }
     .mode-dot:hover { box-shadow: 0 0 6px rgba(245, 196, 81, .7); }
@@ -1891,7 +1898,7 @@
 
     const ELEMENT_ACCENT = { spectro: '#f4d35e', aero: '#4fe0b0', electro: '#b98cff', fusion: '#ff6b57', glacio: '#5ccfff', havoc: '#e2589d' };
     function elementFilterBtn(t, active, fn) {
-      if (t.id === 'all') return `<button onclick="${fn}('all')" class="flex-1 py-1.5 px-1 rounded-lg font-bold text-xs whitespace-nowrap text-center ${active ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}">${t.label}</button>`;
+      if (t.id === 'all') return `<button onclick="${fn}('all')" class="flex-1 py-1.5 px-1 rounded-lg font-bold text-xs whitespace-nowrap text-center ${active ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}"${active ? ' style="border:1px solid #f5a623"' : ''}>${t.label}</button>`;
       const c = ELEMENT_ACCENT[t.id] || '#f5a623';
       return `<button onclick="${fn}('${t.id}')" title="${t.label}" class="flex-1 min-w-0 flex items-center justify-center gap-1 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg font-bold text-xs whitespace-nowrap border transition ${active ? 'text-white shadow-md' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}" style="${active ? `background:${c}26;border-color:${c};box-shadow:0 0 0 1px ${c}55 inset` : ''}">
         <span class="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0 transition ${active ? '' : 'opacity-55 grayscale-[35%]'}">${getElementIconHtml(t.id)}</span><span class="hidden sm:inline">${t.label}</span></button>`;
@@ -1938,7 +1945,7 @@
         const pill = deployed.length > 0 ? `<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"><div class="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-[#f5a623]/95 text-black font-black text-[9px] sm:text-xs shadow-lg border border-[#f5a623]">${deployed.map(n => String(n).padStart(2, '0')).join(', ')}</div></div>` : '';
         return `
           <div data-id="${r.id}" class="roster-card relative rounded-xl sm:rounded-2xl p-1 sm:p-1.5 flex flex-col justify-start transition-all select-none border group cursor-pointer ${isDepleted ? 'bg-[#0a0d13]/85 border-[#181f2b] opacity-35 grayscale cursor-not-allowed' : 'bg-[#10141f] border-[#1f2738] hover:border-amber-400 hover:bg-[#161c2b] hover:shadow-xl'}" ${!isDepleted ? 'draggable="true"' : ''}>
-            <div class="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1 sm:mb-1.5">
+            <div class="roster-ava relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#07090e] border border-[#202738] mb-1 sm:mb-1.5">
               <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-200" crossorigin="anonymous">
               ${pill}
               <div class="roster-count absolute px-1 sm:px-2 py-0 sm:py-0.5 rounded sm:rounded-md bg-black/85 border border-white/10 text-[8px] sm:text-[10px] font-bold text-amber-300 pointer-events-none z-10">${remaining}/${maxU}</div>
