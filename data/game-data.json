@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updatedAt": "2026-10-03",
-  "settings": {"seasonBuffResonatorId": "denia"},
+  "settings": {"seasonBuffResonatorId": "lynae"},
   "theme": {
     "colorPoint": "#f5a623",
     "colorAttack": "#f5a623",
@@ -4637,28 +4637,28 @@
       "name": "공용 강화",
       "iconImage": "IconProperty/T_Iconpropertyredattack_UI",
       "iconSvg": "",
-      "desc": "적이 받는 피해가 최종적으로 20% 증가\n적이 받는 강공격 피해가 최종적으로 20% 증가"
+      "desc": "적군이 받는 피해가 최종적으로 20% 증가되고, 적군이 받는 일반 공격 피해가 최종적으로 20% 증가된다"
     },
     {
       "id": "c_anomaly",
       "name": "이상 효과 강화",
-      "iconImage": "IconProperty/T_Iconpropertyredice_UI",
+      "iconImage": "IconProperty/T_Iconpropertyredmine_UI",
       "iconSvg": "",
-      "desc": "캐릭터가 이상 효과 추가 시, 목표가 받는 피해를 최종적으로 25% 증가시키고 30초간 지속\n적이 받는 서리 효과의 피해가 최종적으로 80% 증가"
+      "desc": "캐릭터가 이상 효과를 추가할 시, 목표가 받는 최종 피해를 25% 증가시키고, 받는 전도 최종 피해를 추가로 30% 증가시키며, 30초간 지속된다"
     },
     {
       "id": "c_echo",
-      "name": "에코 어빌리티 강화",
-      "iconImage": "IconProperty/T_IconpropertyLuokekeBuff1_UI",
+      "name": "기본 피해 강화",
+      "iconImage": "IconProperty/T_Iconpropertyredphysics_UI",
       "iconSvg": "",
-      "desc": "아군 에코 어빌리티의 피해가 최종적으로 30% 증가\n인멸 피해가 최종적으로 20% 증가되며, 공명 스킬 피해가 최종적으로 20% 증가"
+      "desc": "에코 어빌리티 피해가 최종적으로 40% 증가된다.\n캐릭터가 합일 대응 시, 입히는 피해가 최종적으로 55% 증가되고, 30초간 지속된다.\n캐릭터가 실드 획득 시, 입히는 최종 피해가 11% 증가되고, 최대 5스택 중첩이 가능하며, 2초간 지속되고, 캐릭터가 퇴장 시 제거된다"
     },
     {
       "id": "c_tune",
       "name": "조화도 파괴 강화",
       "iconImage": "IconProperty/T_Iconpropertyredcrit_UI",
       "iconSvg": "",
-      "desc": "캐릭터가 조화도 · 이탈 상태 추가 시, 파티 전체의 피해가 최종적으로 25% 증가하며 30초간 지속\n캐릭터가 조화 밀집 · 이탈 상태 추가 시, 피해가 최종적으로 30% 증가하며 15초간 지속"
+      "desc": "캐릭터가 조화도 · 이탈 상태를 추가할 시, 파티 전체의 피해가 최종적으로 25% 증가되고 30초간 지속된다.\n캐릭터가 해킹 · 이탈 상태를 추가할 시, 입히는 피해가 최종적으로 30% 증가되고 30초간 지속된다"
     }
   ]
 }
