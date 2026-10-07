@@ -126,8 +126,8 @@
     }
     /* 육성 카드 프리셋 드롭다운 */
     .preset-dd { position: relative; flex-shrink: 1; min-width: 0; }
-    .preset-dd-btn { display: flex; align-items: center; gap: 3px; max-width: 108px; height: 20px; padding: 0 6px; border-radius: 6px; border: 1px solid #2a3448; background: #151b29; color: #e2e8f0; font-size: 11px; font-weight: 800; transition: border-color .15s, color .15s; }
-    .preset-dd-btn:hover, .preset-dd-btn.is-open { border-color: rgba(251, 191, 36, .7); color: #fde68a; }
+    .preset-dd-btn { display: flex; align-items: center; gap: 3px; max-width: 108px; height: 20px; padding: 0 6px; border-radius: 6px; border: 1px solid #1f2738; background: transparent; color: #64748b; font-size: 11px; font-weight: 600; transition: border-color .15s, color .15s; }
+    .preset-dd-btn:hover, .preset-dd-btn.is-open { border-color: #334155; color: #cbd5e1; }
     .preset-dd-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
     .preset-dd-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; min-width: 168px; padding: 4px; border-radius: 10px; border: 1px solid #2a3448; background: #111725; box-shadow: 0 12px 28px rgba(0, 0, 0, .55); }
     .preset-dd-item { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 6px; font-size: 12px; font-weight: 700; color: #cbd5e1; cursor: pointer; }
@@ -141,6 +141,47 @@
     .preset-dd-item.is-editing { cursor: default; background: transparent; }
     .preset-dd-item input { width: 100%; background: #0b0f18; border: 1px solid rgba(251, 191, 36, .7); border-radius: 5px; padding: 3px 6px; font-size: 12px; color: #fff; outline: none; }
     .preset-dd-sep { height: 1px; margin: 4px 2px; background: #222b3d; }
+
+    /* 육성 상세 창 (캐릭터 · 무기 · 에코 점수) */
+    .bm-panel { width: 100%; max-width: 1180px; max-height: 92vh; overflow-y: auto; background: #0d111b; border: 1px solid #222b3d; border-radius: 18px; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+    .bm-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; padding: 16px 18px; border-bottom: 1px solid #1c2435; }
+    .bm-title { flex: 1; min-width: 150px; }
+    .bm-actions { display: flex; gap: 8px; margin-left: auto; }
+    @media (max-width: 560px) { .bm-btn .bm-btn-text { display: none; } .bm-avatar { width: 52px; height: 52px; } }
+    .bm-avatar { width: 64px; height: 64px; border-radius: 14px; overflow: hidden; border: 1px solid #334155; background: #0a0d14; flex-shrink: 0; }
+    .bm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .bm-name { font-size: 20px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .bm-sub { font-size: 12px; color: #94a3b8; margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+    .bm-sub b { color: #e2e8f0; font-weight: 700; }
+    .bm-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 10px; border: 1px solid #2a3448; background: #131926; color: #e2e8f0; font-size: 12px; font-weight: 700; white-space: nowrap; transition: border-color .15s, background .15s; }
+    .bm-btn:hover { border-color: rgba(251, 191, 36, .6); background: #1a2132; }
+    .bm-body { display: grid; grid-template-columns: 280px 1fr; gap: 16px; padding: 16px 18px 18px; }
+    @media (max-width: 900px) { .bm-body { grid-template-columns: 1fr; } }
+    .bm-box { background: #111724; border: 1px solid #1f2839; border-radius: 14px; padding: 12px 14px; }
+    .bm-box + .bm-box { margin-top: 12px; }
+    .bm-label { font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: .02em; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
+    .bm-label span { font-weight: 600; color: #475569; }
+    .bm-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 3px 0; color: #cbd5e1; }
+    .bm-row b { color: #fff; font-weight: 800; }
+    .bm-row .muted { color: #64748b; font-size: 11px; margin-left: 4px; font-weight: 600; }
+    .bm-score { display: flex; align-items: center; gap: 14px; }
+    .bm-grade { font-size: 34px; font-weight: 900; line-height: 1; }
+    .bm-grade.g-SSS { color: #fbbf24; } .bm-grade.g-SS { color: #fcd34d; } .bm-grade.g-S { color: #c4b5fd; }
+    .bm-grade.g-A { color: #7dd3fc; } .bm-grade.g-B { color: #86efac; } .bm-grade.g-C { color: #94a3b8; }
+    .bm-echoes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    @media (max-width: 1100px) { .bm-echoes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { .bm-echoes { grid-template-columns: 1fr; } }
+    .bm-echo { background: #111724; border: 1px solid #1f2839; border-radius: 14px; padding: 11px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .bm-echo-top { display: flex; justify-content: space-between; align-items: center; }
+    .bm-cost { font-size: 11px; font-weight: 800; color: #94a3b8; border: 1px solid #334155; border-radius: 6px; padding: 1px 6px; }
+    .bm-echo-grade { font-size: 15px; font-weight: 900; }
+    .bm-main { font-size: 13px; font-weight: 800; color: #fde68a; display: flex; justify-content: space-between; border-bottom: 1px solid #1f2839; padding-bottom: 6px; }
+    .bm-main.is-off { color: #fca5a5; }
+    .bm-subrow { display: flex; justify-content: space-between; font-size: 12px; color: #475569; }
+    .bm-subrow.w-hi { color: #fbbf24; font-weight: 700; } .bm-subrow.w-mid { color: #e2e8f0; } .bm-subrow.w-lo { color: #94a3b8; }
+    .bm-empty { border: 1px dashed #2a3448; border-radius: 14px; padding: 28px 16px; text-align: center; color: #64748b; font-size: 13px; line-height: 1.7; }
+    .bm-note { font-size: 11px; color: #64748b; margin-top: 8px; line-height: 1.5; }
+    .bm-note.warn { color: #fbbf24; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start pb-6 selection:bg-[#f5a623] selection:text-black">
@@ -189,9 +230,13 @@
     </div>
   </div>
 
-  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" style="z-index: 120"></div>
 
   <!-- 확인 모달 -->
+  <div id="build-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+    <div class="bm-panel" id="build-modal-panel"></div>
+  </div>
+
   <div id="confirm-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
     <div class="bg-[#0f131d] max-w-sm w-full p-5 rounded-2xl border border-slate-700 shadow-2xl space-y-4">
       <div class="flex items-center gap-3">
@@ -1127,6 +1172,7 @@
       setTimeout(() => {
         modal.classList.add('hidden');
         if (id === 'circuit-modal') state.activeCircuitPartyIndex = null;
+        if (id === 'build-modal') buildModalFor = null;
       }, 150);
     }
 
@@ -1300,6 +1346,7 @@
       const p = GROWTH_DATA[resId].presets;
       if (!Array.isArray(p) || !p.length) GROWTH_DATA[resId].presets = [newGrowthPreset('1')];
       else GROWTH_DATA[resId].presets = p.map((x, i) => ({
+        ...x, // build(에코 · 무기), level 등 추가 정보 유지
         id: String(x?.id ?? i + 1),
         label: x?.label || '',
         remarks: x?.remarks || x?.name || '',
@@ -1439,40 +1486,25 @@
     }
 
     let screenshotBusy = false;
-    async function importGrowthScreenshots(files) {
+    // fallbackResId: 이름을 못 읽었을 때 쓸 캐릭터 (상세 창에서 올린 경우)
+    async function importGrowthScreenshots(files, fallbackResId = null) {
       files = [...(files || [])]; // 입력칸을 비우면 FileList 도 비워지므로 먼저 복사
       if (!files.length || screenshotBusy) return;
       screenshotBusy = true;
       const btn = document.getElementById('growth-shot-btn'), label = btn.querySelector('span');
       label.textContent = '읽는 중...'; btn.disabled = true;
+      showToast('스크린샷을 읽는 중입니다...');
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=1');
+        const ocr = await import('./assets/wuwa-ocr.js?v=3');
         const workers = await ocr.getWorkers();
-        const names = RAW_RESONATORS.map(r => r.name);
+        const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         for (const file of files) {
-          const r = await ocr.parseImage(file, workers, { names });
-          if (r.kind === 'bot-card') { showToast('봇 카드 이미지는 다음 단계에서 지원할 예정입니다.'); continue; }
-          const res = RAW_RESONATORS.find(x => x.name === r.name);
+          const r = await ocr.parseImage(file, workers, { names, weapons });
+          const res = RAW_RESONATORS.find(x => x.name === r.name) || RAW_RESONATORS.find(x => x.id === fallbackResId);
           if (!res) { showToast(`캐릭터 이름을 읽지 못했습니다${r.name ? ` (${esc(r.name)})` : ''}.`); continue; }
-          const st = r.stats, type = (res.targetStats || defaultTargetStats).type;
-          const baseKey = type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력');
-          const values = { base: st[baseKey], regen: st['공명 효율'], cr: st['크리티컬'], cd: st['크리티컬 피해'] };
-          if (Object.values(values).every(v => v == null)) { showToast(`${esc(res.name)}: 스탯을 읽지 못했습니다.`); continue; }
-          initGrowthDataFor(res.id);
-          const g = GROWTH_DATA[res.id], pi = g.presets.findIndex(p => p.id === g.activePresetId), preset = g.presets[pi];
-          const show = v => v == null ? '읽지 못함' : v;
-          const lines = [
-            `${res.name}${r.level ? ` Lv.${r.level.current}` : ''} · ${presetLabel(preset, pi)}에 입력합니다.`,
-            `${baseKey} ${show(values.base)} / 공명 효율 ${show(values.regen)}% / 크리티컬 ${show(values.cr)}% / 크리티컬 피해 ${show(values.cd)}%`,
-          ];
-          if (!isOwned(res.id)) lines.push('보유 공명자로 설정되어 있지 않아 목록에는 보이지 않습니다.');
-          if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
-          if (!await confirmAsync('스크린샷 입력', lines.join('\n'))) continue;
-          Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
-          preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
-          storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
-          renderGrowthTracker();
-          showToast(`${esc(res.name)} 스탯을 입력했습니다.`);
+          if (res.name !== r.name) r.warnings.push(`이미지의 이름(${r.name || '읽지 못함'})을 찾지 못해 ${res.name}에 입력`);
+          if (r.kind === 'bot-card') await applyBotCard(res, r);
+          else await applyStatScreen(res, r);
         }
       } catch (e) {
         console.error('스크린샷 인식 실패', e);
@@ -1480,6 +1512,232 @@
       } finally {
         screenshotBusy = false; label.textContent = '스크린샷 입력'; btn.disabled = false;
       }
+    }
+
+    function activeGrowthPreset(resId) {
+      initGrowthDataFor(resId);
+      const g = GROWTH_DATA[resId], pi = g.presets.findIndex(p => p.id === g.activePresetId);
+      return { preset: g.presets[pi], pi };
+    }
+
+    function afterGrowthChange() {
+      storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+      renderGrowthTracker();
+      if (buildModalFor) renderBuildModal();
+    }
+
+    async function applyStatScreen(res, r) {
+      const st = r.stats, type = (res.targetStats || defaultTargetStats).type;
+      const baseKey = type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력');
+      const values = { base: st[baseKey], regen: st['공명 효율'], cr: st['크리티컬'], cd: st['크리티컬 피해'] };
+      if (Object.values(values).every(v => v == null)) { showToast(`${esc(res.name)}: 스탯을 읽지 못했습니다.`); return; }
+      const { preset, pi } = activeGrowthPreset(res.id);
+      const show = v => v == null ? '읽지 못함' : v;
+      const lines = [
+        `${res.name}${r.level ? ` Lv.${r.level.current}` : ''} · ${presetLabel(preset, pi)}에 스탯을 입력합니다.`,
+        `${baseKey} ${show(values.base)} / 공명 효율 ${show(values.regen)}% / 크리티컬 ${show(values.cr)}% / 크리티컬 피해 ${show(values.cd)}%`,
+      ];
+      if (!isOwned(res.id)) lines.push('보유 공명자로 설정되어 있지 않아 목록에는 보이지 않습니다.');
+      if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
+      if (!await confirmAsync('스크린샷 입력', lines.join('\n'))) return;
+      Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
+      preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
+      if (r.level) preset.level = r.level.current;
+      afterGrowthChange();
+      showToast(`${esc(res.name)} 스탯을 입력했습니다.`);
+    }
+
+    // 봇 카드: 레벨 · 공명 체인 · 무기 · 에코를 프리셋의 build 에 저장 (스탯 칸은 건드리지 않음)
+    async function applyBotCard(res, r) {
+      const { preset, pi } = activeGrowthPreset(res.id);
+      const build = {
+        level: r.level, chain: r.chain,
+        weapon: r.weapon,
+        echoes: r.echoes.map(e => ({ cost: e.cost, main: e.main, mainFlat: e.mainFlat, subs: e.subs })),
+        source: { type: 'bot-card', at: new Date().toISOString() },
+      };
+      const sc = scoreBuild(res, { ...preset, build });
+      const lines = [
+        `${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`,
+        `Lv.${r.level ?? '?'} / 공명 체인 ${r.chain} / ${r.weapon.name || '무기'} Lv.${r.weapon.level ?? '?'}`,
+        `에코 ${build.echoes.length}개, 에코 점수 ${sc.total.toFixed(1)}점 (${sc.grade})`,
+      ];
+      if (preset.build) lines.push('이 프리셋에 저장된 에코 정보는 새 카드로 바뀝니다.');
+      if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
+      if (!await confirmAsync('봇 카드 입력', lines.join('\n'))) return;
+      preset.build = build;
+      if (r.level) preset.level = r.level;
+      afterGrowthChange();
+      showToast(`${esc(res.name)} 에코 정보를 저장했습니다.`);
+    }
+
+    // Ctrl+V 로 붙여넣은 이미지: 육성 탭이나 상세 창이 열려 있을 때만 받음
+    document.addEventListener('paste', e => {
+      const growthOpen = !document.getElementById('view-growth')?.classList.contains('hidden');
+      if (!growthOpen && !buildModalFor) return;
+      const files = [...(e.clipboardData?.items || [])].filter(i => i.kind === 'file' && i.type.startsWith('image/')).map(i => i.getAsFile()).filter(Boolean);
+      if (!files.length) return;
+      e.preventDefault();
+      importGrowthScreenshots(files, buildModalFor);
+    });
+
+    // ---- 에코 점수 ----
+    // 부옵 최대치 (5성 +25 기준). 키: 이름 + (퍼센트면 '%')
+    const ECHO_SUB_MAX = {
+      '크리티컬%': 10.5, '크리티컬 피해%': 21, '공격력%': 11.6, 'HP%': 11.6, '방어력%': 14.7, '공명 효율%': 12.4,
+      '일반 공격 피해 보너스%': 11.6, '강공격 피해 보너스%': 11.6, '공명 스킬 피해 보너스%': 11.6, '공명 해방 피해 보너스%': 11.6,
+      '공격력': 60, 'HP': 580, '방어력': 70,
+    };
+    const MAIN_DMG_BONUS = { '일반 공격': '일반 공격 피해 보너스', '기본 공격': '일반 공격 피해 보너스', '강공격': '강공격 피해 보너스', '공명 스킬': '공명 스킬 피해 보너스', '공명 해방': '공명 해방 피해 보너스' };
+    const subKey = (stat, percent) => stat + (percent ? '%' : '');
+
+    // 부옵 하나를 최대치로 더했을 때 데미지가 몇 % 오르는지로 가중치를 정함 (가장 많이 오르는 부옵 = 1)
+    function echoWeights(res, preset) {
+      const ts = res.targetStats || defaultTargetStats, cur = preset?.stats?.current || {};
+      const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
+      const T = cur.base || ts.base, B = T / 1.9; // B: 캐릭터+무기 기본 수치 추정 (총합의 약 53%)
+      const c = (cur.cr || ts.cr) / 100, d = (cur.cd || ts.cd) / 100, D = 0.7; // D: 기본 피해 보너스 합 추정
+      const crit = (c, d) => 1 + Math.min(c, 1) * (d - 1);
+      const gain = {
+        '크리티컬%': c >= 1 ? 0 : crit(c + 0.105, d) / crit(c, d) - 1,
+        '크리티컬 피해%': crit(c, d + 0.21) / crit(c, d) - 1,
+        [scale + '%']: B * (scale === '방어력' ? 0.147 : 0.116) / T,
+        [scale]: ECHO_SUB_MAX[scale] / T,
+      };
+      const bonus = MAIN_DMG_BONUS[res.mainDmg];
+      if (bonus) gain[bonus + '%'] = 0.116 * 0.7 / (1 + D); // 주력 기술이 딜의 약 70% 라고 가정
+      const top = Math.max(...Object.values(gain));
+      const w = {};
+      Object.entries(gain).forEach(([k, v]) => { w[k] = top > 0 ? v / top : 0; });
+      w['공명 효율%'] = (cur.regen || 0) >= ts.regen ? 0.1 : 0.4; // 목표 공명 효율을 채웠으면 거의 가치 없음
+      return w;
+    }
+
+    const GRADES = [[80, 'SSS'], [70, 'SS'], [60, 'S'], [50, 'A'], [40, 'B'], [0, 'C']];
+    const gradeOf = pct => GRADES.find(([min]) => pct >= min)[1];
+
+    // 에코 점수: Σ(부옵 ÷ 최대치 × 가중치) 를 그 캐릭터가 받을 수 있는 최고점(가중치 상위 5개 × 1.0) 대비 % 로
+    function scoreBuild(res, preset) {
+      const w = echoWeights(res, preset);
+      const ideal = Object.values(w).sort((a, b) => b - a).slice(0, 5).reduce((a, b) => a + b, 0) || 1;
+      const echoes = (preset.build?.echoes || []).map(e => {
+        let sum = 0;
+        const subs = (e.subs || []).map(sub => {
+          const k = subKey(sub.stat, sub.percent), max = ECHO_SUB_MAX[k], weight = w[k] || 0;
+          const part = max && sub.value != null ? Math.min(sub.value / max, 1) * weight : 0;
+          sum += part;
+          return { ...sub, weight, part };
+        });
+        const pct = sum / ideal * 100;
+        return { ...e, subs, pct, grade: gradeOf(pct) };
+      });
+      const total = echoes.length ? echoes.reduce((a, e) => a + e.pct, 0) / echoes.length : 0;
+      return { weights: w, echoes, total, grade: gradeOf(total) };
+    }
+
+    // 메인 옵션이 추천과 맞는지 (데이터의 echoSet.echoes 기준)
+    function mainStatOk(res, echo) {
+      const rec = (res.echoSet?.echoes || []).filter(x => String(x.cost) === String(echo.cost)).map(x => x.stat);
+      if (!rec.length || !echo.main?.stat) return null;
+      const norm = t => t.replace(/\s/g, '').replace('%', '');
+      const got = norm(echo.main.stat);
+      return rec.some(r => r.split('/').some(opt => norm(opt) === got));
+    }
+
+    // ---- 육성 상세 창 ----
+    let buildModalFor = null;
+
+    function openBuildModal(resId) {
+      buildModalFor = resId;
+      renderBuildModal();
+      openModal('build-modal');
+    }
+
+    function closeBuildModal() {
+      buildModalFor = null;
+      closeModal('build-modal');
+    }
+
+    function renderBuildModal() {
+      const res = RAW_RESONATORS.find(r => r.id === buildModalFor);
+      if (!res) return;
+      const { preset, pi } = activeGrowthPreset(res.id);
+      const ts = res.targetStats || defaultTargetStats, cur = preset.stats.current, build = preset.build;
+      const sc = scoreBuild(res, preset);
+      const date = iso => iso ? new Date(iso).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }) : '';
+      const baseLabel = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
+      const statRow = (label, v, tgt, pct) => `<div class="bm-row"><span>${label}<span class="muted">목표 ${tgt}${pct ? '%' : ''}</span></span><b>${v ? v + (pct ? '%' : '') : '-'}</b></div>`;
+      const fmt = sub => sub.value == null ? '?' : (sub.percent ? `${sub.value}%` : sub.value);
+      const wClass = w => w >= 0.75 ? 'w-hi' : (w >= 0.4 ? 'w-mid' : (w > 0 ? 'w-lo' : ''));
+
+      let note = '';
+      const statAt = preset.stats.source?.at, buildAt = build?.source?.at;
+      if (statAt && buildAt && Math.abs(new Date(buildAt) - new Date(statAt)) > 6 * 3600e3)
+        note = new Date(buildAt) > new Date(statAt)
+          ? '에코 정보가 스탯보다 최근이에요. 에코를 바꿨다면 스탯 창도 다시 올려주세요.'
+          : '스탯이 에코 정보보다 최근이에요. 에코를 바꿨다면 봇 카드도 다시 올려주세요.';
+
+      const echoesHtml = build?.echoes?.length ? `<div class="bm-echoes">${sc.echoes.map(e => {
+        const ok = mainStatOk(res, e);
+        return `
+          <div class="bm-echo">
+            <div class="bm-echo-top"><span class="bm-cost">${e.cost ? `COST ${e.cost}` : 'COST ?'}</span><span class="bm-echo-grade bm-grade g-${e.grade}" style="font-size:15px">${e.grade} <span style="font-size:11px;color:#64748b;font-weight:700">${e.pct.toFixed(1)}</span></span></div>
+            <div class="bm-main ${ok === false ? 'is-off' : ''}" title="${ok === false ? '추천 메인 옵션과 다름' : ''}"><span>${esc(e.main?.stat || '메인 옵션')}</span><span>${e.main?.value != null ? e.main.value + '%' : '?'}</span></div>
+            ${e.subs.map(sub => `<div class="bm-subrow ${wClass(sub.weight)}"><span>${esc(sub.stat.replace(' 보너스', ''))}${sub.percent && !/효율|보너스|크리티컬/.test(sub.stat) ? '%' : ''}</span><span>${fmt(sub)}</span></div>`).join('')}
+          </div>`;
+      }).join('')}</div>` : `<div class="bm-empty">아직 에코 정보가 없어요.<br>WuWa Bot 프로필 카드 이미지를 올리거나, 이 창에서 <b style="color:#e2e8f0">Ctrl+V</b>로 붙여넣으면 채워져요.<br>게임 스탯 창 캡처도 같은 방법으로 올릴 수 있어요.</div>`;
+
+      document.getElementById('build-modal-panel').innerHTML = `
+        <div class="bm-head">
+          <div class="bm-avatar"><img src="${res.avatar}" alt="" crossorigin="anonymous"></div>
+          <div class="bm-title">
+            <div class="bm-name">${esc(res.name)}<span class="w-6 h-6 inline-block">${getElementIconHtml(res.element)}</span></div>
+            <div class="bm-sub">
+              <span>${esc(presetLabel(preset, pi))}</span>
+              <span>Lv. <b>${preset.level || build?.level || '-'}</b></span>
+              <span>공명 체인 <b>${build?.chain ?? '-'}</b></span>
+            </div>
+          </div>
+          <input type="file" id="build-shot-input" accept="image/*" multiple class="hidden" onchange="importGrowthScreenshots(this.files, buildModalFor); this.value=''">
+          <div class="bm-actions">
+            <button class="bm-btn" onclick="document.getElementById('build-shot-input').click()" title="이미지 올리기"><i data-lucide="scan-text" class="w-3.5 h-3.5"></i><span class="bm-btn-text">이미지 올리기</span></button>
+            <button class="bm-btn" onclick="openDetailModal('${res.id}')" title="캐릭터 정보"><i data-lucide="info" class="w-3.5 h-3.5"></i><span class="bm-btn-text">캐릭터 정보</span></button>
+            <button class="bm-btn" onclick="closeBuildModal()" title="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+        <div class="bm-body">
+          <div>
+            <div class="bm-box">
+              <div class="bm-label">에코 점수<span>${build ? '봇 카드 ' + date(buildAt) : ''}</span></div>
+              <div class="bm-score">
+                <div class="bm-grade g-${build ? sc.grade : 'C'}">${build ? sc.grade : '-'}</div>
+                <div><div style="font-size:22px;font-weight:900;color:#fff">${build ? sc.total.toFixed(1) : '-'}<span style="font-size:12px;color:#64748b;font-weight:700"> / 100</span></div>
+                <div style="font-size:11px;color:#64748b">유효 부옵 기준, 에코 5개 평균</div></div>
+              </div>
+            </div>
+            <div class="bm-box">
+              <div class="bm-label">무기</div>
+              ${build?.weapon ? `<div class="bm-row"><b>${esc(build.weapon.name || '-')}</b><span>Lv. ${build.weapon.level ?? '-'}</span></div><div class="bm-row"><span>돌파</span><b>${build.weapon.ascension}/6</b></div>` : '<div class="bm-row"><span>봇 카드를 올리면 표시돼요</span></div>'}
+            </div>
+            <div class="bm-box">
+              <div class="bm-label">스킬</div>
+              ${SKILL_NAMES.map((n, i) => `<div class="bm-row"><span>${n}</span><b>${preset.skills[`s${i + 1}`] || 1}</b></div>`).join('')}
+            </div>
+            <div class="bm-box">
+              <div class="bm-label">스탯<span>${preset.stats.source ? '스크린샷 ' + date(statAt) : '직접 입력'}</span></div>
+              ${statRow(baseLabel, cur.base, ts.base, false)}
+              ${statRow('공명 효율', cur.regen, ts.regen, true)}
+              ${statRow('크리티컬', cur.cr, ts.cr, true)}
+              ${statRow('크리티컬 피해', cur.cd, ts.cd, true)}
+              ${note ? `<div class="bm-note warn">${note}</div>` : ''}
+            </div>
+          </div>
+          <div>
+            ${echoesHtml}
+            <div class="bm-note">노란색은 이 캐릭터에게 가장 중요한 부옵, 흰색은 쓸만한 부옵, 어두운 색은 거의 쓸모없는 부옵이에요. 점수는 부옵 하나를 최대치로 올렸을 때 데미지가 얼마나 오르는지로 가중치를 매겨 계산해요. 빨간 메인 옵션은 추천 세팅과 다른 경우예요.</div>
+          </div>
+        </div>`;
+      lucide.createIcons();
     }
 
     function switchGrowthPresetTab(resId, presetId) {
@@ -3208,7 +3466,7 @@
         return `
           <div class="bg-[#121622] border border-[#21293b] rounded-2xl p-4 flex flex-col transition-colors ${isGraduated ? 'card-graduated' : 'hover:border-amber-500/40'}">
             <div class="flex gap-3 border-b border-[#1e2638] pb-2.5 relative">
-              <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 cursor-pointer hover:border-amber-400 transition relative group" onclick="openDetailModal('${r.id}')">
+              <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 cursor-pointer hover:border-amber-400 transition relative group" onclick="openBuildModal('${r.id}')" title="육성 상세 보기">
                 <button onclick="event.stopPropagation(); toggleFavorite('${r.id}')" class="absolute top-1 left-1 z-10 p-0.5 transition drop-shadow-md">
                   <i data-lucide="star" class="w-4 h-4 ${gData.isFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-300/80 group-hover:text-white'} drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"></i>
                 </button>

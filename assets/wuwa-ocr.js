@@ -3,7 +3,8 @@
 // - parseBotCard: WuWa Bot 프로필 카드 (1920x1080 고정 레이아웃)
 //
 // 이미지 처리는 backend 로 주입한다. 브라우저는 createCanvasBackend, 테스트(Node)는 sharp 기반 backend 를 쓴다.
-// backend = { width, height, crop({x,y,w,h}, scale) -> tesseract 입력, goldFraction({x,y,w,h}) -> 0~1 }
+// backend = { width, height, crop({x,y,w,h}, scale, invert) -> tesseract 입력, goldFraction({x,y,w,h}) -> 0~1 }
+// invert: 밝은 글자를 어두운 글자로 뒤집음 (봇 카드의 한글 라벨은 뒤집어야 잘 읽힘)
 
 export const STAT_LABELS = ['HP', '공격력', '방어력', '공명 효율', '크리티컬', '크리티컬 피해'];
 
@@ -168,6 +169,28 @@ export const BOT_CARD = {
   },
 };
 
+// 부옵 수치 범위 (5성, 최소~최대). 범위를 벗어나면 숫자를 잘못 읽은 것으로 보고 고친다
+const SUB_RANGE = {
+  '크리티컬%': [6.3, 10.5], '크리티컬 피해%': [12.6, 21], '공격력%': [6.4, 11.6], 'HP%': [6.4, 11.6], '방어력%': [8.1, 14.7], '공명 효율%': [6.8, 12.4],
+  '일반 공격 피해 보너스%': [6.4, 11.6], '강공격 피해 보너스%': [6.4, 11.6], '공명 스킬 피해 보너스%': [6.4, 11.6], '공명 해방 피해 보너스%': [6.4, 11.6],
+  '공격력': [30, 60], 'HP': [320, 580], '방어력': [40, 70],
+};
+
+// 예: 크리티컬 "71.5" -> 숫자 하나를 더 읽은 것. 한 글자씩 빼 보고 범위에 맞는 값을 고른다
+function fixSubValue(stat, num, raw) {
+  const range = SUB_RANGE[stat + (num.percent ? '%' : '')];
+  if (!range || (num.value >= range[0] && num.value <= range[1])) return num;
+  const digits = (raw.match(/[\d.]+/) || [''])[0];
+  for (let i = 0; i < digits.length; i++) {
+    const v = parseFloat(digits.slice(0, i) + digits.slice(i + 1));
+    if (v >= range[0] && v <= range[1]) return { ...num, value: v, fixed: true };
+  }
+  // % 가 빠졌거나 붙은 경우: 같은 이름의 다른 쪽 범위에 맞으면 그쪽으로
+  const other = SUB_RANGE[stat + (num.percent ? '' : '%')];
+  if (other && num.value >= other[0] && num.value <= other[1]) return { ...num, percent: !num.percent, fixed: true };
+  return { ...num, suspicious: true };
+}
+
 // 코스트별 고정 메인 옵션 (5성 +25 기준)
 const COST_BY_FLAT = [
   { cost: 4, label: '공격력', value: 150 },
@@ -175,12 +198,12 @@ const COST_BY_FLAT = [
   { cost: 1, label: 'HP', value: 2280 },
 ];
 
-export async function parseBotCard(backend, workers, { names = [], aliases = {} } = {}) {
+export async function parseBotCard(backend, workers, { names = [], aliases = {}, weapons = [] } = {}) {
   const sx = backend.width / BOT_CARD.base.w, sy = backend.height / BOT_CARD.base.h;
   const R = (r) => ({ x: Math.round(r.x * sx), y: Math.round(r.y * sy), w: Math.round(r.w * sx), h: Math.round(r.h * sy) });
-  const readKor = async (r, psm = '7') => {
+  const readKor = async (r, psm = '7', invert = true) => {
     await workers.kor.setParameters({ tessedit_pageseg_mode: psm });
-    return (await workers.kor.recognize(await backend.crop(R(r), 3 / sx))).data.text.trim();
+    return (await workers.kor.recognize(await backend.crop(R(r), 3 / sx, invert))).data.text.trim();
   };
   const readNum = async (r) => (await workers.num.recognize(await backend.crop(R(r), 3 / sx))).data.text.trim();
 
@@ -199,7 +222,9 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {} 
     result.skills.push(m ? +m[1] : null);
   }
 
-  result.weapon = { name: (await readKor(BOT_CARD.weaponName)).replace(/[^가-힣0-9·\s]/g, '').trim() };
+  const weaponRaw = (await readKor(BOT_CARD.weaponName)).replace(/[^가-힣0-9·\s]/g, '').trim();
+  const weaponHit = bestMatch(weaponRaw, weapons, 0.5);
+  result.weapon = { name: weaponHit ? weaponHit.value : weaponRaw };
   const wl = (await readNum(BOT_CARD.weaponLevel)).match(/(\d{1,2})/);
   result.weapon.level = wl ? +wl[1] : null;
   const asc = [];
@@ -216,12 +241,18 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {} 
 
     for (let i = 0; i < E.rowsY.length; i++) {
       const y = E.rowsY[i] - 15;
-      const labelRaw = await readKor({ x: x0 + E.rowLabel.dx, y, w: E.rowLabel.w, h: E.rowLabel.h });
-      const num = parseNumber(await readNum({ x: x0 + E.rowValue.dx, y, w: E.rowValue.w, h: E.rowValue.h }));
-      let label = bestMatch(labelRaw, SUBSTAT_NAMES, 0.5);
+      const box = { x: x0 + E.rowLabel.dx, y, w: E.rowLabel.w, h: E.rowLabel.h };
+      const rawNum = await readNum({ x: x0 + E.rowValue.dx, y, w: E.rowValue.w, h: E.rowValue.h });
+      let num = parseNumber(rawNum);
+      let label = bestMatch(await readKor(box), SUBSTAT_NAMES, 0.5);
+      if (!label) label = bestMatch(await readKor(box, '7', false), SUBSTAT_NAMES, 0.5); // 뒤집지 않고 한 번 더
       // 한글 모델이 "HP"를 잘 못 읽는다. 라벨이 안 맞으면 HP 로 본다 (HP 줄만 영문)
       const stat = label ? label.value : 'HP';
       if (!label) echo.uncertain = true;
+      if (num && i > 0) {
+        num = fixSubValue(stat, num, rawNum);
+        if (num.suspicious) result.warnings.push(`에코 ${result.echoes.length + 1}의 ${stat} 값(${num.value}) 확인 필요`);
+      }
       const row = { stat, value: num ? num.value : null, percent: num ? num.percent : false };
       if (i === 0) echo.mainFlat = row; else echo.subs.push(row);
     }
@@ -250,7 +281,7 @@ export async function createCanvasBackend(file) {
   sctx.drawImage(bmp, 0, 0);
   return {
     width: bmp.width, height: bmp.height,
-    async crop({ x, y, w, h }, scale = 2) {
+    async crop({ x, y, w, h }, scale = 2, invert = false) {
       const c = document.createElement('canvas');
       c.width = Math.round(w * scale); c.height = Math.round(h * scale);
       const ctx = c.getContext('2d');
@@ -265,7 +296,7 @@ export async function createCanvasBackend(file) {
       acc = 0;
       for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc >= n * 0.01) { hi = v; break; } }
       const k = 255 / Math.max(1, hi - lo);
-      for (let i = 0; i < d.length; i += 4) { const g = Math.min(255, Math.max(0, (d[i] - lo) * k)); d[i] = d[i + 1] = d[i + 2] = g; }
+      for (let i = 0; i < d.length; i += 4) { let g = Math.min(255, Math.max(0, (d[i] - lo) * k)); if (invert) g = 255 - g; d[i] = d[i + 1] = d[i + 2] = g; }
       ctx.putImageData(img, 0, 0);
       return c;
     },
