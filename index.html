@@ -124,6 +124,23 @@
       outline: none !important;
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) !important;
     }
+    /* 육성 카드 프리셋 드롭다운 */
+    .preset-dd { position: relative; flex-shrink: 1; min-width: 0; }
+    .preset-dd-btn { display: flex; align-items: center; gap: 3px; max-width: 108px; height: 20px; padding: 0 6px; border-radius: 6px; border: 1px solid #2a3448; background: #151b29; color: #e2e8f0; font-size: 11px; font-weight: 800; transition: border-color .15s, color .15s; }
+    .preset-dd-btn:hover, .preset-dd-btn.is-open { border-color: rgba(251, 191, 36, .7); color: #fde68a; }
+    .preset-dd-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .preset-dd-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; min-width: 168px; padding: 4px; border-radius: 10px; border: 1px solid #2a3448; background: #111725; box-shadow: 0 12px 28px rgba(0, 0, 0, .55); }
+    .preset-dd-item { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 6px; font-size: 12px; font-weight: 700; color: #cbd5e1; cursor: pointer; }
+    .preset-dd-item:hover { background: #1b2336; color: #fff; }
+    .preset-dd-item.is-active { color: #fbbf24; }
+    .preset-dd-item .preset-dd-name { flex: 1; }
+    .preset-dd-item button { padding: 3px; border-radius: 4px; color: #64748b; }
+    .preset-dd-item button:hover { color: #fff; background: #263049; }
+    .preset-dd-item button.is-danger:hover { color: #fb7185; }
+    .preset-dd-item.is-add { color: #94a3b8; font-weight: 600; }
+    .preset-dd-item.is-editing { cursor: default; background: transparent; }
+    .preset-dd-item input { width: 100%; background: #0b0f18; border: 1px solid rgba(251, 191, 36, .7); border-radius: 5px; padding: 3px 6px; font-size: 12px; color: #fff; outline: none; }
+    .preset-dd-sep { height: 1px; margin: 4px 2px; background: #222b3d; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start pb-6 selection:bg-[#f5a623] selection:text-black">
@@ -283,6 +300,8 @@
         </div>
         
         <div class="flex items-center gap-2">
+          <button onclick="document.getElementById('growth-shot-input').click()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" title="게임 스탯 창 캡처를 올리면 현재 프리셋에 자동 입력"><i data-lucide="scan-text" class="w-3.5 h-3.5 text-slate-400"></i><span>스크린샷 입력</span></button>
+          <input type="file" id="growth-shot-input" accept="image/*" multiple class="hidden" onchange="importGrowthScreenshots(this.files); this.value=''">
           <button onclick="resetGrowthData()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
           <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
           <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
@@ -1272,21 +1291,106 @@
 
     function loadData() { 
       GROWTH_DATA = storage.get('wuwa_matrix_growth_data', {});
+      // 사이트를 열면 항상 첫 번째 프리셋부터 보여줌
+      Object.values(GROWTH_DATA).forEach(g => { if (g?.presets?.length) g.activePresetId = g.presets[0].id; });
     }
     
     function initGrowthDataFor(resId) {
       if (!GROWTH_DATA[resId]) GROWTH_DATA[resId] = { isFavorite: false, activePresetId: '1', presets: [] };
-      let p = GROWTH_DATA[resId].presets;
-      if (!p || p.length !== 3) {
-         GROWTH_DATA[resId].presets = ['1', '2', '3'].map((id, i) => ({
-           id,
-           remarks: p?.[i]?.remarks || p?.[i]?.name || '',
-           skills: p?.[i]?.skills || {s1:1,s2:1,s3:1,s4:1,s5:1},
-           stats: p?.[i]?.stats || {current:{base:0,regen:0,cr:0,cd:0}}
-         }));
-      }
-      if (!GROWTH_DATA[resId].activePresetId) GROWTH_DATA[resId].activePresetId = '1';
+      const p = GROWTH_DATA[resId].presets;
+      if (!Array.isArray(p) || !p.length) GROWTH_DATA[resId].presets = [newGrowthPreset('1')];
+      else GROWTH_DATA[resId].presets = p.map((x, i) => ({
+        id: String(x?.id ?? i + 1),
+        label: x?.label || '',
+        remarks: x?.remarks || x?.name || '',
+        skills: x?.skills || {s1:1,s2:1,s3:1,s4:1,s5:1},
+        stats: x?.stats || {current:{base:0,regen:0,cr:0,cd:0}}
+      }));
+      const g = GROWTH_DATA[resId];
+      if (!g.presets.some(x => x.id === g.activePresetId)) g.activePresetId = g.presets[0].id;
     }
+
+    function newGrowthPreset(id) {
+      return { id, label: '', remarks: '', skills: {s1:1,s2:1,s3:1,s4:1,s5:1}, stats: {current:{base:0,regen:0,cr:0,cd:0}} };
+    }
+
+    const presetLabel = (preset, i) => preset.label || `프리셋 ${i + 1}`;
+
+    // ---- 프리셋 드롭다운 ----
+    let presetMenuFor = null, presetRenaming = null;
+
+    function togglePresetMenu(resId) {
+      presetMenuFor = presetMenuFor === resId ? null : resId;
+      presetRenaming = null;
+      renderGrowthTracker();
+    }
+
+    // 바깥을 누르면 닫기. 다시 그리지 않고 메뉴만 지워서, 누른 다른 버튼이나 입력칸이 그대로 동작하게 함
+    function closePresetMenu() {
+      if (presetMenuFor === null) return;
+      const input = presetRenaming && document.getElementById(`preset-rename-${presetMenuFor}`);
+      const preset = input && GROWTH_DATA[presetMenuFor]?.presets.find(x => x.id === presetRenaming);
+      if (preset) {
+        preset.label = input.value.trim().slice(0, 20);
+        storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+        const btnName = input.closest('.preset-dd')?.querySelector('.preset-dd-btn .preset-dd-name');
+        const g = GROWTH_DATA[presetMenuFor], ai = g.presets.findIndex(x => x.id === g.activePresetId);
+        if (btnName && ai >= 0) btnName.textContent = presetLabel(g.presets[ai], ai);
+      }
+      presetMenuFor = null; presetRenaming = null;
+      document.querySelectorAll('.preset-dd-menu').forEach(m => m.remove());
+      document.querySelectorAll('.preset-dd-btn.is-open').forEach(b => b.classList.remove('is-open'));
+    }
+
+    function selectGrowthPreset(resId, presetId) {
+      presetMenuFor = null; presetRenaming = null;
+      switchGrowthPresetTab(resId, presetId);
+    }
+
+    function addGrowthPreset(resId, copyCurrent) {
+      const g = GROWTH_DATA[resId];
+      if (!g) return;
+      const id = String(Math.max(0, ...g.presets.map(x => parseInt(x.id) || 0)) + 1);
+      const cur = g.presets.find(x => x.id === g.activePresetId);
+      const preset = copyCurrent && cur
+        ? { ...JSON.parse(JSON.stringify(cur)), id, label: `${presetLabel(cur, g.presets.indexOf(cur))} 복사본` }
+        : newGrowthPreset(id);
+      g.presets.push(preset);
+      g.activePresetId = id;
+      storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+      startRenameGrowthPreset(resId, id); // 만들자마자 이름을 붙일 수 있게
+    }
+
+    function startRenameGrowthPreset(resId, presetId) {
+      presetRenaming = presetId;
+      renderGrowthTracker();
+      const input = document.getElementById(`preset-rename-${resId}`);
+      if (input) { input.focus(); input.select(); }
+    }
+
+    function finishRenameGrowthPreset(resId, presetId, value) {
+      if (presetRenaming !== presetId) return;
+      const preset = GROWTH_DATA[resId]?.presets.find(x => x.id === presetId);
+      if (preset) preset.label = value.trim().slice(0, 20);
+      presetRenaming = null;
+      storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+      renderGrowthTracker();
+    }
+
+    function deleteGrowthPreset(resId, presetId) {
+      const g = GROWTH_DATA[resId];
+      if (!g || g.presets.length <= 1) { showToast('프리셋은 최소 1개가 필요합니다.'); return; }
+      const i = g.presets.findIndex(x => x.id === presetId);
+      openConfirm('프리셋 삭제', `'${presetLabel(g.presets[i], i)}'의 육성 기록을 삭제합니다.`, () => {
+        g.presets.splice(i, 1);
+        if (g.activePresetId === presetId) g.activePresetId = g.presets[0].id;
+        storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+        renderGrowthTracker();
+      });
+    }
+
+    document.addEventListener('mousedown', e => { if (presetMenuFor !== null && !e.target.closest('.preset-dd')) closePresetMenu(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && presetMenuFor !== null && !presetRenaming) { presetMenuFor = null; renderGrowthTracker(); } });
 
     function toggleFavorite(resId) {
       initGrowthDataFor(resId);
@@ -1320,6 +1424,62 @@
       else if (category === 'remarks') preset.remarks = value;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
       renderGrowthTracker(); 
+    }
+
+    // ---- 스탯 창 스크린샷 → 현재 프리셋 자동 입력 ----
+    function confirmAsync(title, msg) {
+      return new Promise(resolve => {
+        const msgEl = document.getElementById('confirm-modal-message');
+        msgEl.style.whiteSpace = 'pre-line';
+        const done = v => { msgEl.style.whiteSpace = ''; resolve(v); };
+        openConfirm(title, msg, () => done(true));
+        const btnCancel = document.getElementById('confirm-btn-cancel'), close = btnCancel.onclick;
+        btnCancel.onclick = () => { close(); done(false); };
+      });
+    }
+
+    let screenshotBusy = false;
+    async function importGrowthScreenshots(files) {
+      files = [...(files || [])]; // 입력칸을 비우면 FileList 도 비워지므로 먼저 복사
+      if (!files.length || screenshotBusy) return;
+      screenshotBusy = true;
+      const btn = document.getElementById('growth-shot-btn'), label = btn.querySelector('span');
+      label.textContent = '읽는 중...'; btn.disabled = true;
+      try {
+        const ocr = await import('./assets/wuwa-ocr.js?v=1');
+        const workers = await ocr.getWorkers();
+        const names = RAW_RESONATORS.map(r => r.name);
+        for (const file of files) {
+          const r = await ocr.parseImage(file, workers, { names });
+          if (r.kind === 'bot-card') { showToast('봇 카드 이미지는 다음 단계에서 지원할 예정입니다.'); continue; }
+          const res = RAW_RESONATORS.find(x => x.name === r.name);
+          if (!res) { showToast(`캐릭터 이름을 읽지 못했습니다${r.name ? ` (${esc(r.name)})` : ''}.`); continue; }
+          const st = r.stats, type = (res.targetStats || defaultTargetStats).type;
+          const baseKey = type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력');
+          const values = { base: st[baseKey], regen: st['공명 효율'], cr: st['크리티컬'], cd: st['크리티컬 피해'] };
+          if (Object.values(values).every(v => v == null)) { showToast(`${esc(res.name)}: 스탯을 읽지 못했습니다.`); continue; }
+          initGrowthDataFor(res.id);
+          const g = GROWTH_DATA[res.id], pi = g.presets.findIndex(p => p.id === g.activePresetId), preset = g.presets[pi];
+          const show = v => v == null ? '읽지 못함' : v;
+          const lines = [
+            `${res.name}${r.level ? ` Lv.${r.level.current}` : ''} · ${presetLabel(preset, pi)}에 입력합니다.`,
+            `${baseKey} ${show(values.base)} / 공명 효율 ${show(values.regen)}% / 크리티컬 ${show(values.cr)}% / 크리티컬 피해 ${show(values.cd)}%`,
+          ];
+          if (!isOwned(res.id)) lines.push('보유 공명자로 설정되어 있지 않아 목록에는 보이지 않습니다.');
+          if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
+          if (!await confirmAsync('스크린샷 입력', lines.join('\n'))) continue;
+          Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
+          preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
+          storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+          renderGrowthTracker();
+          showToast(`${esc(res.name)} 스탯을 입력했습니다.`);
+        }
+      } catch (e) {
+        console.error('스크린샷 인식 실패', e);
+        showToast('스크린샷을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      } finally {
+        screenshotBusy = false; label.textContent = '스크린샷 입력'; btn.disabled = false;
+      }
     }
 
     function switchGrowthPresetTab(resId, presetId) {
@@ -2949,6 +3109,39 @@
       sel.innerHTML = `<option value="all" class="text-white">전체 보기</option>` + state.parties.map((_, idx) => `<option value="${idx}">파티 ${idx + 1}</option>`).join('');
     }
 
+    function renderPresetDropdown(resId, gData) {
+      const ai = Math.max(0, gData.presets.findIndex(p => p.id === gData.activePresetId));
+      const open = presetMenuFor === resId;
+      const items = gData.presets.map((p, i) => {
+        const active = p.id === gData.activePresetId;
+        if (presetRenaming === p.id && open) return `
+          <div class="preset-dd-item is-editing">
+            <input id="preset-rename-${resId}" maxlength="20" value="${esc(p.label)}" placeholder="${esc(presetLabel(p, i))}"
+              onkeydown="if(event.key==='Enter'){this.blur()} else if(event.key==='Escape'){presetRenaming=null;renderGrowthTracker()}"
+              onblur="finishRenameGrowthPreset('${resId}','${p.id}',this.value)">
+          </div>`;
+        return `
+          <div class="preset-dd-item ${active ? 'is-active' : ''}" onclick="selectGrowthPreset('${resId}','${p.id}')">
+            <span class="preset-dd-name">${esc(presetLabel(p, i))}</span>
+            <button title="이름 변경" onclick="event.stopPropagation(); startRenameGrowthPreset('${resId}','${p.id}')"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+            <button title="삭제" class="is-danger" onclick="event.stopPropagation(); deleteGrowthPreset('${resId}','${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+          </div>`;
+      }).join('');
+      return `
+        <div class="preset-dd">
+          <button class="preset-dd-btn ${open ? 'is-open' : ''}" onclick="togglePresetMenu('${resId}')" title="프리셋 선택">
+            <span class="preset-dd-name">${esc(presetLabel(gData.presets[ai], ai))}</span><i data-lucide="chevron-down" class="w-3 h-3 flex-shrink-0"></i>
+          </button>
+          ${open ? `
+          <div class="preset-dd-menu">
+            ${items}
+            <div class="preset-dd-sep"></div>
+            <div class="preset-dd-item is-add" onclick="addGrowthPreset('${resId}', false)"><i data-lucide="plus" class="w-3 h-3"></i><span>새 프리셋</span></div>
+            <div class="preset-dd-item is-add" onclick="addGrowthPreset('${resId}', true)"><i data-lucide="copy" class="w-3 h-3"></i><span>현재 프리셋 복사</span></div>
+          </div>` : ''}
+        </div>`;
+    }
+
     function renderGrowthTracker() {
       const container = document.getElementById('growth-cards-container');
       const fElem = currentGrowthFilters.element, fRole = currentGrowthFilters.role;
@@ -3025,9 +3218,7 @@
                 <div class="flex items-center w-full">
                   <div class="text-sm font-black text-white truncate mr-1">${esc(r.name)}</div>
                   <div class="w-5 h-5 drop-shadow-md flex-shrink-0 mr-1.5">${elemIcon}</div>
-                  <div class="flex items-center gap-0.5">
-                    ${[1, 2, 3].map(num => `<button onclick="switchGrowthPresetTab('${r.id}', '${num}')" class="w-5 h-5 flex items-center justify-center rounded text-[11px] font-black transition-colors ${gData.activePresetId === String(num) ? 'bg-slate-700 text-white shadow-inner' : 'bg-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800'}">${num}</button>`).join('')}
-                  </div>
+                  ${renderPresetDropdown(r.id, gData)}
                   <div class="ml-auto px-1.5 py-0.5 rounded text-[9px] font-extrabold border flex-shrink-0 ${roleMeta.tagClass}">${roleMeta.label}</div>
                 </div>
                 ${remarksHtml}
