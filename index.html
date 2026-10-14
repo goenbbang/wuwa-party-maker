@@ -1925,6 +1925,7 @@
       if (!await confirmAsync('봇 카드 입력', lines.join('\n'))) return;
       preset.build = build;
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level);
+      if (r.chain != null) GROWTH_DATA[res.id].chain = r.chain;
       afterGrowthChange();
       showToast(`${esc(res.name)} 에코 정보를 저장했습니다.`);
     }
@@ -2150,6 +2151,8 @@
     const LV_CAPS = [20, 40, 50, 60, 70, 80, 90];
     // 돌파 단계를 모를 때는 그 레벨에서 돌파까지 마친 것으로 봄 (80 → 80/90)
     const levelOf = (n, max) => { n = Math.max(1, Math.min(90, parseInt(n) || 90)); const br = max ? Math.max(0, LV_CAPS.indexOf(+max)) : LV_CAPS.slice(0, 6).filter(c => c <= n).length; return { lv: n, br: Math.min(br, 6) }; };
+    // 공명 체인도 인게임처럼 모든 프리셋 공통 (예전 프리셋별 값은 가장 높은 것을 이어받음)
+    const charChain = resId => { const g = GROWTH_DATA[resId]; return g?.chain ?? Math.max(0, ...(g?.presets || []).map(p => p.chain ?? p.build?.chain ?? 0)); };
     const charLevel = resId => GROWTH_DATA[resId]?.level || { lv: 90, br: 6 };
     const weaponLevel = w => w?.br != null ? { lv: w.level ?? 90, br: w.br } : levelOf(w?.level ?? 90);
     const lvLabel = l => `Lv.${l.lv}/${LV_CAPS[l.br]}`;
@@ -2223,10 +2226,10 @@
 
     function setBuildChain(n) {
       const { preset } = activeGrowthPreset(buildModalFor);
-      const cur = preset.chain ?? preset.build?.chain ?? 0;
+      const cur = charChain(buildModalFor);
       const res = RAW_RESONATORS.find(r => r.id === buildModalFor);
       buildAnim = { prevTotals: computeBuildStats(res, preset)?.total, prevChain: cur };
-      preset.chain = cur === n ? n - 1 : n;
+      GROWTH_DATA[buildModalFor].chain = cur === n ? n - 1 : n;
       afterGrowthChange();
     }
 
@@ -2414,7 +2417,7 @@
       const { preset, pi } = activeGrowthPreset(res.id);
       const build = preset.build;
       const sc = scoreBuild(res, preset), st = computeBuildStats(res, preset);
-      const chain = preset.chain ?? build?.chain ?? 0;
+      const chain = charChain(res.id);
       const accent = ELEMENT_ACCENT[res.element] || '#f5a623';
       const date = iso => iso ? new Date(iso).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }) : '';
       const wClass = w => w >= 0.75 ? 'w-hi' : (w >= 0.4 ? 'w-mid' : (w > 0 ? 'w-lo' : ''));
