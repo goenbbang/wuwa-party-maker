@@ -464,6 +464,16 @@
     .up-drop-main { font-size: 14px; font-weight: 800; color: #e8e8ea; }
     .up-drop-sub { font-size: 12px; }
     .up-drop-sub b { color: #e8e8ea; }
+    .up-pick { display: flex; flex-direction: column; gap: 14px; }
+    /* 읽는 중 → 저장 확인: 업로드 창 안에서 바로 바뀜 */
+    .up-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 26px 8px 8px; text-align: center; }
+    .up-stage.hidden, .up-pick.hidden { display: none; }
+    .up-spin { width: 30px; height: 30px; border-radius: 99px; border: 3px solid rgba(255, 255, 255, .12); border-top-color: var(--wg, #d9bf86); animation: upSpin .8s linear infinite; }
+    @keyframes upSpin { to { transform: rotate(360deg); } }
+    .up-stage-msg { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.5; }
+    .up-stage-note { font-size: 12px; color: #a3a3a5; line-height: 1.5; }
+    .up-stage-note.warn { color: var(--wg, #d9bf86); }
+    .up-stage .up-foot { align-self: stretch; margin-top: 10px; }
     .up-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .up-list:empty { display: none; }
     .up-item { position: relative; border: 1px solid #29292b; border-radius: 5px; overflow: hidden; background: #0e0e10; aspect-ratio: 16 / 10; }
@@ -660,7 +670,7 @@
   <div id="load-error" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#06080d]">
     <div class="max-w-md text-center space-y-2">
       <div class="text-lg font-black text-white">데이터를 불러오지 못했습니다</div>
-      <p class="text-sm text-slate-400">data/game-data.json 파일을 찾을 수 없습니다. 웹사이트 주소로 접속했는지, 저장소에 data 폴더가 있는지 확인해 주십시오. (HTML 파일을 직접 열면 데이터를 읽을 수 없습니다)</p>
+      <p class="text-sm text-slate-400">data/game-data.json 파일을 찾을 수 없습니다. 웹사이트 주소로 접속했는지, 저장소에 data 폴더가 있는지 확인해 주세요. (HTML 파일을 직접 열면 데이터를 읽을 수 없습니다)</p>
     </div>
   </div>
 
@@ -695,7 +705,7 @@
         <li>아래 <b class="text-white">Commit changes</b>를 누릅니다.</li>
         <li>1~2분 뒤 새로고침하면 반영됩니다.</li>
       </ol>
-      <p class="text-[11px] text-slate-500">편집기에서 직접 올린 이미지는 데이터 파일에 그대로 들어가 파일이 커집니다. 이미지는 저장소 images 폴더에 올리고 파일명으로 입력해 주십시오.</p>
+      <p class="text-[11px] text-slate-500">편집기에서 직접 올린 이미지는 데이터 파일에 그대로 들어가 파일이 커집니다. 이미지는 저장소 images 폴더에 올리고 파일명으로 입력해 주세요.</p>
       <div class="flex justify-end"><button onclick="closeModal('publish-guide-modal')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold">확인</button></div>
     </div>
   </div>
@@ -708,20 +718,23 @@
       <div class="up-head">
         <div>
           <div class="up-title">이미지 업로드</div>
-          <div class="up-desc" id="upload-target-desc">WuWa Bot 프로필 카드나 게임 스탯 창 캡처를 올리면 자동으로 입력됩니다.</div>
+          <div class="up-desc" id="upload-target-desc">WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.</div>
         </div>
         <button class="bm-btn" onclick="closeUploadModal()" aria-label="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
       </div>
       <input type="file" id="upload-file-input" accept="image/*" multiple class="hidden" onchange="addUploadFiles(this.files); this.value=''">
+      <div id="upload-stage" class="up-stage hidden"></div>
+      <div id="upload-pick" class="up-pick">
       <div id="upload-drop" class="up-drop" onclick="document.getElementById('upload-file-input').click()">
         <i data-lucide="image-up" class="w-7 h-7"></i>
-        <div class="up-drop-main">여기를 눌러 파일 선택</div>
-        <div class="up-drop-sub">끌어다 놓거나 <b>Ctrl+V</b>로 붙여넣어도 됩니다</div>
+        <div class="up-drop-main">이미지 업로드하기</div>
+        <div class="up-drop-sub">드래그 앤 드롭 또는 <b>Ctrl+V</b>로 붙여넣기</div>
       </div>
       <div id="upload-list" class="up-list"></div>
       <div class="up-foot">
         <button class="bm-btn" onclick="clearUploadFiles()">비우기</button>
         <button id="upload-run-btn" class="up-run" onclick="runUpload()" disabled>입력하기</button>
+      </div>
       </div>
     </div>
   </div>
@@ -1385,7 +1398,7 @@
       get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; } },
       set: (k, v) => {
         try { localStorage.setItem(k, JSON.stringify(v)); return true; }
-        catch (e) { console.error('저장 실패:', k, e); if (typeof showToast === 'function') showToast('저장 공간이 부족합니다. 올린 이미지를 줄여 주십시오.'); return false; }
+        catch (e) { console.error('저장 실패:', k, e); if (typeof showToast === 'function') showToast('저장 공간이 부족합니다. 올린 이미지를 줄여 주세요.'); return false; }
       },
       remove: (k) => localStorage.removeItem(k)
     };
@@ -1667,6 +1680,7 @@
       // 버튼·바깥 클릭으로 마지막 창을 닫았으면 쌓아 둔 기록도 정리
       if (!fromHistory && !modalStack.length && history.state?.wuwaModal) { skipNextPop = true; history.back(); }
       if (id === 'confirm-modal' && confirmCancel) { const c = confirmCancel; confirmCancel = null; c(); }
+      if (id === 'upload-modal') { uploadAborted = screenshotBusy; answerUpload(false); }
       if (id === 'owned-modal' && ownedBackup) { state.ownedResonators = ownedBackup; ownedBackup = null; }   // 적용 없이 닫으면 되돌림
       modal.classList.add('is-closing', 'opacity-0');
       const dur = (parseFloat(getComputedStyle(modal).transitionDuration) || .15) * 1000;
@@ -2024,31 +2038,48 @@
     }
 
     // ---- 스탯 창 스크린샷 → 현재 프리셋 자동 입력 ----
-    function confirmAsync(title, msg) {
+    // 업로드 창 안의 진행 화면. 창을 닫으면 남은 확인은 모두 취소
+    let uploadAsk = null, uploadAborted = false;
+    function showUploadStage(html) {
+      document.getElementById('upload-pick').classList.add('hidden');
+      const st = document.getElementById('upload-stage');
+      st.innerHTML = html; st.classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function resetUploadStage() {
+      document.getElementById('upload-pick').classList.remove('hidden');
+      document.getElementById('upload-stage').classList.add('hidden');
+    }
+    function showUploadBusy(i, n) {
+      showUploadStage(`<div class="up-spin"></div><div class="up-stage-msg">이미지를 읽는 중입니다${n > 1 ? ` (${i}/${n})` : ''}</div>`);
+    }
+    // msg: 한 줄 안내, notes: [[문구, 강조 여부]] → 저장하면 true
+    function askUpload(msg, notes = []) {
       return new Promise(resolve => {
-        const msgEl = document.getElementById('confirm-modal-message');
-        msgEl.style.whiteSpace = 'pre-line';
-        const done = v => { msgEl.style.whiteSpace = ''; resolve(v); };
-        openConfirm(title, msg, () => done(true), () => done(false));
+        uploadAsk = resolve;
+        showUploadStage(`<div class="up-stage-msg">${esc(msg)}</div>${notes.map(([t, warn]) => `<div class="up-stage-note ${warn ? 'warn' : ''}">${esc(t)}</div>`).join('')}
+          <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`);
       });
     }
+    function answerUpload(ok) { const a = uploadAsk; uploadAsk = null; a?.(ok); }
 
     let screenshotBusy = false;
     // fallbackResId: 이름을 못 읽었을 때 쓸 캐릭터 (상세 창에서 올린 경우)
     async function importGrowthScreenshots(files, fallbackResId = null) {
       files = [...(files || [])]; // 입력칸을 비우면 FileList 도 비워지므로 먼저 복사
       if (!files.length || screenshotBusy) return;
-      screenshotBusy = true;
-      const btn = document.getElementById('growth-shot-btn'), label = btn.querySelector('span');
-      label.textContent = '읽는 중...'; btn.disabled = true;
-      showToast('이미지를 읽는 중...');
+      screenshotBusy = true; uploadAborted = false;
+      showUploadBusy(1, files.length);
       try {
         const ocr = await import('./assets/wuwa-ocr.js?v=6');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
-        for (const file of files) {
+        for (const [fi, file] of files.entries()) {
+          if (uploadAborted) break;
+          showUploadBusy(fi + 1, files.length);
           const r = await ocr.parseImage(file, workers, { names, weapons, echoDb });
+          if (uploadAborted) break;
           const res = RAW_RESONATORS.find(x => x.name === r.name) || RAW_RESONATORS.find(x => x.id === fallbackResId);
           if (!res) { showToast(`캐릭터 이름을 읽지 못했습니다${r.name ? ` (${esc(r.name)})` : ''}.`); continue; }
           if (res.name !== r.name) r.warnings.push(`이름(${r.name || '읽지 못함'})을 찾지 못해 ${res.name}에 입력합니다`);
@@ -2059,7 +2090,8 @@
         console.error('스크린샷 인식 실패', e);
         showToast('이미지를 읽지 못했습니다.');
       } finally {
-        screenshotBusy = false; label.textContent = '이미지 업로드'; btn.disabled = false;
+        screenshotBusy = false;
+        if (modalStack.includes('upload-modal')) closeModal('upload-modal');
       }
     }
 
@@ -2095,14 +2127,10 @@
       const values = { base: st[baseKey], regen: st['공명 효율'], cr: st['크리티컬'], cd: st['크리티컬 피해'] };
       if (Object.values(values).every(v => v == null)) { showToast(`${esc(res.name)}: 스탯을 읽지 못했습니다.`); return; }
       const { preset, pi } = activeGrowthPreset(res.id);
-      const show = v => v == null ? '읽지 못함' : v;
-      const lines = [
-        `${res.name}${r.level ? ` Lv.${r.level.current}` : ''} · ${presetLabel(preset, pi)}에 스탯을 입력합니다.`,
-        `${baseKey} ${show(values.base)} / 공명 효율 ${show(values.regen)}% / 크리티컬 ${show(values.cr)}% / 크리티컬 피해 ${show(values.cd)}%`,
-      ];
-      if (!isOwned(res.id)) lines.push('보유 공명자가 아니어서 목록에는 보이지 않습니다.');
-      if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
-      if (!await confirmAsync('이미지 업로드', lines.join('\n'))) return;
+      const notes = [];
+      if (!isOwned(res.id)) notes.push(['보유 공명자가 아니어서 목록에는 보이지 않습니다.']);
+      r.warnings.forEach(w => notes.push([w, true]));
+      if (!await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 스탯을 저장합니다.`, notes)) return;
       Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
       preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level.current, r.level.max);
@@ -2119,21 +2147,13 @@
         echoes: r.echoes.map(e => ({ name: e.name || null, img: e.img || null, nameUncertain: !!e.nameUncertain, cost: e.cost, main: e.main, mainFlat: e.mainFlat, subs: e.subs })),
         source: { type: 'bot-card', at: new Date().toISOString() },
       };
-      const sc = scoreBuild(res, { ...preset, build });
       // 봇 카드 스킬 칸은 위에서 시계방향으로 기본 공격 · 공명 해방 · 공명 회로 · 변주 스킬 · 공명 스킬.
       // r.skills 는 [위, 왼쪽 위, 오른쪽 위, 왼쪽 아래, 오른쪽 아래] 순서라 s1~s5 순으로 바꿈
       const sk = r.skills || [], skills = [sk[0], sk[1], sk[4], sk[2], sk[3]].map(v => v >= 1 && v <= 10 ? v : null);
-      const lines = [
-        `${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`,
-        `Lv.${r.level ?? '?'} / 공명 체인 ${r.chain} / ${r.weapon.name || '무기'} Lv.${r.weapon.level ?? '?'}`,
-        skills.some(v => v) ? '스킬 레벨: ' + SKILL_NAMES.map((n, i) => `${n} ${skills[i] ?? '?'}`).join(', ') : '',
-        `에코 ${build.echoes.length}개, 에코 점수 ${sc.total.toFixed(1)}점 (${sc.grade})`,
-        build.echoes.some(e => e?.name) ? '에코: ' + build.echoes.map(e => e?.name || '?').join(', ') : '',
-      ];
-      if (preset.build) lines.push('기존 에코 정보는 새 카드로 바뀝니다.');
-      lines.splice(0, lines.length, ...lines.filter(Boolean));
-      if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
-      if (!await confirmAsync('봇 카드 입력', lines.join('\n'))) return;
+      const notes = [];
+      if (preset.build) notes.push(['이 프리셋의 기존 에코 정보는 새 카드로 바뀝니다.']);
+      r.warnings.forEach(w => notes.push([w, true]));
+      if (!await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`, notes)) return;
       preset.build = build;
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level);
       if (r.chain != null) GROWTH_DATA[res.id].chain = r.chain;
@@ -2149,10 +2169,11 @@
 
     function openUploadModal(resId = null) {
       uploadTarget = resId;
+      if (!screenshotBusy) resetUploadStage();
       const res = resId && RAW_RESONATORS.find(r => r.id === resId);
       document.getElementById('upload-target-desc').textContent = res
-        ? `WuWa Bot 프로필 카드나 게임 스탯 창 캡처를 올리면 ${res.name}에 입력됩니다.`
-        : 'WuWa Bot 프로필 카드나 게임 스탯 창 캡처를 올리면 자동으로 입력됩니다.';
+        ? `${res.name}의 WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.`
+        : 'WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.';
       renderUploadList();
       openModal('upload-modal');
     }
@@ -2193,7 +2214,6 @@
       if (!uploadFiles.length) return;
       const files = uploadFiles.map(u => u.file);
       clearUploadFiles();
-      closeUploadModal();
       await importGrowthScreenshots(files, uploadTarget);
     }
 
@@ -2596,14 +2616,14 @@
       const build = ensureBuild(preset);
       rememberBuildStats(preset);
       if (editState.kind === 'weapon') {
-        if (!editState.pick) { showToast('무기를 선택해 주십시오.'); return; }
+        if (!editState.pick) { showToast('무기를 선택해 주세요.'); return; }
         const prev = build.weapon || {};
         const [lv, br] = editState.wlv.split('-').map(Number);
         build.weapon = { ...prev, name: editState.pick, level: lv, br, refine: +editState.refine };
         delete build.weapon.ascension;
       } else {
         const e = editState.echo;
-        if (!e.name) { showToast('에코를 선택해 주십시오.'); return; }
+        if (!e.name) { showToast('에코를 선택해 주세요.'); return; }
         e.subs = e.subs.filter(Boolean);
         build.echoes[editState.slot] = e;
         for (let i = 0; i < 5; i++) if (build.echoes[i] === undefined) build.echoes[i] = null;
