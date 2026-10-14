@@ -197,7 +197,6 @@
     .bm-main { font-size: 13px; font-weight: 800; color: #ecdcb4; display: flex; justify-content: space-between; border-bottom: 1px solid #29292b; padding-bottom: 6px; }
     .bm-main.is-off { color: #fca5a5; }
     .bm-subrow { display: flex; justify-content: space-between; font-size: 12px; color: #555557; }
-    .bm-subrow.w-hi { color: #d9bf86; font-weight: 700; } .bm-subrow.w-mid { color: #e8e8ea; } .bm-subrow.w-lo { color: #a3a3a5; }
     .bm-empty { border: 1px dashed #353537; border-radius: 5px; padding: 28px 16px; text-align: center; color: #747476; font-size: 13px; line-height: 1.7; }
     .bm-note { font-size: 11px; color: #747476; margin-top: 8px; line-height: 1.5; }
     .bm-note.warn { color: #d9bf86; }
@@ -351,7 +350,6 @@
     .bd-echo-flat { color: #a3a3a5; padding-bottom: 5px; border-bottom: 1px solid #29292b; }
     .bd-subs { display: flex; flex-direction: column; gap: 3px; }
     .bd-sub { color: #555557; }
-    .bd-sub.w-hi { color: #d9bf86; font-weight: 700; } .bd-sub.w-mid { color: #e8e8ea; } .bd-sub.w-lo { color: #a3a3a5; }
     .bd-echo-foot { margin-top: auto; padding-top: 6px; border-top: 1px solid #29292b; display: flex; align-items: baseline; gap: 6px; font-size: 11px; color: #747476; }
     .bd-echo-foot b { color: #fff; font-size: 14px; }
     .bd-echo-foot .bd-grade { margin-left: auto; font-size: 15px; }
@@ -362,9 +360,7 @@
     .dm-star { color: #fbbf24; fill: #fbbf24; }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
     .bd-stat:not(.is-eff) b { color: #a3a3a5; }
-    .bd-sub.w-hi, .bd-sub.w-mid { color: var(--eff); font-weight: 700; }
-    .bd-sub.w-hi b { color: var(--eff-strong); }
-    .bd-sub.w-lo { color: #747476; }
+    .bd-sub.is-eff { color: var(--eff); font-weight: 700; }
     .bd-eff-legend { color: var(--eff); }
     button.bd-echo { text-align: left; cursor: pointer; transition: border-color .15s, background .15s; }
     button.bd-echo:hover { border-color: rgba(255, 255, 255, .3); background: #1b1b1d; }
@@ -2252,7 +2248,8 @@
     //  - 주력 피해 보너스 0.6, 나머지 피해 보너스 0
     //  - 공명 효율: 캐릭터 목표 공명 효율로 고정 (110% 이하 0.2 → 140% 이상 0.8, 사이는 비율대로)
     const SUPPORT_CRIT = ['suisui', 'shorekeeper', 'mornye'];
-    const regenWeight = target => Math.round(Math.min(0.8, Math.max(0.2, 0.2 + (target - 110) * 0.02)) * 100) / 100;
+    // 공명 효율: 목표 110% 이하 0.6 ~ 150% 이상 1.0 (서포터 1.0)
+    const regenWeight = target => Math.round(Math.min(1, Math.max(0.6, 0.6 + (target - 110) * 0.01)) * 100) / 100;
     function echoWeights(res) {
       const ts = res.targetStats || defaultTargetStats, sup = res.role === 'support';
       const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
@@ -2260,7 +2257,7 @@
       const w = {
         '크리티컬%': crit, '크리티컬 피해%': crit,
         [scale + '%']: sup ? 1 : 0.8, [scale]: sup ? 0.4 : 0.3,
-        '공명 효율%': regenWeight(+ts.regen || 120),
+        '공명 효율%': sup ? 1 : regenWeight(+ts.regen || 120),
       };
       const bonus = MAIN_DMG_BONUS[res.mainDmg];
       if (bonus && !sup) w[bonus + '%'] = 0.6;
@@ -2488,10 +2485,11 @@
       return { total, base: { ...cb, atk: cb.atk + wAtk }, weapon, wAtk, wMain, chain: cd.chain || [], tree: cd.tree || {} };
     }
 
-    // 이 캐릭터에게 유효한 스탯인지 (에코 점수 가중치가 0.4 이상)
+    // 이 캐릭터에게 유효한 스탯인지 (에코 점수 가중치가 EFF_MIN 이상)
+    const EFF_MIN = 0.4;
     function statEffective(stat, w) {
       const keys = FLAT_STATS.includes(stat) ? [stat + '%', stat] : [stat + '%'];
-      return keys.some(k => (w[k] || 0) >= 0.4);
+      return keys.some(k => (w[k] || 0) >= EFF_MIN);
     }
 
     const fmtStat = (stat, v) => FLAT_STATS.includes(stat) ? Math.round(v).toLocaleString() : `${(Math.round(v * 10) / 10).toFixed(1)}%`;
@@ -2712,7 +2710,6 @@
       const chain = charChain(res.id);
       const accent = ELEMENT_ACCENT[res.element] || '#f5a623';
       const date = iso => iso ? new Date(iso).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }) : '';
-      const wClass = w => w >= 0.75 ? 'w-hi' : (w >= 0.4 ? 'w-mid' : (w > 0 ? 'w-lo' : ''));
 
       const anim = buildAnim; buildAnim = null;
       // 왼쪽: 캐릭터 + 공명 체인
@@ -2773,7 +2770,7 @@
           </div>
           <div class="bd-echo-main">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>
           ${e.mainFlat ? `<div class="bd-echo-flat">${statIcon(e.mainFlat.stat, 'bd-ico-s')}<span>${esc(e.mainFlat.stat)}</span><b>${e.mainFlat.value ?? '?'}</b></div>` : ''}
-          <div class="bd-subs">${e.subs.map(s => `<div class="bd-sub ${wClass(s.weight)}"><span>${esc(s.stat.replace(' 보너스', ''))}${s.percent && FLAT_STATS.includes(s.stat) ? '%' : ''}</span><b>${s.value == null ? '?' : s.value + (s.percent ? '%' : '')}</b></div>`).join('')}</div>
+          <div class="bd-subs">${e.subs.map(s => `<div class="bd-sub ${s.weight >= EFF_MIN ? 'is-eff' : ''}"><span>${esc(s.stat.replace(' 보너스', ''))}${s.percent && FLAT_STATS.includes(s.stat) ? '%' : ''}</span><b>${s.value == null ? '?' : s.value + (s.percent ? '%' : '')}</b></div>`).join('')}</div>
           <div class="bd-echo-foot"><span>점수</span><b>${e.pct.toFixed(1)}</b><i class="bd-grade g-${e.grade}">${e.grade}</i></div>
         </button>`;
       };

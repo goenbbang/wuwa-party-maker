@@ -1388,7 +1388,7 @@
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
       "weapons": [{"name": "옥궐에 피는 꽃", "pct": 100.0}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 79.7}, {"name": "꼭두각시의 손", "pct": 76.2}, {"name": "청음", "pct": 64.6}],
       "teammates": [{"id": "rover_electro"}, {"id": "suisui"}, {"id": "jinhsi"}],
-      "targetStats": {"type": "atk", "base": 2100, "regen": 112, "cr": 65, "cd": 250}
+      "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 65, "cd": 250}
     },
     {
       "id": "suoming",
@@ -2210,7 +2210,7 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "불빛의 심판", "pct": 100.0}, {"name": "희비극", "pct": 93.7}, {"name": "팔방의 천추", "pct": 85.0}, {"name": "거침없는 비상", "pct": 72.6}],
       "teammates": [{"id": "phoebe"}, {"id": "rover_spectro"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 115, "cr": 65, "cd": 210}
+      "targetStats": {"type": "atk", "base": 1800, "regen": 125, "cr": 65, "cd": 210}
     },
     {
       "id": "chisa",
