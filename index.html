@@ -2205,14 +2205,28 @@
     const MAIN_DMG_BONUS = { '일반 공격': '일반 공격 피해 보너스', '기본 공격': '일반 공격 피해 보너스', '강공격': '강공격 피해 보너스', '공명 스킬': '공명 스킬 피해 보너스', '공명 해방': '공명 해방 피해 보너스' };
     const subKey = (stat, percent) => stat + (percent ? '%' : '');
 
-    // 부옵 하나를 최대치로 더했을 때 데미지가 몇 % 오르는지로 가중치를 정함 (가장 많이 오르는 부옵 = 1)
-    function echoWeights(res, preset) {
-      const ts = getTargetStats(res, preset), cur = preset?.stats?.current || {};
+    // 서포터: 본인 딜이 아니라 버프 · 회복 기준. 공명 효율 > 기준 스탯% > 기준 스탯 고정값, 딜 옵션은 버프에 영향이 없으면 0
+    // 크리티컬 관련 효과가 있는 서포터는 크리 · 크피를 조금만 침 (돌파와 상관없이 고정)
+    const SUPPORT_CRIT = ['suisui', 'shorekeeper', 'mornye'];
+    function supportWeights(res) {
+      const ts = res.targetStats || defaultTargetStats;
       const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
-      // B: 캐릭터(+무기) 90레벨 기본 수치. 게임 데이터가 없으면 총합의 약 53%로 어림
-      const base = preset && computeBuildStats(res, preset)?.base;
-      const T = cur.base || ts.base, B = (base && { 'HP': base.hp, '공격력': base.atk, '방어력': base.def }[scale]) || T / 1.9;
-      const c = (cur.cr || ts.cr) / 100, d = (cur.cd || ts.cd) / 100, D = 0.7; // D: 기본 피해 보너스 합 추정
+      const crit = SUPPORT_CRIT.includes(res.id) ? 0.2 : 0;
+      return {
+        '공명 효율%': 1,
+        [scale + '%']: 0.7, [scale]: 0.3,
+        '크리티컬%': crit, '크리티컬 피해%': crit,
+      };
+    }
+
+    // 에코 점수는 에코 자체에 좋은 옵션이 얼마나 붙었는지만 봄. 현재 스탯 · 무기 · 돌파 · 목표 달성 여부와 상관없이 캐릭터마다 고정
+    // 딜러: 캐릭터 기본 목표 수치 기준으로 부옵 하나를 최대치로 더했을 때 데미지가 몇 % 오르는지로 가중치를 정함 (가장 많이 오르는 부옵 = 1)
+    function echoWeights(res) {
+      if (res.role === 'support') return supportWeights(res);
+      const ts = res.targetStats || defaultTargetStats;
+      const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
+      const T = ts.base, B = T / 1.9; // B: 90레벨 기본 수치 (목표 총합의 약 53%로 어림)
+      const c = ts.cr / 100, d = ts.cd / 100, D = 0.7; // D: 기본 피해 보너스 합 추정
       const crit = (c, d) => 1 + Math.min(c, 1) * (d - 1);
       const gain = {
         '크리티컬%': c >= 1 ? 0 : crit(c + 0.105, d) / crit(c, d) - 1,
@@ -2225,7 +2239,7 @@
       const top = Math.max(...Object.values(gain));
       const w = {};
       Object.entries(gain).forEach(([k, v]) => { w[k] = top > 0 ? v / top : 0; });
-      w['공명 효율%'] = (cur.regen || 0) >= ts.regen ? 0.1 : 0.4; // 목표 공명 효율을 채웠으면 거의 가치 없음
+      w['공명 효율%'] = 0.4;
       return w;
     }
 
