@@ -2248,8 +2248,8 @@
     //  - 주력 피해 보너스 0.6, 나머지 피해 보너스 0
     //  - 공명 효율: 캐릭터 목표 공명 효율로 고정 (110% 이하 0.2 → 140% 이상 0.8, 사이는 비율대로)
     const SUPPORT_CRIT = ['suisui', 'shorekeeper', 'mornye'];
-    // 공명 효율: 목표 110% 이하 0.6 ~ 150% 이상 1.0 (서포터 1.0)
-    const regenWeight = target => Math.round(Math.min(1, Math.max(0.6, 0.6 + (target - 110) * 0.01)) * 100) / 100;
+    // 공명 효율: 목표 100% 이하는 공효가 필요 없는 공명자라 0, 110% 이하 0.6 ~ 150% 이상 1.0 (서포터 1.0)
+    const regenWeight = target => target <= 100 ? 0 : Math.round(Math.min(1, Math.max(0.6, 0.6 + (target - 110) * 0.01)) * 100) / 100;
     function echoWeights(res) {
       const ts = res.targetStats || defaultTargetStats, sup = res.role === 'support';
       const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
@@ -2257,7 +2257,7 @@
       const w = {
         '크리티컬%': crit, '크리티컬 피해%': crit,
         [scale + '%']: sup ? 1 : 0.8, [scale]: sup ? 0.4 : 0.3,
-        '공명 효율%': sup ? 1 : regenWeight(+ts.regen || 120),
+        '공명 효율%': sup ? 1 : regenWeight(ts.regen == null ? 120 : +ts.regen),
       };
       const bonus = MAIN_DMG_BONUS[res.mainDmg];
       if (bonus && !sup) w[bonus + '%'] = 0.6;
