@@ -166,6 +166,7 @@ export const BOT_CARD = {
     rowsY: [857, 894, 928, 962, 996, 1030],
     rowLabel: { dx: 40, w: 230, h: 30 },
     rowValue: { dx: 255, w: 112, h: 30 },
+    icon: { dx: 0, y: 650, w: 190, h: 180 },
   },
 };
 
@@ -198,7 +199,29 @@ const COST_BY_FLAT = [
   { cost: 1, label: 'HP', value: 2280 },
 ];
 
-export async function parseBotCard(backend, workers, { names = [], aliases = {}, weapons = [] } = {}) {
+// 에코 아이콘을 12x12 색 평균으로 줄인 값 (평균을 빼고 길이 1로 맞춤). 사이트의 에코 이미지도 같은 방식으로 미리 계산해 둠
+export const ECHO_FEAT_SIZE = 12;
+export function decodeEchoFeat(b64) {
+  const bin = atob(b64), v = new Float32Array(bin.length);
+  for (let i = 0; i < bin.length; i++) v[i] = ((bin.charCodeAt(i) << 24) >> 24);
+  return normalize(v);
+}
+function normalize(v) {
+  let m = 0; for (const x of v) m += x; m /= v.length;
+  let n = 0; for (let i = 0; i < v.length; i++) { v[i] -= m; n += v[i] * v[i]; }
+  n = Math.sqrt(n) || 1; for (let i = 0; i < v.length; i++) v[i] /= n;
+  return v;
+}
+// echoDb: [{ name, cost, img, feat(Float32Array) }]. 같은 코스트 중 가장 비슷한 에코를 고른다
+export function matchEcho(q, echoDb, cost) {
+  const pool = echoDb.filter((e) => e.feat && (!cost || e.cost === cost));
+  const scored = pool.map((e) => { let s = 0; for (let i = 0; i < q.length; i++) s += q[i] * e.feat[i]; return { e, s }; }).sort((a, b) => b.s - a.s);
+  if (!scored.length) return null;
+  const [a, b] = scored;
+  return { echo: a.e, score: a.s, sure: a.s >= 0.9 && (!b || a.s - b.s >= 0.03 || b.e.name === a.e.name) };
+}
+
+export async function parseBotCard(backend, workers, { names = [], aliases = {}, weapons = [], echoDb = null } = {}) {
   const sx = backend.width / BOT_CARD.base.w, sy = backend.height / BOT_CARD.base.h;
   const R = (r) => ({ x: Math.round(r.x * sx), y: Math.round(r.y * sy), w: Math.round(r.w * sx), h: Math.round(r.h * sy) });
   const readKor = async (r, psm = '7', invert = true) => {
@@ -259,6 +282,13 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
     const c = COST_BY_FLAT.find((c) => echo.mainFlat && c.label === echo.mainFlat.stat && c.value === echo.mainFlat.value);
     echo.cost = c ? c.cost : null;
     if (!c) result.warnings.push(`에코 ${result.echoes.length + 1}: 코스트를 판단하지 못함`);
+    if (echoDb && backend.feature) {
+      const hit = matchEcho(await backend.feature(R({ x: x0 + E.icon.dx, y: E.icon.y, w: E.icon.w, h: E.icon.h })), echoDb, echo.cost);
+      if (hit) {
+        echo.name = hit.echo.name; echo.img = hit.echo.img; echo.matchScore = +hit.score.toFixed(3);
+        if (!hit.sure) { echo.nameUncertain = true; result.warnings.push(`에코 ${result.echoes.length + 1}: ${hit.echo.name}인지 확인 필요`); }
+      }
+    }
     result.echoes.push(echo);
   }
   return result;
@@ -299,6 +329,16 @@ export async function createCanvasBackend(file) {
       for (let i = 0; i < d.length; i += 4) { let g = Math.min(255, Math.max(0, (d[i] - lo) * k)); if (invert) g = 255 - g; d[i] = d[i + 1] = d[i + 2] = g; }
       ctx.putImageData(img, 0, 0);
       return c;
+    },
+    async feature({ x, y, w, h }, S = ECHO_FEAT_SIZE) {
+      const d = sctx.getImageData(x, y, w, h).data, v = new Float32Array(S * S * 3);
+      for (let gy = 0; gy < S; gy++) for (let gx = 0; gx < S; gx++) {
+        const y0 = Math.floor(gy * h / S), y1 = Math.floor((gy + 1) * h / S), x0 = Math.floor(gx * w / S), x1 = Math.floor((gx + 1) * w / S);
+        let r = 0, g = 0, b = 0, n = 0;
+        for (let yy = y0; yy < y1; yy++) for (let xx = x0; xx < x1; xx++) { const i = (yy * w + xx) * 4; r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+        const o = (gy * S + gx) * 3; v[o] = r / n; v[o + 1] = g / n; v[o + 2] = b / n;
+      }
+      return normalize(v);
     },
     async goldFraction({ x, y, w, h }) {
       const d = sctx.getImageData(x, y, w, h).data;
