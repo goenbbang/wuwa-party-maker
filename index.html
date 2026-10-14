@@ -185,7 +185,7 @@
     .bm-row .muted { color: #747476; font-size: 11px; margin-left: 4px; font-weight: 600; }
     .bm-score { display: flex; align-items: center; gap: 14px; }
     .bm-grade { font-size: 34px; font-weight: 900; line-height: 1; }
-    .bm-grade.g-SSS { color: #fbbf24; } .bm-grade.g-SS { color: #fcd34d; } .bm-grade.g-S { color: #c4b5fd; }
+    .bm-grade.g-SSS { color: #fbbf24; } .bm-grade.g-SS { color: #fcd34d; } .bm-grade.g-S { color: #fb923c; }
     .bm-grade.g-A { color: #7dd3fc; } .bm-grade.g-B { color: #86efac; } .bm-grade.g-C { color: #94a3b8; }
     .bm-echoes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
     @media (max-width: 1100px) { .bm-echoes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -243,7 +243,7 @@
     .bd-score-val small { font-size: 12px; color: #555557; }
     .bd-grade { font-style: normal; font-weight: 900; font-size: 13px; }
     .bd-grade.big { font-size: 36px; line-height: 1; }
-    .bd-grade.g-SSS { color: #fbbf24; } .bd-grade.g-SS { color: #fcd34d; } .bd-grade.g-S { color: #c4b5fd; }
+    .bd-grade.g-SSS { color: #fbbf24; } .bd-grade.g-SS { color: #fcd34d; } .bd-grade.g-S { color: #fb923c; }
     .bd-grade.g-A { color: #7dd3fc; } .bd-grade.g-B { color: #86efac; } .bd-grade.g-C { color: #94a3b8; }
     .bd-weapon { display: flex; gap: 12px; align-items: center; }
     .bd-weapon.is-empty { color: #747476; font-size: 12px; padding: 10px 0; }
@@ -361,6 +361,7 @@
     :root { --eff: #d9a27a; --eff-strong: #e8bc98; }
     .dm-star { color: #fbbf24; fill: #fbbf24; }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
+    .bd-stat:not(.is-eff) b { color: #a3a3a5; }
     .bd-sub.w-hi, .bd-sub.w-mid { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi b { color: var(--eff-strong); }
     .bd-sub.w-lo { color: #747476; }
@@ -2244,41 +2245,25 @@
     const MAIN_DMG_BONUS = { '일반 공격': '일반 공격 피해 보너스', '기본 공격': '일반 공격 피해 보너스', '강공격': '강공격 피해 보너스', '공명 스킬': '공명 스킬 피해 보너스', '공명 해방': '공명 해방 피해 보너스' };
     const subKey = (stat, percent) => stat + (percent ? '%' : '');
 
-    // 서포터: 본인 딜이 아니라 버프 · 회복 기준. 공명 효율 > 기준 스탯% > 기준 스탯 고정값, 딜 옵션은 버프에 영향이 없으면 0
-    // 크리티컬 관련 효과가 있는 서포터는 크리 · 크피를 조금만 침 (돌파와 상관없이 고정)
+    // 에코 가중치 (명조 채널 위키 "이정도면 잘키웠다표"와 대조해 정함). 에코 점수는 에코 자체에 좋은 옵션이 얼마나 붙었는지만 보고,
+    // 현재 스탯 · 무기 · 돌파 · 목표 달성 여부와 상관없이 캐릭터마다 고정
+    //  - 크리티컬 · 크리티컬 피해: 딜러 1, 서포터 0 (크리티컬 관련 효과가 있는 서포터만 0.2)
+    //  - 계수 스탯%(공격력 / HP / 방어력 중 하나): 딜러 0.8, 서포터 1 · 같은 스탯 고정값: 딜러 0.3, 서포터 0.4
+    //  - 주력 피해 보너스 0.6, 나머지 피해 보너스 0
+    //  - 공명 효율: 캐릭터 목표 공명 효율로 고정 (110% 이하 0.2 → 140% 이상 0.8, 사이는 비율대로)
     const SUPPORT_CRIT = ['suisui', 'shorekeeper', 'mornye'];
-    function supportWeights(res) {
-      const ts = res.targetStats || defaultTargetStats;
-      const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
-      const crit = SUPPORT_CRIT.includes(res.id) ? 0.2 : 0;
-      return {
-        '공명 효율%': 1,
-        [scale + '%']: 0.7, [scale]: 0.3,
-        '크리티컬%': crit, '크리티컬 피해%': crit,
-      };
-    }
-
-    // 에코 점수는 에코 자체에 좋은 옵션이 얼마나 붙었는지만 봄. 현재 스탯 · 무기 · 돌파 · 목표 달성 여부와 상관없이 캐릭터마다 고정
-    // 딜러: 캐릭터 기본 목표 수치 기준으로 부옵 하나를 최대치로 더했을 때 데미지가 몇 % 오르는지로 가중치를 정함 (가장 많이 오르는 부옵 = 1)
+    const regenWeight = target => Math.round(Math.min(0.8, Math.max(0.2, 0.2 + (target - 110) * 0.02)) * 100) / 100;
     function echoWeights(res) {
-      if (res.role === 'support') return supportWeights(res);
-      const ts = res.targetStats || defaultTargetStats;
+      const ts = res.targetStats || defaultTargetStats, sup = res.role === 'support';
       const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
-      const T = ts.base, B = T / 1.9; // B: 90레벨 기본 수치 (목표 총합의 약 53%로 어림)
-      const c = ts.cr / 100, d = ts.cd / 100, D = 0.7; // D: 기본 피해 보너스 합 추정
-      const crit = (c, d) => 1 + Math.min(c, 1) * (d - 1);
-      const gain = {
-        '크리티컬%': c >= 1 ? 0 : crit(c + 0.105, d) / crit(c, d) - 1,
-        '크리티컬 피해%': crit(c, d + 0.21) / crit(c, d) - 1,
-        [scale + '%']: B * (scale === '방어력' ? 0.147 : 0.116) / T,
-        [scale]: ECHO_SUB_MAX[scale] / T,
+      const crit = sup ? (SUPPORT_CRIT.includes(res.id) ? 0.2 : 0) : 1;
+      const w = {
+        '크리티컬%': crit, '크리티컬 피해%': crit,
+        [scale + '%']: sup ? 1 : 0.8, [scale]: sup ? 0.4 : 0.3,
+        '공명 효율%': regenWeight(+ts.regen || 120),
       };
       const bonus = MAIN_DMG_BONUS[res.mainDmg];
-      if (bonus) gain[bonus + '%'] = 0.116 * 0.7 / (1 + D); // 주력 기술이 딜의 약 70% 라고 가정
-      const top = Math.max(...Object.values(gain));
-      const w = {};
-      Object.entries(gain).forEach(([k, v]) => { w[k] = top > 0 ? v / top : 0; });
-      w['공명 효율%'] = 0.4;
+      if (bonus && !sup) w[bonus + '%'] = 0.6;
       return w;
     }
 
