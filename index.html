@@ -280,11 +280,11 @@
     /* 세부 창 스킬 트리 (인게임 공명 회로 배치) */
     .bd-skills { overflow: visible; position: relative; z-index: 3; display: flex; flex-direction: column; }
     .t2-tree { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; margin-top: 8px; }
-    .t2-col { display: grid; grid-template-columns: 100%; grid-template-rows: 1fr 1fr auto auto auto auto; justify-items: center; align-items: center; row-gap: 4px; position: relative; }
+    .t2-col { display: grid; grid-template-columns: 100%; grid-template-rows: auto minmax(12px, 1fr) auto minmax(12px, 1fr) auto auto auto auto; justify-items: center; align-items: center; row-gap: 0; position: relative; }
     .t2-col > * { grid-column: 1; }
-    .t2-line { grid-row: 1 / 4; width: 2px; align-self: stretch; margin: 22px 0 30px; background: linear-gradient(#343436, #555557); z-index: 0; }
+    .t2-line { grid-row: 1 / 6; width: 2px; align-self: stretch; margin: 19px 0 28px; background: linear-gradient(#343436, #555557); z-index: 0; }
     .t2-node, .t2-inh { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
-    .t2-col > .t2-node:nth-of-type(1), .t2-col > .t2-inh:nth-of-type(1) { grid-row: 1; } .t2-col > .t2-node:nth-of-type(2), .t2-col > .t2-inh:nth-of-type(2) { grid-row: 2; }
+    .t2-col > .t2-node:nth-of-type(1), .t2-col > .t2-inh:nth-of-type(1) { grid-row: 1; } .t2-col > .t2-node:nth-of-type(2), .t2-col > .t2-inh:nth-of-type(2) { grid-row: 3; }
     .t2-node-ico, .t2-inh-ico { width: 38px; height: 38px; border-radius: 99px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
     .t2-node-ico { padding: 7px; background: #101012; border: 1.5px solid #555557; }
     .t2-node small, .t2-inh small { font-size: 10.5px; color: #a3a3a5; font-weight: 700; background: #151517; padding: 0 4px; margin-top: 2px; white-space: nowrap; }
@@ -300,13 +300,13 @@
     .fl-tip p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: #d4d4d6; white-space: pre-line; }
     .t2-col:first-child .t2-tip { left: 0; transform: none; } .t2-col:last-child .t2-tip { left: auto; right: 0; transform: none; }
  .t2-tip .eff { color: var(--eff); font-size: 11px; margin-left: 6px; }
-    .t2-sk { grid-row: 3; position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 99px; display: flex; align-items: center; justify-content: center; background: radial-gradient(#232325, #101012); border: 2px solid #555557; }
+    .t2-sk { grid-row: 5; position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 99px; display: flex; align-items: center; justify-content: center; background: radial-gradient(#232325, #101012); border: 2px solid #555557; }
     .t2-sk img { width: 72%; height: 72%; object-fit: contain; } .t2-sk b { color: #fff; font-size: 21px; font-weight: 900; }
     .t2-sk.max { border-color: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent); }
-    .t2-lv { grid-row: 5; font-size: 15px; font-weight: 900; color: #e8e8ea; line-height: 1; } .t2-lv small { font-size: 10px; color: #747476; font-weight: 700; } .t2-lv.max { color: #ecdcb4; }
-    .t2-name { grid-row: 4; font-size: 11.5px; color: #e8e8ea; font-weight: 800; white-space: nowrap; margin-top: 4px; }
-    .t2-rank { grid-row: 6; font-style: normal; font-size: 10px; color: #ecdcb4; font-weight: 800; } .t2-rank.off { color: transparent; }
-    .t2-step { grid-row: 6; display: flex; gap: 3px; } .t2-step button { width: 22px; height: 20px; line-height: 18px; font-size: 12px; color: #a3a3a5; background: #101012; border: 1px solid #323234; border-radius: 99px; }
+    .t2-lv { grid-row: 7; margin-top: 4px; font-size: 15px; font-weight: 900; color: #e8e8ea; line-height: 1; } .t2-lv small { font-size: 10px; color: #747476; font-weight: 700; } .t2-lv.max { color: #ecdcb4; }
+    .t2-name { grid-row: 6; margin-top: 8px; font-size: 11.5px; color: #e8e8ea; font-weight: 800; white-space: nowrap; }
+    .t2-rank { grid-row: 8; font-style: normal; font-size: 10px; color: #ecdcb4; font-weight: 800; } .t2-rank.off { color: transparent; }
+    .t2-step { grid-row: 8; display: flex; gap: 3px; margin-top: 4px; } .t2-step button { width: 22px; height: 20px; line-height: 18px; font-size: 12px; color: #a3a3a5; background: #101012; border: 1px solid #323234; border-radius: 99px; }
     .t2-step button:hover { color: #fff; border-color: var(--color-point); }
     .bd-echoes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 12px 18px 18px; }
     @media (max-width: 1100px) { .bd-echoes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -315,7 +315,11 @@
     .bd-echo { background: #151517; border: 1px solid #29292b; border-radius: 5px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .bd-echo.is-empty { border-style: dashed; align-items: center; justify-content: center; min-height: 220px; color: #555557; font-size: 12px; }
     .bd-echo-ph { font-weight: 800; color: #747476; }
-    .bd-echo-head { display: flex; gap: 10px; align-items: center; }
+    .bd-echo-head { display: flex; gap: 10px; align-items: center; padding-right: 14px; }
+    button.bd-echo { position: relative; }
+    .bd-echo-del { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: #747476; border-radius: 4px; transition: color .15s; }
+    .bd-echo-del:hover { color: var(--wg, #d9bf86); }
+    .bd-echo-del svg { width: 15px; height: 15px; }
     .bd-echo-img { width: 58px; height: 58px; border-radius: 5px; object-fit: cover; background: #0e0e10; border: 1px solid #323234; flex-shrink: 0; }
     .bd-echo-meta { min-width: 0; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
     .bd-echo-name { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.25; }
@@ -344,7 +348,12 @@
     .bd-eff-legend { color: var(--eff); }
     button.bd-echo { text-align: left; cursor: pointer; transition: border-color .15s, background .15s; }
     button.bd-echo:hover { border-color: rgba(255, 255, 255, .3); background: #1b1b1d; }
-    .bd-weapon-card { position: relative; text-align: left; cursor: pointer; width: 100%; transition: border-color .15s; }
+    .bd-weapon-card { position: relative; text-align: left; cursor: pointer; width: 100%; transition: border-color .15s; flex: 1; display: flex; align-items: center; }
+    .bd-weapon-card > .bd-weapon { width: 100%; gap: 16px; }
+    .bd-weapon-card .bd-weapon-img { width: 88px; height: 88px; transition: transform .25s ease; }
+    .bd-weapon-card:hover .bd-weapon-img { transform: scale(1.07); }
+    .bd-weapon-card .bd-weapon-name { font-size: 15px; }
+    .bd-weapon-card .bd-weapon-sub { font-size: 12.5px; margin-top: 5px; }
     .bd-weapon-card:hover { border-color: rgba(255, 255, 255, .3); }
     .bd-edit-hint { position: absolute; top: 10px; right: 12px; font-size: 10px; color: #747476; border: 1px solid #323234; border-radius: 4px; padding: 1px 6px; }
     .bd-set { font-size: 10px; color: #a3a3a5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
@@ -581,10 +590,10 @@
     html.theme-wuwa [class*="accent-[#f5a623]"] { accent-color: var(--wg) !important; }
     html.theme-wuwa [class~="bg-[#f5a623]/95"] { background-color: rgba(217, 191, 134, .95) !important; }
     html.theme-wuwa [class~="hover:bg-[#e0961d]"]:hover { background-color: #e6d3a6 !important; }
-    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; color: var(--wmuted) !important; padding: 6px !important; transition: color .15s; }
-    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x):hover { color: var(--wg) !important; background: transparent !important; }
+    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x), html.theme-wuwa button[onclick*="lose"]:has(> i[data-lucide="x"]) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; color: var(--wmuted) !important; padding: 6px !important; transition: color .15s; }
+    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x):hover, html.theme-wuwa button[onclick*="lose"]:has(> i[data-lucide="x"]):hover { color: var(--wg) !important; background: transparent !important; }
     html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x) > svg { width: 20px !important; height: 20px !important; }
-    html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> svg.lucide-x) { color: #fff !important; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .9)); }
+    html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> svg.lucide-x), html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> i[data-lucide="x"]) { color: #fff !important; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .9)); }
     #fatigue-modal > div, #owned-modal > div { padding-top: 14px !important; }
     @media (min-width: 768px) { html.theme-wuwa [class~="md:rounded-3xl"] { border-radius: 8px !important; } }
   </style>
@@ -778,7 +787,7 @@
         
         <div class="flex items-center gap-2">
           <button onclick="resetGrowthData()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
-          <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" title="WuWa Bot 카드나 게임 스탯 창 캡처를 올리면 자동 입력"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
+          <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
           <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
           <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
         </div>
@@ -1818,11 +1827,25 @@
       if (buildModalFor) renderBuildModal();
     }
 
+    // 프리셋 드롭다운만 다시 그림 (육성 카드 · 세부 창 전체를 다시 그리면 느림)
+    function redrawPresetDropdowns(resId) {
+      const g = GROWTH_DATA[resId];
+      if (!g) return;
+      document.querySelectorAll(`.preset-dd[data-dd="${resId}"]`).forEach(el => {
+        const t = document.createElement('template');
+        t.innerHTML = renderPresetDropdown(resId, g, el.dataset.where).trim();
+        const dd = t.content.firstElementChild;
+        el.replaceWith(dd);
+        lucide.createIcons({ root: dd });
+      });
+    }
+
     function togglePresetMenu(resId, where = 'card') {
-      presetMenuFor = presetMenuFor === resId && presetMenuIn === where ? null : resId;
-      presetMenuIn = where;
-      presetRenaming = null;
-      refreshGrowthViews();
+      const wasOpen = presetMenuFor === resId && presetMenuIn === where;
+      closePresetMenu();
+      if (wasOpen) return;
+      presetMenuFor = resId; presetMenuIn = where; presetRenaming = null;
+      redrawPresetDropdowns(resId);
     }
 
     // 바깥을 누르면 닫기. 다시 그리지 않고 메뉴만 지워서, 누른 다른 버튼이나 입력칸이 그대로 동작하게 함
@@ -1864,7 +1887,7 @@
 
     function startRenameGrowthPreset(resId, presetId) {
       presetRenaming = presetId;
-      refreshGrowthViews();
+      redrawPresetDropdowns(resId);
       const input = document.getElementById(`preset-rename-${resId}`);
       if (input) { input.focus(); input.select(); }
     }
@@ -1875,7 +1898,7 @@
       if (preset) preset.label = value.trim().slice(0, 20);
       presetRenaming = null;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
-      refreshGrowthViews();
+      redrawPresetDropdowns(resId);
     }
 
     function deleteGrowthPreset(resId, presetId) {
@@ -1891,7 +1914,7 @@
     }
 
     document.addEventListener('mousedown', e => { if (presetMenuFor !== null && !e.target.closest('.preset-dd')) closePresetMenu(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && presetMenuFor !== null && !presetRenaming) { presetMenuFor = null; refreshGrowthViews(); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && presetMenuFor !== null && !presetRenaming) closePresetMenu(); });
 
     function toggleFavorite(resId) {
       initGrowthDataFor(resId);
@@ -2498,6 +2521,16 @@
       buildAnim = { prevTotals: computeBuildStats(res, preset)?.total };
     }
 
+    function deleteEchoAt(i) {
+      const { preset } = activeGrowthPreset(buildModalFor);
+      if (!preset.build?.echoes?.[i]) return;
+      openConfirm('에코 삭제', `${i + 1}번 칸의 에코를 삭제합니다.`, () => {
+        rememberBuildStats(preset);
+        preset.build.echoes[i] = null; markManual(preset.build);
+        afterGrowthChange();
+      });
+    }
+
     function removeEchoFromSlot() {
       const { preset } = activeGrowthPreset(buildModalFor);
       rememberBuildStats(preset);
@@ -2508,7 +2541,7 @@
     // 에코 세트 아이콘 (게임 데이터의 세트 목록에서 이름으로 찾음)
     function setIconHtml(name, cls = 'set-ico') {
       const url = ECHO_SETS.find(x => x.name === name)?.iconUrl;
-      return url ? `<img class="${cls}" src="${url}" alt="" title="${esc(name)}">` : '';
+      return url ? `<img class="${cls}" src="${url}" alt="">` : '';
     }
 
     // 저장된 세트가 없으면 (봇 카드로 읽은 에코) 캐릭터 추천 세트 → 세트가 하나뿐인 에코 순으로 추정
@@ -2612,7 +2645,7 @@
         const lv = +preset.skills[`s${i + 1}`] || 1, icon = stt?.skillIcons?.[i];
         const top = i === 2 ? (stt?.inherent || []).map(treeInh).reverse().join('') : (stt?.nodes || []).filter(x => x.col === i).sort((a, b) => b.tier - a.tier).map(treeNode).join('');
         return `<div class="t2-col"><i class="t2-line"></i>${top}
-          <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}" data-tip="${esc(`<b>${esc(stt?.skills?.[i] || n)}</b>`)}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)}>` : `<b>${lv}</b>`}</div>
+          <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)}>` : `<b>${lv}</b>`}</div>
           <div class="t2-name">${n.replace('공명 ', '')}</div>
           <div class="t2-lv ${lv >= 10 ? 'max' : ''}"><small>Lv.</small>${lv}<small>/10</small></div>
           <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" aria-label="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" aria-label="레벨 올리기">+</button></div></div>`;
@@ -2624,6 +2657,7 @@
         if (!e) return `<button class="bd-echo is-empty" onclick="openEchoEditor(${i})"><div class="bd-echo-ph">${i + 1}번 에코</div><div class="bd-echo-empty-txt">눌러서 에코 추가</div></button>`;
         const ok = mainStatOk(res, e);
         return `<button class="bd-echo" onclick="openEchoEditor(${i})">
+          <span class="bd-echo-del" role="button" aria-label="에코 삭제" onclick="event.stopPropagation(); deleteEchoAt(${i})"><i data-lucide="x"></i></span>
           <div class="bd-echo-head">
             ${e.img ? `<img class="bd-echo-img" src="${echoImgUrl(e.img)}" alt="">` : '<div class="bd-echo-img"></div>'}
             <div class="bd-echo-meta"><div class="bd-echo-name ${e.nameUncertain ? 'is-unsure' : ''}" title="${e.nameUncertain ? '이미지로 고른 에코예요. 맞는지 확인해 주세요' : esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
@@ -2637,7 +2671,8 @@
       };
 
       const statAt = preset.stats.source?.at, buildAt = build?.source?.at;
-      document.getElementById('build-modal-panel').innerHTML = `
+      const panel = document.getElementById('build-modal-panel'), oldArt = panel.querySelector('.bd-art');
+      panel.innerHTML = `
         <div class="bd-head">
           <div class="bd-title"><span class="bd-el">${getElementIconHtml(res.element)}</span><b>${esc(res.name)}</b>
             ${renderPresetDropdown(res.id, GROWTH_DATA[res.id], 'modal')}</div>
@@ -2664,8 +2699,11 @@
           </div>
         </div>
         <div class="bd-echoes ${anim?.enter ? 'is-enter' : ''}">${[0, 1, 2, 3, 4].map(i => echoCard(echoes[i], i)).join('')}</div>`;
-      bindArt(document.querySelector('#build-modal-panel .bd-art'));
       lucide.createIcons();
+      // 같은 일러스트면 이전 이미지를 그대로 옮겨 붙여서 다시 그릴 때 깜박이지 않게
+      const art = panel.querySelector('.bd-art');
+      if (oldArt && art && oldArt.src === art.src) { art.replaceWith(oldArt); artObserver.observe(oldArt.parentElement); placeArt(oldArt); }
+      else bindArt(art);
     }
 
     function switchGrowthPresetTab(resId, presetId) {
@@ -3076,7 +3114,7 @@
                   <img loading="lazy" decoding="async" src="${wp.image || DEFAULT_WEAPON_IMG}" class="w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition duration-300 pointer-events-none" crossorigin="anonymous">
                 </div>
                 <div class="w-full sm:flex-1 min-w-0 flex flex-col items-center sm:items-start gap-1.5">
-                  <div class="w-full text-[10px] sm:text-sm font-black text-white text-center sm:text-left line-clamp-2 sm:truncate leading-tight break-keep" title="${esc(wp.name)}">${esc(wp.name)}</div>
+                  <div class="w-full text-[10px] sm:text-sm font-black text-white text-center sm:text-left line-clamp-2 sm:truncate leading-tight break-keep">${esc(wp.name)}</div>
                   <div class="hidden sm:flex items-center gap-1 flex-shrink-0">
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${rankTagClass}">${rank}★</span>
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${typeTagClass}">${wp.weaponType || '직검'}</span>
@@ -3246,7 +3284,7 @@
     function elementFilterBtn(t, active, fn) {
       if (t.id === 'all') return `<button onclick="${fn}('all')" class="flex-1 py-1.5 px-1 rounded-lg font-bold text-xs whitespace-nowrap text-center ${active ? 'bg-[#f5a623] text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border border-[#232b3b]'}"${active ? ' style="border:1px solid var(--wg, #f5a623)"' : ''}>${t.label}</button>`;
       const c = ELEMENT_ACCENT[t.id] || '#f5a623';
-      return `<button onclick="${fn}('${t.id}')" title="${t.label}" class="flex-1 min-w-0 flex items-center justify-center gap-1 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg font-bold text-xs whitespace-nowrap border transition ${active ? 'text-white shadow-md' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}" style="${active ? `background:${c}26;border-color:${c};box-shadow:0 0 0 1px ${c}55 inset` : ''}">
+      return `<button onclick="${fn}('${t.id}')" aria-label="${t.label}" class="flex-1 min-w-0 flex items-center justify-center gap-1 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg font-bold text-xs whitespace-nowrap border transition ${active ? 'text-white shadow-md' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}" style="${active ? `background:${c}26;border-color:${c};box-shadow:0 0 0 1px ${c}55 inset` : ''}">
         <span class="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0 transition ${active ? '' : 'opacity-55 grayscale-[35%]'}">${getElementIconHtml(t.id)}</span><span class="hidden sm:inline">${t.label}</span></button>`;
     }
 
@@ -3301,7 +3339,7 @@
             <div class="w-full text-center sm:text-left space-y-0.5 px-0 sm:px-1 pb-0.5 sm:pb-1">
               <div class="roster-name"><span class="text-[10px] sm:text-[13px] font-black text-slate-100 truncate" style="min-width:0">${esc(r.name)}</span></div>
               <div class="hidden sm:block text-[11px] font-bold theme-attack-text truncate">${esc(r.mainDmg)}</div>
-              ${kwText ? `<div class="hidden sm:block text-[11px] theme-buff-text truncate leading-tight" title="${esc(kwText)}">${esc(kwText)}</div>` : ''}
+              ${kwText ? `<div class="hidden sm:block text-[11px] theme-buff-text truncate leading-tight">${esc(kwText)}</div>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -3613,7 +3651,7 @@
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
               <img loading="lazy" decoding="async" src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
               ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
-              ${w.pct != null ? `<span class="absolute top-1 right-1 z-10 px-1 py-0.5 rounded bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums" title="Prydwen 효율 (기준 무기 = 100%)">${Number(w.pct).toFixed(1)}%</span>` : ''}
+              ${w.pct != null ? `<span class="absolute top-1 right-1 z-10 px-1 py-0.5 rounded bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums">${Number(w.pct).toFixed(1)}%</span>` : ''}
             </div>
             <div class="border-t ${borderClass} py-1 px-1 bg-[#0e121a] flex items-center justify-center flex-shrink-0 z-10 relative overflow-hidden">
               <span class="weapon-name-text font-extrabold text-[11px] sm:text-xs text-slate-200 block whitespace-nowrap text-center leading-tight">${esc(w.name)}</span>
@@ -3974,11 +4012,11 @@
               <option value="">무기 선택 안 함</option>
               ${weaponOptions}
             </select>
-            <select onchange="if (this.value) currentEditWeapons[${i}].tag = this.value; else delete currentEditWeapons[${i}].tag;" title="분류 (자동: 등급·전무 정보로 판단)" class="w-[68px] flex-shrink-0 bg-[#10141f] border border-slate-700 rounded-lg px-1 py-1.5 text-[11px] text-slate-300 outline-none cursor-pointer">
+            <select onchange="if (this.value) currentEditWeapons[${i}].tag = this.value; else delete currentEditWeapons[${i}].tag;" class="w-[68px] flex-shrink-0 bg-[#10141f] border border-slate-700 rounded-lg px-1 py-1.5 text-[11px] text-slate-300 outline-none cursor-pointer">
               <option value="">자동${(() => { const t = WEAPON_TAGS[weaponTag({ name: curName }, document.getElementById('edit-char-id')?.value)]; return t ? '·' + t.label : ''; })()}</option>
               ${Object.entries(WEAPON_TAGS).map(([k, t]) => `<option value="${k}" ${w.tag === k ? 'selected' : ''}>${t.label}</option>`).join('')}
             </select>
-            <input type="number" step="0.1" value="${w.pct ?? ''}" placeholder="%" title="효율 % (비우면 표시 안 함)" oninput="if (this.value === '') delete currentEditWeapons[${i}].pct; else currentEditWeapons[${i}].pct = parseFloat(this.value)" class="w-14 flex-shrink-0 bg-[#10141f] border border-slate-700 rounded-lg px-1.5 py-1.5 text-[11px] text-slate-200 text-center outline-none">
+            <input type="number" step="0.1" value="${w.pct ?? ''}" placeholder="%" oninput="if (this.value === '') delete currentEditWeapons[${i}].pct; else currentEditWeapons[${i}].pct = parseFloat(this.value)" class="w-14 flex-shrink-0 bg-[#10141f] border border-slate-700 rounded-lg px-1.5 py-1.5 text-[11px] text-slate-200 text-center outline-none">
             <button type="button" onclick="removeEditorWeapon(${i})" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>`;
       }).join('');
@@ -4314,7 +4352,7 @@
         if (presetRenaming === p.id && open) return `
           <div class="preset-dd-item is-editing">
             <input id="preset-rename-${resId}" maxlength="20" value="${esc(p.label)}" placeholder="${esc(presetLabel(p, i))}"
-              onkeydown="if(event.key==='Enter'){this.blur()} else if(event.key==='Escape'){presetRenaming=null;refreshGrowthViews()}"
+              onkeydown="if(event.key==='Enter'){this.blur()} else if(event.key==='Escape'){presetRenaming=null;redrawPresetDropdowns('${resId}')}"
               onblur="finishRenameGrowthPreset('${resId}','${p.id}',this.value)">
           </div>`;
         return `
@@ -4325,7 +4363,7 @@
           </div>`;
       }).join('');
       return `
-        <div class="preset-dd ${where === 'modal' ? 'is-modal' : ''}">
+        <div class="preset-dd ${where === 'modal' ? 'is-modal' : ''}" data-dd="${resId}" data-where="${where}">
           <button class="preset-dd-btn ${open ? 'is-open' : ''}" onclick="togglePresetMenu('${resId}', '${where}')" aria-label="프리셋 선택">
             <span class="preset-dd-name">${esc(presetLabel(gData.presets[ai], ai))}</span><i data-lucide="chevron-down" class="w-3 h-3 flex-shrink-0"></i>
           </button>
