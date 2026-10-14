@@ -42,6 +42,20 @@
     [id$="-modal"], [id$="-modal"] .overflow-y-auto, [id$="-modal"] .overflow-x-auto { overscroll-behavior: contain; }
     html { scrollbar-gutter: stable; color-scheme: dark; }
     select option { background: #17171a; color: #ecebe8; }
+    /* 직접 만든 선택 목록 */
+    .pk-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 6px; cursor: pointer; text-align: left; }
+    .pk-btn .pk-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pk-chev { width: 11px; height: 11px; flex-shrink: 0; color: #8e8d8a; transition: transform .15s; }
+    .pk-btn.is-open .pk-chev { transform: rotate(180deg); }
+    .pk-menu { position: fixed; z-index: 400; max-height: 264px; overflow-y: auto; padding: 4px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, .13); background: #141416; box-shadow: 0 12px 28px rgba(0, 0, 0, .55); scrollbar-width: thin; scrollbar-color: #3a3a3d transparent; }
+    .pk-item { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; color: #cfcdc8; cursor: pointer; text-align: left; white-space: nowrap; }
+    .pk-item:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+    .pk-item.is-active { color: var(--wg, #d9bf86); }
+    .sk-pick { width: 100%; justify-content: center; position: relative; padding: 4px 16px 4px 4px !important; }
+    .sk-pick .pk-label { flex: 0 1 auto; } .sk-pick .pk-chev { position: absolute; right: 4px; }
+    .pf-sel.pk-btn { padding-right: 9px !important; min-width: 92px; }
+    .bd-lv.pk-btn .pk-chev { color: #cfcdc8; } .ed-lv.pk-btn { min-width: 88px; }
+    .pf-sel { appearance: none; -webkit-appearance: none; padding-right: 28px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8d8a' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 12px; }
     .sk-sel { appearance: none; -webkit-appearance: none; text-align-last: center; padding: 4px 16px 4px 4px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8d8a' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 4px center; background-size: 11px; }
     html.theme-wuwa .text-yellow-400 { color: var(--wg) !important; }
     html.modal-open, html.modal-open body { overflow: hidden; }
@@ -51,6 +65,7 @@
     /* 모달: 배경은 페이드, 내용은 살짝 아래에서 커지며 등장 */
     .fixed.inset-0[id$="-modal"] > div { transition: transform .2s cubic-bezier(.2,.8,.2,1); }
     .fixed.inset-0[id$="-modal"].opacity-0 > div { transform: translateY(8px); }
+    .fixed.inset-0[id$="-modal"].is-closing > div { transform: none; transition: none; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
     /* 키보드 사용자용 포커스 표시 */
     button:focus-visible, [onclick]:focus-visible { outline: 2px solid var(--color-point); outline-offset: 2px; }
@@ -189,7 +204,7 @@
 
     /* 육성 상세 창 v2 */
     .bm-panel { max-width: 1240px; }
-    .bd-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #252527; }
+    .bd-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #252527; position: sticky; top: 0; z-index: 6; background: #121214; }
     .bd-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex: 1; min-width: 200px; }
     .bd-title b { font-size: 19px; font-weight: 900; color: #fff; }
     .bd-el { width: 22px; height: 22px; display: inline-block; }
@@ -201,7 +216,7 @@
     .bd-mid { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     .bd-label { font-size: 12px; font-weight: 800; color: #a3a3a5; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
     .bd-label span { font-weight: 600; color: #555557; font-size: 11px; text-align: right; }
-    .bd-char { position: relative; padding: 0; overflow: hidden; min-height: 360px; border-color: color-mix(in srgb, var(--accent) 35%, #29292b); background: radial-gradient(120% 80% at 70% 20%, color-mix(in srgb, var(--accent) 18%, transparent), #101012 70%); }
+    .bd-char { position: relative; padding: 0; overflow: hidden; min-height: 300px; border-color: color-mix(in srgb, var(--accent) 35%, #29292b); background: radial-gradient(120% 80% at 70% 20%, color-mix(in srgb, var(--accent) 18%, transparent), #101012 70%); }
     .bd-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
     .bd-chains { position: absolute; left: 10px; top: 10px; display: flex; flex-direction: column; gap: 7px; }
     .bd-chain { width: 36px; height: 36px; border-radius: 999px; border: 1px solid #414143; background: rgba(14, 14, 16, .75); color: #747476; font-size: 12px; font-weight: 900; transition: all .15s; }
@@ -272,7 +287,7 @@
     .dm-in .dm-right > :nth-child(1) { animation-delay: .04s; } .dm-in .dm-right > :nth-child(2) { animation-delay: .09s; }
     .dm-in .dm-right > :nth-child(3) { animation-delay: .14s; } .dm-in .dm-right > :nth-child(4) { animation-delay: .19s; }
     button.bd-echo, .bd-weapon-card { transition: border-color .2s, box-shadow .25s, background .2s; }
-    button.bd-echo:hover, .bd-weapon-card:hover { border-color: rgba(255, 255, 255, .28) !important; box-shadow: 0 0 14px rgba(255, 255, 255, .06); }
+    button.bd-echo:hover, button.bd-weapon-card:hover { border-color: rgba(255, 255, 255, .28) !important; box-shadow: 0 0 14px rgba(255, 255, 255, .06); }
     @keyframes bdFill { from { opacity: .35; } to { opacity: 1; } }
     .bd-chain.is-new { animation: bdFill .3s ease-out; }
     @keyframes bdFlash { 0%, 30% { background: color-mix(in srgb, var(--color-point) 26%, transparent); } 100% { background: transparent; } }
@@ -297,6 +312,7 @@
     /* 사이트 공용 툴팁 (data-tip 에 HTML) */
     .fl-tip { position: fixed; z-index: 300; display: none; width: max-content; max-width: 260px; padding: 10px 12px; background: #121214; border: 1px solid rgba(255, 255, 255, .13); border-radius: 4px; box-shadow: 0 10px 30px #000a; pointer-events: none; text-align: left; }
     .fl-tip b { display: block; color: var(--wg, #d9bf86); font-size: 13px; font-weight: 800; }
+    .fl-tip p strong, .t2-tip p strong { color: #fff; font-weight: 800; }
     .fl-tip p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: #d4d4d6; white-space: pre-line; }
     .t2-col:first-child .t2-tip { left: 0; transform: none; } .t2-col:last-child .t2-tip { left: auto; right: 0; transform: none; }
  .t2-tip .eff { color: var(--eff); font-size: 11px; margin-left: 6px; }
@@ -317,6 +333,8 @@
     .bd-echo-ph { font-weight: 800; color: #747476; }
     .bd-echo-head { display: flex; gap: 10px; align-items: center; padding-right: 14px; }
     button.bd-echo { position: relative; }
+    .bd-echo.sortable-ghost { opacity: .35; }
+    .bd-echo.sortable-chosen { border-color: rgba(217, 191, 134, .6) !important; }
     .bd-echo-del { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: #747476; border-radius: 4px; transition: color .15s; }
     .bd-echo-del:hover { color: var(--wg, #d9bf86); }
     .bd-echo-del svg { width: 15px; height: 15px; }
@@ -340,7 +358,8 @@
     .bd-note { font-size: 11px; color: #555557; padding: 10px 18px 16px; line-height: 1.5; }
 
     /* 유효 옵션 강조 · 편집 */
-    :root { --eff: #d9bf86; --eff-strong: #ecdcb4; }
+    :root { --eff: #d9a27a; --eff-strong: #e8bc98; }
+    .dm-star { color: var(--eff); fill: var(--eff); }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi, .bd-sub.w-mid { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi b { color: var(--eff-strong); }
@@ -348,13 +367,16 @@
     .bd-eff-legend { color: var(--eff); }
     button.bd-echo { text-align: left; cursor: pointer; transition: border-color .15s, background .15s; }
     button.bd-echo:hover { border-color: rgba(255, 255, 255, .3); background: #1b1b1d; }
-    .bd-weapon-card { position: relative; text-align: left; cursor: pointer; width: 100%; transition: border-color .15s; flex: 1; display: flex; align-items: center; }
+    .bd-weapon-card { position: relative; text-align: left; width: 100%; transition: border-color .15s; flex: 1; display: flex; align-items: center; }
     .bd-weapon-card > .bd-weapon { width: 100%; gap: 16px; }
-    .bd-weapon-card .bd-weapon-img { width: 88px; height: 88px; transition: transform .25s ease; }
-    .bd-weapon-card:hover .bd-weapon-img { transform: scale(1.07); }
+    .bd-weapon-card > .bd-weapon.is-empty { justify-content: center; gap: 6px; font-size: 13px; font-weight: 700; }
+    button.bd-weapon-card { cursor: pointer; }
+    .bd-weapon-pick { flex-shrink: 0; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--wr-s, 4px); }
+    .bd-weapon-card .bd-weapon-img { width: 72px; height: 72px; transition: transform .25s ease, border-color .2s; display: block; }
+    .bd-weapon-pick:hover .bd-weapon-img, .bd-weapon-pick:focus-visible .bd-weapon-img { transform: scale(1.07); border-color: rgba(255, 255, 255, .4) !important; }
     .bd-weapon-card .bd-weapon-name { font-size: 15px; }
     .bd-weapon-card .bd-weapon-sub { font-size: 12.5px; margin-top: 5px; }
-    .bd-weapon-card:hover { border-color: rgba(255, 255, 255, .3); }
+    button.bd-weapon-card:hover { border-color: rgba(255, 255, 255, .3); }
     .bd-edit-hint { position: absolute; top: 10px; right: 12px; font-size: 10px; color: #747476; border: 1px solid #323234; border-radius: 4px; padding: 1px 6px; }
     .bd-set { font-size: 10px; color: #a3a3a5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .ed-panel { max-width: 640px; max-height: 88vh; overflow-y: auto; }
@@ -371,7 +393,7 @@
     .ed-seg button { padding: 6px 11px; font-size: 12px; font-weight: 800; color: #a3a3a5; }
     .ed-seg button.on { background: #e2e2e2; color: #111; }
     .ed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; max-height: 46vh; overflow-y: auto; padding: 2px; }
-    .ed-pick { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px; border: 1px solid #29292b; border-radius: 5px; background: #151517; font-size: 11.5px; font-weight: 700; color: #e8e8ea; text-align: center; line-height: 1.25; }
+    .ed-pick { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px; border: 1px solid #29292b; border-radius: 5px; background: #151517; font-size: 11.5px; font-weight: 700; color: #e8e8ea; text-align: center; line-height: 1.25; }
     .ed-pick img { width: 56px; height: 56px; object-fit: contain; border-radius: 5px; }
     .ed-pick small { font-size: 10px; color: #747476; font-weight: 600; }
     .ed-pick:hover { border-color: #414143; }
@@ -397,7 +419,8 @@
     /* 캐릭터 레벨 · 꺼진 스킬 트리 노드 */
     .bd-lv { background: rgba(0, 0, 0, .55); border: 1px solid rgba(255, 255, 255, .18); border-radius: 4px; padding: 3px 6px; font-size: 13px; font-weight: 800; color: #fff; cursor: pointer; }
     .t2-node, .t2-inh { cursor: pointer; }
-    .t2-node.off .t2-node-ico, .t2-inh.off .t2-inh-ico { opacity: .3; filter: grayscale(1); border-style: dashed; }
+    .t2-node.off .t2-node-ico, .t2-inh.off .t2-inh-ico { border-style: dashed; border-color: rgba(255, 255, 255, .14) !important; }
+    .t2-node.off .t2-node-ico > *, .t2-inh.off .t2-inh-ico > * { opacity: .3; filter: grayscale(1); }
     .t2-node-ico, .t2-inh-ico { transition: opacity .2s, filter .2s; }
     /* 프리셋 전환 · 세트 아이콘 · 빈 무기 칸 */
     .bd-presets { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid #323234; border-radius: 4px; margin-left: 6px; }
@@ -492,7 +515,7 @@
       border-radius: 8px !important;
       box-shadow: 0 30px 80px rgba(0, 0, 0, .7) !important;
     }
-    html.theme-wuwa .bd-head { border-bottom: 1px solid var(--wg-line) !important; background: none !important; }
+    html.theme-wuwa .bd-head { border-bottom: 1px solid var(--wg-line) !important; background: inherit !important; }
     html.theme-wuwa .bd-title b { letter-spacing: .02em; color: var(--wtext) !important; }
     html.theme-wuwa .bd-card, html.theme-wuwa .bd-echo { background: #18181b !important; border: 1px solid var(--wg-line) !important; border-radius: var(--wr) !important; }
     html.theme-wuwa .bd-label { color: var(--wg) !important; letter-spacing: .04em; }
@@ -512,6 +535,14 @@
     html.theme-wuwa .ed-form select, html.theme-wuwa .ed-form input, html.theme-wuwa .ed-search { background: #0f0f11; }
     html.theme-wuwa .bd-presets, html.theme-wuwa .ed-sets button, html.theme-wuwa .ed-seg, html.theme-wuwa .ed-pick, html.theme-wuwa .bd-edit-hint { border-color: var(--wg-dim); }
     html.theme-wuwa .ed-pick { background: #18181b; }
+    html.theme-wuwa .ed-pick:hover { border-color: rgba(255, 255, 255, .3); }
+    html.theme-wuwa .ed-pick.r5 { border-color: rgba(217, 191, 134, .45); } html.theme-wuwa .ed-pick.r4 { border-color: rgba(168, 85, 247, .5); } html.theme-wuwa .ed-pick.r3 { border-color: rgba(96, 165, 250, .45); }
+    html.theme-wuwa .ed-pick.r5:hover { border-color: rgba(217, 191, 134, .8); } html.theme-wuwa .ed-pick.r4:hover { border-color: rgba(168, 85, 247, .85); } html.theme-wuwa .ed-pick.r3:hover { border-color: rgba(96, 165, 250, .8); }
+    html.theme-wuwa .ed-pick.on.r5, html.theme-wuwa .ed-pick.on.r4, html.theme-wuwa .ed-pick.on.r3 { background: rgba(255, 255, 255, .09); box-shadow: none; }
+    html.theme-wuwa .ed-pick.on.r5 { border-color: rgba(217, 191, 134, .9); } html.theme-wuwa .ed-pick.on.r4 { border-color: rgba(168, 85, 247, .95); } html.theme-wuwa .ed-pick.on.r3 { border-color: rgba(96, 165, 250, .9); }
+    .ed-check { position: absolute; top: 5px; right: 5px; width: 18px; height: 18px; border-radius: 99px; background: #ecebe8; color: #111; display: flex; align-items: center; justify-content: center; }
+    .ed-check svg { width: 12px; height: 12px; }
+    html.theme-wuwa .ed-pick.on:not(.r5):not(.r4):not(.r3), html.theme-wuwa .ed-sets button.on { border-color: var(--wg); background: rgba(217, 191, 134, .1); box-shadow: inset 0 0 0 1px var(--wg); }
     html.theme-wuwa .bd-dots { border-color: rgba(255, 255, 255, .1); }
     html.theme-wuwa .bd-weapon-card.is-empty, html.theme-wuwa .bd-echo.is-empty { border-style: dashed !important; }
     /* 세부 창 스킬 트리 */
@@ -590,7 +621,7 @@
     html.theme-wuwa [class*="accent-[#f5a623]"] { accent-color: var(--wg) !important; }
     html.theme-wuwa [class~="bg-[#f5a623]/95"] { background-color: rgba(217, 191, 134, .95) !important; }
     html.theme-wuwa [class~="hover:bg-[#e0961d]"]:hover { background-color: #e6d3a6 !important; }
-    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x), html.theme-wuwa button[onclick*="lose"]:has(> i[data-lucide="x"]) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; color: var(--wmuted) !important; padding: 6px !important; transition: color .15s; }
+    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x), html.theme-wuwa button[onclick*="lose"]:has(> i[data-lucide="x"]) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; color: var(--wmuted) !important; padding: 6px !important; margin-right: -6px; transition: color .15s; }
     html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x):hover, html.theme-wuwa button[onclick*="lose"]:has(> i[data-lucide="x"]):hover { color: var(--wg) !important; background: transparent !important; }
     html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x) > svg { width: 20px !important; height: 20px !important; }
     html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> svg.lucide-x), html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> i[data-lucide="x"]) { color: #fff !important; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .9)); }
@@ -647,7 +678,7 @@
   <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" style="z-index: 120"></div>
 
   <!-- 확인 모달 -->
-  <div id="upload-modal" class="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150" onclick="if (event.target === this) closeUploadModal()">
+  <div id="upload-modal" class="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
     <div class="up-panel">
       <div class="up-head">
         <div>
@@ -670,7 +701,7 @@
     </div>
   </div>
 
-  <div id="edit-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150" onclick="if (event.target === this) closeModal('edit-modal')">
+  <div id="edit-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
     <div class="up-panel ed-panel" id="edit-modal-panel"></div>
   </div>
 
@@ -778,15 +809,13 @@
           <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" aria-label="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
           <div class="flex items-center gap-2 ml-1">
             <span class="text-xs font-bold text-slate-400">소속 파티:</span>
-            <select id="growth-filter-party" onchange="renderGrowthTracker()" class="bg-[#121622] border border-[#212a3d] text-amber-300 font-bold text-xs rounded-lg px-2 py-1.5 outline-none focus:border-amber-400 cursor-pointer">
-              <option value="all" class="text-white">전체 보기</option>
-            </select>
+            <span id="growth-filter-party-box"></span>
           </div>
           <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95 ml-1"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
         </div>
         
-        <div class="flex items-center gap-2">
-          <button onclick="resetGrowthData()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="resetGrowthData()" class="whitespace-nowrap text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
           <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
           <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
           <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
@@ -1341,6 +1370,8 @@
     };
     const KO = new Intl.Collator('ko-KR');
     const debounce = (fn, ms = 150) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+    // 게임 설명문 서식: <size=40>소제목</size> → 굵게, <size=10></size> 는 줄 간격용이라 지움, 그 밖의 태그는 글자만
+    const gameText = s => esc(s).replace(/&lt;size=10&gt;.*?&lt;\/size&gt;\n?/g, '').replace(/&lt;size=\d+&gt;(.*?)&lt;\/size&gt;/g, '<strong>$1</strong>').replace(/&lt;\/?[a-z]+(=[^&]*)?&gt;/gi, '');
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     const defaultTargetStats = { type: 'atk', base: 2000, regen: 120, cr: 60, cd: 240 };
@@ -1585,6 +1616,7 @@
     // ── 창(모달)과 뒤로가기 ──
     // 창이 하나라도 열려 있으면 방문 기록을 하나 쌓아 두고, 뒤로가기를 누르면 페이지 이동 대신 맨 위 창을 닫음
     const modalStack = [];
+    let ownedBackup = null;
     let skipNextPop = false;
     function armHistory() { if (modalStack.length && !history.state?.wuwaModal) history.pushState({ wuwaModal: true }, ''); }
     window.addEventListener('popstate', () => {
@@ -1596,9 +1628,10 @@
     function openModal(id) {
       const modal = document.getElementById(id);
       if (!modal) return;
-      modal.classList.remove('hidden');
+      modal.classList.remove('hidden', 'is-closing');
       requestAnimationFrame(() => modal.classList.remove('opacity-0'));
       if (!modalStack.includes(id)) { modalStack.push(id); if (!skipNextPop) armHistory(); }
+      if (id === 'owned-modal') ownedBackup = { ...state.ownedResonators };
       document.documentElement.classList.add('modal-open');
       lucide.createIcons();
     }
@@ -1606,11 +1639,15 @@
     function closeModal(id, fromHistory = false) {
       const modal = document.getElementById(id);
       if (!modal) return;
-      const i = modalStack.indexOf(id); if (i >= 0) modalStack.splice(i, 1);
+      const i = modalStack.indexOf(id);
+      if (i < 0) return;   // 이미 닫는 중
+      modalStack.splice(i, 1);
       if (!modalStack.length) document.documentElement.classList.remove('modal-open');
       // 버튼·바깥 클릭으로 마지막 창을 닫았으면 쌓아 둔 기록도 정리
       if (!fromHistory && !modalStack.length && history.state?.wuwaModal) { skipNextPop = true; history.back(); }
-      modal.classList.add('opacity-0');
+      if (id === 'confirm-modal' && confirmCancel) { const c = confirmCancel; confirmCancel = null; c(); }
+      if (id === 'owned-modal' && ownedBackup) { state.ownedResonators = ownedBackup; ownedBackup = null; }   // 적용 없이 닫으면 되돌림
+      modal.classList.add('is-closing', 'opacity-0');
       const dur = (parseFloat(getComputedStyle(modal).transitionDuration) || .15) * 1000;
       setTimeout(() => {
         if (!modal.classList.contains('opacity-0')) return;   // 닫히는 사이 다시 열림
@@ -1806,7 +1843,7 @@
         label: x?.label || '',
         remarks: x?.remarks || x?.name || '',
         skills: x?.skills || {s1:1,s2:1,s3:1,s4:1,s5:1},
-        stats: x?.stats || {current:{base:0,regen:0,cr:0,cd:0}}
+        stats: { ...x?.stats, current: { base: 0, regen: 0, cr: 0, cd: 0, ...x?.stats?.current } }
       }));
       const g = GROWTH_DATA[resId];
       if (!g.presets.some(x => x.id === g.activePresetId)) g.activePresetId = g.presets[0].id;
@@ -1882,7 +1919,11 @@
       g.presets.push(preset);
       g.activePresetId = id;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
-      startRenameGrowthPreset(resId, id); // 만들자마자 이름을 붙일 수 있게
+      // 만들자마자 이름을 붙일 수 있게 (본문도 새 프리셋으로 다시 그림)
+      presetRenaming = id;
+      refreshGrowthViews();
+      const input = document.getElementById(`preset-rename-${resId}`);
+      if (input) { input.focus(); input.select(); }
     }
 
     function startRenameGrowthPreset(resId, presetId) {
@@ -1914,7 +1955,13 @@
     }
 
     document.addEventListener('mousedown', e => { if (presetMenuFor !== null && !e.target.closest('.preset-dd')) closePresetMenu(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && presetMenuFor !== null && !presetRenaming) closePresetMenu(); });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape' || e.target.closest?.('.preset-dd')) return;
+      if (pickMenu) { closePickMenu(); return; }
+      if (presetMenuFor !== null) { closePresetMenu(); return; }
+      const top = modalStack[modalStack.length - 1];
+      if (top) closeModal(top);
+    });
 
     function toggleFavorite(resId) {
       initGrowthDataFor(resId);
@@ -1947,7 +1994,12 @@
       else if (category === 'stats_current') preset.stats.current[field] = parseFloat(value) || 0;
       else if (category === 'remarks') preset.remarks = value;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
-      renderGrowthTracker(); 
+      // 다시 그린 뒤에도 옮겨 간 입력칸에 포커스 유지
+      setTimeout(() => {
+        const fk = document.activeElement?.dataset?.fk;
+        renderGrowthTracker();
+        if (fk) document.querySelector(`[data-fk="${fk}"]`)?.focus();
+      });
     }
 
     // ---- 스탯 창 스크린샷 → 현재 프리셋 자동 입력 ----
@@ -1956,9 +2008,7 @@
         const msgEl = document.getElementById('confirm-modal-message');
         msgEl.style.whiteSpace = 'pre-line';
         const done = v => { msgEl.style.whiteSpace = ''; resolve(v); };
-        openConfirm(title, msg, () => done(true));
-        const btnCancel = document.getElementById('confirm-btn-cancel'), close = btnCancel.onclick;
-        btnCancel.onclick = () => { close(); done(false); };
+        openConfirm(title, msg, () => done(true), () => done(false));
       });
     }
 
@@ -1972,7 +2022,7 @@
       label.textContent = '읽는 중...'; btn.disabled = true;
       showToast('스크린샷을 읽는 중입니다...');
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=4');
+        const ocr = await import('./assets/wuwa-ocr.js?v=6');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
@@ -2049,9 +2099,13 @@
         source: { type: 'bot-card', at: new Date().toISOString() },
       };
       const sc = scoreBuild(res, { ...preset, build });
+      // 봇 카드 스킬 칸은 위에서 시계방향으로 기본 공격 · 공명 해방 · 공명 회로 · 변주 스킬 · 공명 스킬.
+      // r.skills 는 [위, 왼쪽 위, 오른쪽 위, 왼쪽 아래, 오른쪽 아래] 순서라 s1~s5 순으로 바꿈
+      const sk = r.skills || [], skills = [sk[0], sk[1], sk[4], sk[2], sk[3]].map(v => v >= 1 && v <= 10 ? v : null);
       const lines = [
         `${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`,
         `Lv.${r.level ?? '?'} / 공명 체인 ${r.chain} / ${r.weapon.name || '무기'} Lv.${r.weapon.level ?? '?'}`,
+        skills.some(v => v) ? '스킬 레벨: ' + SKILL_NAMES.map((n, i) => `${n} ${skills[i] ?? '?'}`).join(', ') : '',
         `에코 ${build.echoes.length}개, 에코 점수 ${sc.total.toFixed(1)}점 (${sc.grade})`,
         build.echoes.some(e => e?.name) ? '에코: ' + build.echoes.map(e => e?.name || '?').join(', ') : '',
       ];
@@ -2062,6 +2116,8 @@
       preset.build = build;
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level);
       if (r.chain != null) GROWTH_DATA[res.id].chain = r.chain;
+      // 스킬 레벨은 모든 프리셋 공통
+      GROWTH_DATA[res.id].presets.forEach(p => { p.skills = { ...p.skills }; skills.forEach((v, i) => { if (v) p.skills[`s${i + 1}`] = v; }); });
       afterGrowthChange();
       showToast(`${esc(res.name)} 에코 정보를 저장했습니다.`);
     }
@@ -2176,7 +2232,7 @@
     const GRADES = [[80, 'SSS'], [70, 'SS'], [60, 'S'], [50, 'A'], [40, 'B'], [0, 'C']];
     const gradeOf = pct => GRADES.find(([min]) => pct >= min)[1];
 
-    // 에코 점수: Σ(부옵 ÷ 최대치 × 가중치) 를 그 캐릭터가 받을 수 있는 최고점(가중치 상위 5개 × 1.0) 대비 % 로 (메인 옵션이 추천과 다르면 ×0.85)
+    // 에코 점수: Σ(부옵 ÷ 최대치 × 가중치) 를 그 캐릭터가 받을 수 있는 최고점(가중치 상위 5개 × 1.0) 대비 % 로 (메인 옵션은 점수에 넣지 않음)
     function scoreBuild(res, preset) {
       const w = echoWeights(res, preset);
       const ideal = Object.values(w).sort((a, b) => b - a).slice(0, 5).reduce((a, b) => a + b, 0) || 1;
@@ -2189,10 +2245,8 @@
           sum += part;
           return { ...sub, weight, part };
         });
-        // 메인 옵션이 추천과 다르면 15% 감점
-        const mainOff = mainStatOk(res, e) === false;
-        const pct = sum / ideal * 100 * (mainOff ? 0.85 : 1);
-        return { ...e, subs, pct, mainOff, grade: gradeOf(pct) };
+        const pct = sum / ideal * 100;
+        return { ...e, subs, pct, grade: gradeOf(pct) };
       });
       const filled = echoes.filter(Boolean);
       const total = filled.length ? filled.reduce((a, e) => a + e.pct, 0) / filled.length : 0;
@@ -2328,14 +2382,14 @@
     const charChain = resId => { const g = GROWTH_DATA[resId]; return g?.chain ?? Math.max(0, ...(g?.presets || []).map(p => p.chain ?? p.build?.chain ?? 0)); };
     const charLevel = resId => GROWTH_DATA[resId]?.level || { lv: 90, br: 6 };
     const weaponLevel = w => w?.br != null ? { lv: w.level ?? 90, br: w.br } : levelOf(w?.level ?? 90);
-    const lvLabel = l => `Lv.${l.lv}/${LV_CAPS[l.br]}`;
+    const lvLabel = l => `Lv.${l.lv}`;
     function growthRatio(table, l) {
       const rows = BUILD_DATA?.growth?.[table];
       if (!rows) return null;
       const r = rows.find(x => x[0] === l.lv && x[1] === l.br) || rows.find(x => x[0] === l.lv) || rows[rows.length - 1], top = rows[rows.length - 1];
       return r.slice(2).map((v, i) => v / top[i + 2]);
     }
-    const levelOptions = (cur) => (BUILD_DATA?.growth?.role || []).slice().reverse().map(([lv, br]) => `<option value="${lv}-${br}" ${lv === cur.lv && br === cur.br ? 'selected' : ''}>${lvLabel({ lv, br })}</option>`).join('');
+    const levelOpts = (cur) => (BUILD_DATA?.growth?.role || []).slice().reverse().filter(([lv, br], i, a) => a[i - 1]?.[0] !== lv || (lv === cur.lv && br === cur.br)).map(([lv, br]) => [`${lv}-${br}`, lvLabel({ lv, br })]);
     function setCharLevel(v) {
       const [lv, br] = v.split('-').map(Number), res = RAW_RESONATORS.find(r => r.id === buildModalFor);
       buildAnim = { prevTotals: computeBuildStats(res, activeGrowthPreset(res.id).preset)?.total };
@@ -2453,6 +2507,7 @@
       const wl = weaponLevel(preset.build?.weapon);
       editState = { kind: 'weapon', q: '', refine: preset.build?.weapon?.refine || 1, pick: preset.build?.weapon?.name || null, wlv: `${wl.lv}-${wl.br}` };
       renderEditor(); openModal('edit-modal');
+      document.querySelector('#edit-modal .ed-pick.on')?.scrollIntoView({ block: 'center' });
     }
 
     // 에코 고르기 · 수정 (slot: 0~4)
@@ -2560,10 +2615,10 @@
       if (s.kind === 'weapon') {
         const q = s.q.trim();
         const list = WEAPONS.filter(w => w.weaponType === res.weaponType && (!q || w.name.includes(q))).sort((a, b) => (b.rank || 0) - (a.rank || 0));
-        box.innerHTML = `${head('무기 설정', esc(res.weaponType))}
+        box.innerHTML = `${head('무기 설정')}
           <input class="ed-search" placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(); const el=document.querySelector('#edit-modal .ed-search'); el.focus(); el.setSelectionRange(el.value.length, el.value.length)">
-          <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()"><img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없어요</div>'}</div>
-          <div class="ed-row"><label>레벨</label><select class="ed-lv" onchange="editState.wlv=this.value">${levelOptions((([lv, br]) => ({ lv, br }))(s.wlv.split('-').map(Number)))}</select><label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
+          <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()">${s.pick === w.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없어요</div>'}</div>
+          <div class="ed-row"><label>레벨</label>${pickBtn('wlv', s.wlv, levelOpts((([lv, br]) => ({ lv, br }))(s.wlv.split('-').map(Number))), 'ed-lv', 'aria-label="무기 레벨"')}<label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
           <div class="up-foot"><button class="up-run" onclick="saveEditor()">저장</button></div>`;
       } else if (s.step === 'pick') {
         const q = s.q.trim();
@@ -2608,7 +2663,7 @@
       const anim = buildAnim; buildAnim = null;
       // 왼쪽: 캐릭터 + 공명 체인
       const chainNodes = (st?.chain || Array.from({ length: 6 }, () => ({ name: '', desc: '' }))).map((c, i) => `
-        <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" data-tip="${esc(`<b>${i + 1}. ${esc(c.name)}</b><p>${esc(c.desc)}</p>`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}">` : i + 1}</button>`).join('');
+        <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" data-tip="${esc(`<b>${i + 1}. ${gameText(c.name)}</b><p>${gameText(c.desc)}</p>`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}">` : i + 1}</button>`).join('');
 
       // 가운데: 스탯 표
       const statRow = (stat) => {
@@ -2623,12 +2678,12 @@
 
       const w = st?.weapon || WEAPONS.find(x => x.name === build?.weapon?.name);
       const weaponHtml = w ? `
-        <div class="bd-weapon"><img src="${w.image}" alt="" class="bd-weapon-img r${w.rank || 5}">
+        <div class="bd-weapon"><button class="bd-weapon-pick" onclick="openWeaponEditor()" aria-label="무기 변경"><img src="${w.image}" alt="" class="bd-weapon-img r${w.rank || 5}"></button>
           <div class="bd-weapon-info">
             <div class="bd-weapon-head"><span class="bd-weapon-name">${esc(w.name)}</span><span class="bd-weapon-lv">${lvLabel(weaponLevel(build?.weapon))} · R${build?.weapon?.refine || 1}</span></div>
             <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}공격력 <b>${st?.wAtk ?? w.atk}</b></div>
             ${st?.wMain ? `<div class="bd-weapon-sub">${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} <b>${st.wMain.value}%</b></div>` : ''}</div></div>`
-        : `<div class="bd-weapon is-empty"><i data-lucide="plus" class="w-6 h-6"></i></div>`;
+        : `<div class="bd-weapon is-empty"><i data-lucide="plus" class="w-4 h-4"></i><span>무기 추가</span></div>`;
 
       // 오른쪽: 스킬
       // 오른쪽: 인게임식 스킬 트리 (스탯 노드 2단 + 스킬 아이콘, 공명 회로 위는 고유 스킬)
@@ -2638,7 +2693,7 @@
       const treeNode = n => `<div class="t2-node ${off.includes(`${n.col}-${n.tier}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('${n.col}-${n.tier}')" onkeydown="if(event.key==='Enter')this.click()">${statIcon(n.stat, 't2-node-ico')}
           <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b></div></div>`;
       const treeInh = (x, j) => `<div class="t2-inh ${off.includes(`inh-${j}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('inh-${j}')" onkeydown="if(event.key==='Enter')this.click()"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt=""></span>
-          <div class="t2-tip"><b>${esc(x.name)}</b><small>고유 스킬</small><p>${esc(x.desc)}</p></div></div>`;
+          <div class="t2-tip"><b>${gameText(x.name)}</b><small>고유 스킬</small><p>${gameText(x.desc)}</p></div></div>`;
       // 아이콘 그림의 무게중심을 원 가운데로 (data/build-data.json iconCenter: 벗어난 정도 %)
       const skIconShift = name => { const c = BUILD_DATA?.iconCenter?.[name]; return c ? ` style="transform:translate(${-c[0]}%,${-c[1]}%)"` : ''; };
       const skillsHtml = `<div class="t2-tree">${SKILL_NAMES.map((n, i) => {
@@ -2646,7 +2701,7 @@
         const top = i === 2 ? (stt?.inherent || []).map(treeInh).reverse().join('') : (stt?.nodes || []).filter(x => x.col === i).sort((a, b) => b.tier - a.tier).map(treeNode).join('');
         return `<div class="t2-col"><i class="t2-line"></i>${top}
           <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)}>` : `<b>${lv}</b>`}</div>
-          <div class="t2-name">${n.replace('공명 ', '')}</div>
+          <div class="t2-name">${n}</div>
           <div class="t2-lv ${lv >= 10 ? 'max' : ''}"><small>Lv.</small>${lv}<small>/10</small></div>
           <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" aria-label="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" aria-label="레벨 올리기">+</button></div></div>`;
       }).join('')}</div>`;
@@ -2655,7 +2710,6 @@
       const echoes = sc.echoes;
       const echoCard = (e, i) => {
         if (!e) return `<button class="bd-echo is-empty" onclick="openEchoEditor(${i})"><div class="bd-echo-ph">${i + 1}번 에코</div><div class="bd-echo-empty-txt">눌러서 에코 추가</div></button>`;
-        const ok = mainStatOk(res, e);
         return `<button class="bd-echo" onclick="openEchoEditor(${i})">
           <span class="bd-echo-del" role="button" aria-label="에코 삭제" onclick="event.stopPropagation(); deleteEchoAt(${i})"><i data-lucide="x"></i></span>
           <div class="bd-echo-head">
@@ -2663,7 +2717,7 @@
             <div class="bd-echo-meta"><div class="bd-echo-name ${e.nameUncertain ? 'is-unsure' : ''}" title="${e.nameUncertain ? '이미지로 고른 에코예요. 맞는지 확인해 주세요' : esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
               <span class="bd-cost">COST ${e.cost ?? '?'}</span></div>
           </div>
-          <div class="bd-echo-main ${ok === false ? 'is-off' : ''}" title="${ok === false ? '추천 메인 옵션과 달라요' : ''}">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>
+          <div class="bd-echo-main">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>
           ${e.mainFlat ? `<div class="bd-echo-flat">${statIcon(e.mainFlat.stat, 'bd-ico-s')}<span>${esc(e.mainFlat.stat)}</span><b>${e.mainFlat.value ?? '?'}</b></div>` : ''}
           <div class="bd-subs">${e.subs.map(s => `<div class="bd-sub ${wClass(s.weight)}"><span>${esc(s.stat.replace(' 보너스', ''))}${s.percent && FLAT_STATS.includes(s.stat) ? '%' : ''}</span><b>${s.value == null ? '?' : s.value + (s.percent ? '%' : '')}</b></div>`).join('')}</div>
           <div class="bd-echo-foot"><span>점수</span><b>${e.pct.toFixed(1)}</b><i class="bd-grade g-${e.grade}">${e.grade}</i></div>
@@ -2686,13 +2740,13 @@
           <div class="bd-card bd-char" style="--accent:${accent}">
             <img class="bd-art" src="${res.sprite || res.avatar}" alt="" crossorigin="anonymous" ${res.focus ? `data-focus="${res.focus.join(',')}"` : ''}>
             <div class="bd-chains">${chainNodes}</div>
-            <div class="bd-char-foot"><select class="bd-lv" onchange="setCharLevel(this.value)" aria-label="캐릭터 레벨 (모든 프리셋 공통)">${levelOptions(charLevel(res.id))}</select></div>
+            <div class="bd-char-foot">${pickBtn('charlv', `${charLevel(res.id).lv}-${charLevel(res.id).br}`, levelOpts(charLevel(res.id)), 'bd-lv', 'aria-label="캐릭터 레벨 (모든 프리셋 공통)"')}</div>
           </div>
           <div class="bd-mid">
             <div class="bd-card">
               <div class="bd-stats"><div>${left.map(statRow).join('')}</div><div>${right.map(statRow).join('')}</div></div>
             </div>
-            <button class="bd-card bd-weapon-card ${w ? '' : 'is-empty'}" onclick="openWeaponEditor()">${weaponHtml}${w ? '<span class="bd-edit-hint">변경</span>' : ''}</button>
+            ${w ? `<div class="bd-card bd-weapon-card">${weaponHtml}</div>` : `<button class="bd-card bd-weapon-card is-empty" onclick="openWeaponEditor()">${weaponHtml}</button>`}
           </div>
           <div class="bd-card bd-skills" style="--accent:${accent}">
             ${skillsHtml}
@@ -2704,6 +2758,19 @@
       const art = panel.querySelector('.bd-art');
       if (oldArt && art && oldArt.src === art.src) { art.replaceWith(oldArt); artObserver.observe(oldArt.parentElement); placeArt(oldArt); }
       else bindArt(art);
+      // 에코 카드는 끌어서 순서를 바꿀 수 있음
+      const echoBox = panel.querySelector('.bd-echoes');
+      if (window.Sortable && echoBox) new Sortable(echoBox, { animation: 150, delay: 150, delayOnTouchOnly: true, filter: '.bd-echo-del', preventOnFilter: false, onEnd: ev => moveEcho(ev.oldIndex, ev.newIndex) });
+    }
+
+    function moveEcho(from, to) {
+      if (from === to) return;
+      const { preset } = activeGrowthPreset(buildModalFor);
+      if (!preset.build) return;
+      const list = [0, 1, 2, 3, 4].map(i => preset.build.echoes?.[i] || null);
+      list.splice(to, 0, list.splice(from, 1)[0]);
+      preset.build.echoes = list; markManual(preset.build);
+      afterGrowthChange();
     }
 
     function switchGrowthPresetTab(resId, presetId) {
@@ -3621,7 +3688,7 @@
       const showSprite = () => { if (sprite.dataset.tok === tok) sprite.style.visibility = ''; };
       if (sprite.complete) showSprite(); else { sprite.addEventListener('load', showSprite, { once: true }); sprite.addEventListener('error', showSprite, { once: true }); }
       document.getElementById('detail-modal-name').textContent = char.name;
-      document.getElementById('detail-modal-rarity').innerHTML = Array(char.rarity || 5).fill('<i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>').join('');
+      document.getElementById('detail-modal-rarity').innerHTML = Array(char.rarity || 5).fill('<i data-lucide="star" class="w-4 h-4 dm-star"></i>').join('');
       document.getElementById('detail-modal-title-element').innerHTML = `<div class="w-8 h-8 flex items-center justify-center drop-shadow-md mr-0.5">${getElementIconHtml(char.element)}</div>`;
       document.getElementById('detail-modal-role-badge').textContent = roleMeta.label;
       document.getElementById('detail-modal-role-badge').className = `px-2.5 py-1 rounded-lg text-xs font-bold border shadow-sm whitespace-nowrap ${roleMeta.tagClass}`;
@@ -3831,19 +3898,22 @@
     }
 
     function saveOwnershipModal() { 
+      ownedBackup = null;
       storage.set('wuwa_matrix_owned_chars', state.ownedResonators); 
       closeModal('owned-modal'); 
       renderRoster(); 
       refreshActiveView(); 
     }
 
-    function openConfirm(title, msg, onOk) {
+    // confirmCancel: 확인 창이 '확인' 말고 다른 방법(취소 · 바깥 클릭 · 뒤로가기 · Esc)으로 닫힐 때 부름
+    let confirmCancel = null;
+    function openConfirm(title, msg, onOk, onCancel) {
       document.getElementById('confirm-modal-title').textContent = title;
       document.getElementById('confirm-modal-message').textContent = msg;
       const btnCancel = document.getElementById('confirm-btn-cancel'), btnOk = document.getElementById('confirm-btn-ok');
-      const close = () => { closeModal('confirm-modal'); btnCancel.onclick = null; btnOk.onclick = null; };
-      btnCancel.onclick = close;
-      btnOk.onclick = () => { close(); onOk(); };
+      confirmCancel = onCancel || (() => {});
+      btnCancel.onclick = () => closeModal('confirm-modal');
+      btnOk.onclick = () => { confirmCancel = null; closeModal('confirm-modal'); onOk(); };
       openModal('confirm-modal');
     }
 
@@ -4340,9 +4410,57 @@
     }
 
     function populateGrowthPartyFilter() {
-      const sel = document.getElementById('growth-filter-party');
-      sel.innerHTML = `<option value="all" class="text-white">전체 보기</option>` + state.parties.map((_, idx) => `<option value="${idx}">파티 ${idx + 1}</option>`).join('');
+      const prev = document.getElementById('growth-filter-party')?.dataset.value || 'all';
+      const opts = [['all', '전체 보기'], ...state.parties.map((_, idx) => [String(idx), `파티 ${idx + 1}`])];
+      document.getElementById('growth-filter-party-box').innerHTML = pickBtn('party', opts.some(o => o[0] === prev) ? prev : 'all', opts, 'pf-sel bg-[#121622] border border-[#212a3d] text-amber-300 font-bold text-xs rounded-lg px-2 py-1.5 hover:border-amber-400 transition', 'id="growth-filter-party" aria-label="소속 파티"');
     }
+
+    // ---- 직접 만든 선택 목록 (브라우저 기본 목록 대신, 프리셋 메뉴와 같은 모양) ----
+    // data-pick 종류별로 고른 값을 처리. opts: [[값, 표시], ...]
+    const PICK = {
+      skill: (b, v) => updateGrowthData(b.dataset.res, b.dataset.preset, 'skills', b.dataset.key, v),
+      party: () => renderGrowthTracker(),
+      charlv: (b, v) => setCharLevel(v),
+      wlv: (b, v) => { editState.wlv = v; },
+    };
+    function pickBtn(kind, value, opts, cls = '', attrs = '') {
+      const cur = opts.find(o => String(o[0]) === String(value)) || opts[0] || ['', ''];
+      return `<button type="button" class="pk-btn ${cls}" data-pick="${kind}" data-value="${esc(cur[0])}" data-opts="${esc(JSON.stringify(opts))}" ${attrs} onclick="openPickMenu(this)"><span class="pk-label">${esc(cur[1])}</span><svg class="pk-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>`;
+    }
+    let pickMenu = null;
+    function closePickMenu() {
+      if (!pickMenu) return;
+      pickMenu.btn.classList.remove('is-open'); pickMenu.el.remove(); pickMenu = null;
+    }
+    function openPickMenu(btn) {
+      const same = pickMenu?.btn === btn;
+      closePickMenu();
+      if (same) return;
+      const opts = JSON.parse(btn.dataset.opts), el = document.createElement('div');
+      el.className = 'pk-menu';
+      el.innerHTML = opts.map(([v, l]) => `<div class="pk-item ${String(v) === btn.dataset.value ? 'is-active' : ''}" data-v="${esc(v)}">${esc(l)}</div>`).join('');
+      document.body.append(el);
+      const r = btn.getBoundingClientRect();
+      el.style.minWidth = `${r.width}px`;
+      const h = el.offsetHeight, w = el.offsetWidth, below = innerHeight - r.bottom - 8;
+      el.style.left = `${Math.max(8, Math.min(r.left, innerWidth - w - 8))}px`;
+      el.style.top = `${below >= h || below >= r.top ? r.bottom + 4 : Math.max(8, r.top - 4 - h)}px`;
+      const act = el.querySelector('.is-active');
+      if (act) el.scrollTop = act.offsetTop - el.clientHeight / 2 + act.offsetHeight / 2;
+      el.addEventListener('click', e => {
+        const it = e.target.closest('.pk-item');
+        if (!it) return;
+        closePickMenu();
+        if (it.dataset.v === btn.dataset.value) return;
+        btn.dataset.value = it.dataset.v; btn.querySelector('.pk-label').textContent = it.textContent;
+        PICK[btn.dataset.pick]?.(btn, it.dataset.v);
+      });
+      btn.classList.add('is-open');
+      pickMenu = { el, btn };
+    }
+    document.addEventListener('mousedown', e => { if (pickMenu && !e.target.closest('.pk-menu, .pk-btn')) closePickMenu(); });
+    window.addEventListener('scroll', e => { if (pickMenu && !pickMenu.el.contains(e.target)) closePickMenu(); }, true);
+    window.addEventListener('resize', () => closePickMenu());
 
     function renderPresetDropdown(resId, gData, where = 'card') {
       const ai = Math.max(0, gData.presets.findIndex(p => p.id === gData.activePresetId));
@@ -4380,7 +4498,7 @@
     function renderGrowthTracker() {
       const container = document.getElementById('growth-cards-container');
       const fElem = currentGrowthFilters.element, fRole = currentGrowthFilters.role;
-      const fParty = document.getElementById('growth-filter-party').value;
+      const fParty = document.getElementById('growth-filter-party')?.dataset.value || 'all';
       const fSearch = document.getElementById('growth-search-input').value.trim().toLowerCase();
       
       let filtered = RAW_RESONATORS.filter(r => {
@@ -4405,7 +4523,7 @@
 
           const makeSkill = (key, label) => {
             const val = preset.skills[key] || 1;
-            return `<div class="flex flex-col gap-1"><span class="text-[10px] text-slate-400 text-center whitespace-nowrap">${label}</span><select onchange="updateGrowthData('${r.id}','${preset.id}','skills','${key}',this.value)" class="bg-[#1a2130] border border-slate-700 ${val === 10 ? 'text-yellow-400 font-black' : 'text-white font-bold'} text-xs rounded px-1 py-1 text-center outline-none cursor-pointer hover:border-amber-400 transition sk-sel">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" class="text-white" ${n === val ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
+            return `<div class="flex flex-col gap-1"><span class="text-[10px] text-slate-400 text-center whitespace-nowrap">${label}</span>${pickBtn('skill', val, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => [n, n]), `bg-[#1a2130] border border-slate-700 ${val === 10 ? 'text-yellow-400 font-black' : 'text-white font-bold'} text-xs rounded hover:border-amber-400 transition sk-pick`, `data-fk="${r.id}-sk-${key}" data-res="${r.id}" data-preset="${preset.id}" data-key="${key}" aria-label="${label} 레벨"`)}</div>`;
           };
 
           let allStatsMet = true;
@@ -4419,7 +4537,7 @@
               <div class="flex flex-col gap-1.5">
                 <div class="flex items-center gap-1 px-0.5"><span class="text-[11px] font-bold text-slate-300 leading-none">${label}</span><span class="text-[10px] text-slate-500 leading-none">(${tgt}${isPct?'%':''})</span></div>
                 <div class="flex items-center bg-[#151b29] border ${border} rounded-lg px-2 py-1.5 transition-colors w-full">
-                  <input type="number" value="${cur}" onchange="updateGrowthData('${r.id}','${preset.id}','stats_current','${key}',this.value)" class="w-full bg-transparent text-xs font-bold ${text} text-left outline-none p-0 m-0 leading-none">
+                  <input type="number" data-fk="${r.id}-st-${key}" value="${cur}" onchange="updateGrowthData('${r.id}','${preset.id}','stats_current','${key}',this.value)" class="w-full bg-transparent text-xs font-bold ${text} text-left outline-none p-0 m-0 leading-none">
                   ${isPct ? `<span class="text-[10px] ${text} ml-1 font-bold">%</span>` : ''}
                 </div>
               </div>`;
@@ -4447,7 +4565,7 @@
                 <button onclick="event.stopPropagation(); toggleFavorite('${r.id}')" class="absolute top-1 left-1 z-10 p-0.5 transition drop-shadow-md">
                   <i data-lucide="star" class="w-4 h-4 ${gData.isFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-300/80 group-hover:text-white'} drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"></i>
                 </button>
-                <img loading="lazy" decoding="async" src="${r.avatar}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-300" crossorigin="anonymous">
+                <img loading="lazy" decoding="async" src="${r.avatar}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-300" crossorigin="anonymous">
               </div>
               <div class="flex-1 min-w-0 flex flex-col justify-center">
                 <div class="flex items-center w-full">

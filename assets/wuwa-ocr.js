@@ -154,7 +154,8 @@ export const BOT_CARD = {
   base: { w: 1920, h: 1080 },
   name: { x: 60, y: 15, w: 125, h: 70 },
   level: { x: 205, y: 40, w: 60, h: 25 },
-  chainStars: [190, 264, 344, 424, 504, 584].map((x) => ({ x: x - 22, y: 550, w: 44, h: 44 })),
+  // 공명 체인 별 가운데. 켜진 별은 안에 체인 아이콘(밝은 금색)이 있고 꺼진 별은 가운데가 어두움
+  chainStars: [190, 264, 344, 424, 504, 584].map((x) => ({ x: x - 8, y: 564, w: 16, h: 16 })),
   skills: [[1108, 198], [882, 354], [1308, 354], [962, 600], [1228, 600]].map(([x, y]) => ({ x: x - 25, y: y - 13, w: 70, h: 26 })),
   weaponName: { x: 1600, y: 452, w: 260, h: 30 },
   weaponLevel: { x: 1655, y: 508, w: 55, h: 28 },
@@ -231,13 +232,17 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
   const readNum = async (r) => (await workers.num.recognize(await backend.crop(R(r), 3 / sx))).data.text.trim();
 
   const result = { kind: 'bot-card', warnings: [] };
-  result.name = resolveName(await readKor(BOT_CARD.name), names, aliases).name;
-  const lv = (await readNum(BOT_CARD.level)).match(/(\d{1,2})/);
+  // 레벨 배지(금색)는 이름 길이에 따라 옆으로 밀리므로 위치를 찾아서 읽음
+  let badge = null;
+  for (let x = 140; x < 420; x += 2) if (await backend.goldFraction(R({ x, y: 42, w: 2, h: 22 })) > 0.5) { badge = x; break; }
+  const nameBox = badge ? { ...BOT_CARD.name, w: Math.max(60, badge - 8 - BOT_CARD.name.x) } : BOT_CARD.name;
+  result.name = resolveName(await readKor(nameBox), names, aliases).name;
+  const lv = (await readNum(badge ? { ...BOT_CARD.level, x: badge + 21 } : BOT_CARD.level)).match(/(\d{1,2})/);
   result.level = lv ? +lv[1] : null;
 
   const chain = [];
-  for (const r of BOT_CARD.chainStars) chain.push(await backend.goldFraction(R(r)));
-  result.chain = chain.filter((f) => f > 0.25).length;
+  for (const r of BOT_CARD.chainStars) chain.push(await backend.brightness(R(r)));
+  result.chain = chain.filter((v) => v > 145).length;
 
   result.skills = [];
   for (const r of BOT_CARD.skills) {
@@ -281,14 +286,16 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
     }
     const c = COST_BY_FLAT.find((c) => echo.mainFlat && c.label === echo.mainFlat.stat && c.value === echo.mainFlat.value);
     echo.cost = c ? c.cost : null;
-    if (!c) result.warnings.push(`에코 ${result.echoes.length + 1}: 코스트를 판단하지 못함`);
     if (echoDb && backend.feature) {
       const hit = matchEcho(await backend.feature(R({ x: x0 + E.icon.dx, y: E.icon.y, w: E.icon.w, h: E.icon.h })), echoDb, echo.cost);
       if (hit) {
         echo.name = hit.echo.name; echo.img = hit.echo.img; echo.matchScore = +hit.score.toFixed(3);
         if (!hit.sure) { echo.nameUncertain = true; result.warnings.push(`에코 ${result.echoes.length + 1}: ${hit.echo.name}인지 확인 필요`); }
+        // 강화가 덜 된 에코는 고정 메인 수치로 코스트를 못 정하므로, 확실히 찾은 에코면 그 에코의 코스트를 씀
+        else if (echo.cost == null && hit.echo.cost) echo.cost = hit.echo.cost;
       }
     }
+    if (echo.cost == null) result.warnings.push(`에코 ${result.echoes.length + 1}: 코스트를 판단하지 못함`);
     result.echoes.push(echo);
   }
   return result;
@@ -339,6 +346,12 @@ export async function createCanvasBackend(file) {
         const o = (gy * S + gx) * 3; v[o] = r / n; v[o + 1] = g / n; v[o + 2] = b / n;
       }
       return normalize(v);
+    },
+    async brightness({ x, y, w, h }) {
+      const d = sctx.getImageData(x, y, w, h).data;
+      let sum = 0;
+      for (let i = 0; i < d.length; i += 4) sum += (d[i] + d[i + 1] + d[i + 2]) / 3;
+      return sum / (w * h);
     },
     async goldFraction({ x, y, w, h }) {
       const d = sctx.getImageData(x, y, w, h).data;
