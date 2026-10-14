@@ -1,0 +1,14 @@
+﻿{
+    "host":  "https://api-v2.encore.moe/resource/Data/Game/Aki/ + path after api.hakush.in/ww/",
+    "extension":  ".webp (same as manifest dest)",
+    "fallbackHost":  "https://files.wuthery.com/p/GameData/ (png, saved as .png)",
+    "ok":  456,
+    "failed":  0,
+    "skippedExisting":  0,
+    "savedAsPngViaFallback":  [
+
+                              ],
+    "failedUrls":  [
+
+                   ]
+}
