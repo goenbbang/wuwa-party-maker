@@ -40,7 +40,10 @@
     html, body { overscroll-behavior: none; }
     /* 창 안의 모든 요소에 걸면, 넘침을 숨긴 카드(overflow:hidden) 위에서 휠이 목록으로 전달되지 않음 → 창과 실제 스크롤 영역에만 */
     [id$="-modal"], [id$="-modal"] .overflow-y-auto, [id$="-modal"] .overflow-x-auto { overscroll-behavior: contain; }
-    html { scrollbar-gutter: stable; }
+    html { scrollbar-gutter: stable; color-scheme: dark; }
+    select option { background: #17171a; color: #ecebe8; }
+    .sk-sel { appearance: none; -webkit-appearance: none; text-align-last: center; padding: 4px 16px 4px 4px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8d8a' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 4px center; background-size: 11px; }
+    html.theme-wuwa .text-yellow-400 { color: var(--wg) !important; }
     html.modal-open, html.modal-open body { overflow: hidden; }
     input:not([type="checkbox"]):not([type="radio"]), select { vertical-align: middle; }
     .card-graduated { border-color: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
@@ -231,8 +234,12 @@
     .bd-weapon.is-empty { color: #747476; font-size: 12px; padding: 10px 0; }
     .bd-weapon-img { width: 64px; height: 64px; border-radius: 5px; object-fit: contain; background: linear-gradient(160deg, rgba(217, 191, 134, .18), #101012); border: 1px solid rgba(217, 191, 134, .4); flex-shrink: 0; }
     .bd-weapon-img.r4 { background: linear-gradient(160deg, rgba(168, 85, 247, .18), #101012); border-color: rgba(168, 85, 247, .4); }
-    .bd-weapon-name { font-size: 14px; font-weight: 900; color: #fff; }
-    .bd-weapon-sub { font-size: 12px; color: #a3a3a5; margin-top: 3px; }
+    .bd-weapon-info { flex: 1; min-width: 0; }
+    .bd-weapon-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; padding-right: 44px; margin-bottom: 4px; }
+    .bd-weapon-name { font-size: 14px; font-weight: 900; color: #fff; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bd-weapon-lv { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: #8e8d8a; white-space: nowrap; }
+    .bd-weapon-sub { font-size: 12px; color: #a3a3a5; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+    .bd-weapon-sub b { color: #e8e8ea; font-weight: 800; }
     .bd-skill { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e1e20; font-size: 13px; color: #d4d4d6; }
     .bd-skill:last-of-type { border-bottom: 0; }
     .bd-skill-name em { font-style: normal; font-size: 10px; color: #747476; margin-left: 6px; }
@@ -250,17 +257,17 @@
     @keyframes bdPop { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
     @keyframes bdFade { from { opacity: 0; } to { opacity: 1; } }
     .bd-top.is-enter > .bd-char, .bd-top.is-enter > .bd-mid > *, .bd-top.is-enter > .bd-skills, .bd-echoes.is-enter > .bd-echo,
-    .dm-in .dm-right > *, .dm-in .dm-name { animation: bdUp .32s cubic-bezier(.2, .8, .2, 1) both; }
+    .dm-in .dm-right > *, .dm-in .dm-name { animation: bdUp .32s cubic-bezier(.2, .8, .2, 1) backwards; }
     .bd-top.is-enter > .bd-mid > :nth-child(1) { animation-delay: .04s; } .bd-top.is-enter > .bd-mid > :nth-child(2) { animation-delay: .08s; }
     .bd-top.is-enter > .bd-skills { animation-delay: .1s; }
-    .bd-top.is-enter .bd-chain { animation: bdPop .26s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(.06s + var(--k, 0) * .03s); }
+    .bd-top.is-enter .bd-chain { animation: bdPop .26s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(.06s + var(--k, 0) * .03s); }
     .bd-top.is-enter .bd-chain:nth-child(2) { --k: 1; } .bd-top.is-enter .bd-chain:nth-child(3) { --k: 2; } .bd-top.is-enter .bd-chain:nth-child(4) { --k: 3; } .bd-top.is-enter .bd-chain:nth-child(5) { --k: 4; } .bd-top.is-enter .bd-chain:nth-child(6) { --k: 5; }
-    .bd-top.is-enter .t2-tree > * { animation: bdUp .3s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(.14s + var(--k, 0) * .03s); }
+    .bd-top.is-enter .t2-tree > * { animation: bdUp .3s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(.14s + var(--k, 0) * .03s); }
     .bd-top.is-enter .t2-tree > :nth-child(2) { --k: 1; } .bd-top.is-enter .t2-tree > :nth-child(3) { --k: 2; } .bd-top.is-enter .t2-tree > :nth-child(4) { --k: 3; } .bd-top.is-enter .t2-tree > :nth-child(5) { --k: 4; }
     .bd-echoes.is-enter > .bd-echo { animation-delay: .16s; }
     .bd-echoes.is-enter > .bd-echo:nth-child(2) { animation-delay: .19s; } .bd-echoes.is-enter > .bd-echo:nth-child(3) { animation-delay: .22s; }
     .bd-echoes.is-enter > .bd-echo:nth-child(4) { animation-delay: .25s; } .bd-echoes.is-enter > .bd-echo:nth-child(5) { animation-delay: .28s; }
-    .dm-in #detail-modal-sprite { animation: bdFade .35s ease-out both; }
+    .dm-in #detail-modal-sprite { animation: bdFade .35s ease-out backwards; }
     .dm-in .dm-name { animation-delay: .06s; }
     .dm-in .dm-right > :nth-child(1) { animation-delay: .04s; } .dm-in .dm-right > :nth-child(2) { animation-delay: .09s; }
     .dm-in .dm-right > :nth-child(3) { animation-delay: .14s; } .dm-in .dm-right > :nth-child(4) { animation-delay: .19s; }
@@ -283,14 +290,19 @@
     .t2-node small, .t2-inh small { font-size: 10.5px; color: #a3a3a5; font-weight: 700; background: #151517; padding: 0 4px; margin-top: 2px; white-space: nowrap; }
     .t2-inh-ico { background: radial-gradient(color-mix(in srgb, var(--accent) 27%, transparent), #101012); border: 1.5px solid color-mix(in srgb, var(--accent) 67%, transparent); }
     .t2-inh-ico img { width: 80%; height: 80%; object-fit: contain; }
-    .t2-tip { display: none; position: absolute; left: 50%; transform: translateX(-50%); top: calc(100% + 8px); width: 230px; padding: 10px 12px; background: #101012; border: 1px solid #414143; box-shadow: 0 10px 30px #000a; z-index: 9; text-align: left; }
-    .t2-tip b { color: #fff; font-size: 13px; } .t2-tip small { margin-left: 6px; color: #747476; font-size: 10px; background: none; padding: 0; } .t2-tip p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: #d4d4d6; white-space: normal; }
-    .t2-inh:hover .t2-tip, .t2-inh:focus .t2-tip, .t2-node:hover .t2-tip, .t2-node:focus .t2-tip { display: block; } .t2-inh:hover, .t2-inh:focus, .t2-node:hover, .t2-node:focus { z-index: 10; outline: none; }
+    .t2-tip { display: none; position: absolute; left: 50%; transform: translateX(-50%); top: calc(100% + 8px); width: max-content; max-width: 230px; padding: 10px 12px; background: #101012; border: 1px solid #414143; box-shadow: 0 10px 30px #000a; z-index: 9; text-align: left; }
+    .t2-tip b { color: var(--wg, #fff); font-size: 13px; } .t2-tip small { margin-left: 6px; color: #747476; font-size: 10px; background: none; padding: 0; } .t2-tip p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: #d4d4d6; white-space: normal; }
+    .t2-inh:hover .t2-tip, .t2-inh:focus .t2-tip, .t2-node:hover .t2-tip, .t2-node:focus .t2-tip { display: block; } .t2-inh:hover, .t2-inh:focus, .t2-node:hover, .t2-node:focus { z-index: 20; outline: none; }
+    .t2-tip { z-index: 30; }
+    /* 사이트 공용 툴팁 (data-tip 에 HTML) */
+    .fl-tip { position: fixed; z-index: 300; display: none; width: max-content; max-width: 260px; padding: 10px 12px; background: #121214; border: 1px solid rgba(255, 255, 255, .13); border-radius: 4px; box-shadow: 0 10px 30px #000a; pointer-events: none; text-align: left; }
+    .fl-tip b { display: block; color: var(--wg, #d9bf86); font-size: 13px; font-weight: 800; }
+    .fl-tip p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: #d4d4d6; white-space: pre-line; }
     .t2-col:first-child .t2-tip { left: 0; transform: none; } .t2-col:last-child .t2-tip { left: auto; right: 0; transform: none; }
  .t2-tip .eff { color: var(--eff); font-size: 11px; margin-left: 6px; }
     .t2-sk { grid-row: 3; position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 99px; display: flex; align-items: center; justify-content: center; background: radial-gradient(#232325, #101012); border: 2px solid #555557; }
     .t2-sk img { width: 72%; height: 72%; object-fit: contain; } .t2-sk b { color: #fff; font-size: 21px; font-weight: 900; }
-    .t2-sk.max { border-color: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent); } .t2-sk.forte { border-style: double; border-width: 4px; }
+    .t2-sk.max { border-color: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent); }
     .t2-lv { grid-row: 5; font-size: 15px; font-weight: 900; color: #e8e8ea; line-height: 1; } .t2-lv small { font-size: 10px; color: #747476; font-weight: 700; } .t2-lv.max { color: #ecdcb4; }
     .t2-name { grid-row: 4; font-size: 11.5px; color: #e8e8ea; font-weight: 800; white-space: nowrap; margin-top: 4px; }
     .t2-rank { grid-row: 6; font-style: normal; font-size: 10px; color: #ecdcb4; font-weight: 800; } .t2-rank.off { color: transparent; }
@@ -324,7 +336,7 @@
     .bd-note { font-size: 11px; color: #555557; padding: 10px 18px 16px; line-height: 1.5; }
 
     /* 유효 옵션 강조 · 편집 */
-    :root { --eff: #d9a27a; --eff-strong: #e8bc98; }
+    :root { --eff: #d9bf86; --eff-strong: #ecdcb4; }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi, .bd-sub.w-mid { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi b { color: var(--eff-strong); }
@@ -474,7 +486,7 @@
     html.theme-wuwa .bd-head { border-bottom: 1px solid var(--wg-line) !important; background: none !important; }
     html.theme-wuwa .bd-title b { letter-spacing: .02em; color: var(--wtext) !important; }
     html.theme-wuwa .bd-card, html.theme-wuwa .bd-echo { background: #18181b !important; border: 1px solid var(--wg-line) !important; border-radius: var(--wr) !important; }
-    html.theme-wuwa .bd-label { color: var(--wtext) !important; letter-spacing: .02em; }
+    html.theme-wuwa .bd-label { color: var(--wg) !important; letter-spacing: .04em; }
     html.theme-wuwa .eff { color: var(--eff) !important; }
     /* 세부 창: 체인 · 에코 카드 */
     html.theme-wuwa .bd-chain { width: 40px !important; height: 40px !important; background: rgba(17, 17, 19, .85) !important; color: var(--wmuted) !important; border: 1px solid rgba(255, 255, 255, .18) !important; }
@@ -569,6 +581,11 @@
     html.theme-wuwa [class*="accent-[#f5a623]"] { accent-color: var(--wg) !important; }
     html.theme-wuwa [class~="bg-[#f5a623]/95"] { background-color: rgba(217, 191, 134, .95) !important; }
     html.theme-wuwa [class~="hover:bg-[#e0961d]"]:hover { background-color: #e6d3a6 !important; }
+    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; color: var(--wmuted) !important; padding: 6px !important; transition: color .15s; }
+    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x):hover { color: var(--wg) !important; background: transparent !important; }
+    html.theme-wuwa button[onclick*="lose"]:has(> svg.lucide-x) > svg { width: 20px !important; height: 20px !important; }
+    html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> svg.lucide-x) { color: #fff !important; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .9)); }
+    #fatigue-modal > div, #owned-modal > div { padding-top: 14px !important; }
     @media (min-width: 768px) { html.theme-wuwa [class~="md:rounded-3xl"] { border-radius: 8px !important; } }
   </style>
 </head>
@@ -1626,9 +1643,10 @@
     function playEnter(id) {
       const el = document.getElementById(id);
       if (!el) return;
-      [...el.children].slice(0, 20).forEach((c, i) => c.style.setProperty('--fx-d', `${i * 30}ms`));
-      el.classList.remove('fx-in'); void el.offsetWidth; el.classList.add('fx-in');
-      clearTimeout(el._fx); el._fx = setTimeout(() => el.classList.remove('fx-in'), 1100);
+      [...el.children].slice(0, 20).forEach((c, i) => {
+        c.style.animation = 'none'; void c.offsetWidth;
+        c.style.animation = `bdUp .35s cubic-bezier(.2, .8, .2, 1) ${i * 30}ms backwards`;
+      });
     }
 
     // 기본 속성 아이콘 = 각 속성 에코 세트 아이콘 (관리자 설정에서 따로 지정하면 그게 우선)
@@ -2240,6 +2258,21 @@
       artObserver.observe(img.parentElement);
     }
 
+    // ---- 공용 툴팁: data-tip 이 있는 요소에 마우스를 올리면 옆에 표시 ----
+    const flTip = Object.assign(document.createElement('div'), { className: 'fl-tip' });
+    document.addEventListener('mouseover', e => {
+      const el = e.target.closest?.('[data-tip]');
+      if (!el) { flTip.style.display = 'none'; return; }
+      if (!flTip.isConnected) document.body.append(flTip);
+      flTip.innerHTML = el.dataset.tip; flTip.style.display = 'block';
+      const r = el.getBoundingClientRect(), t = flTip.getBoundingClientRect();
+      let x = r.right + 8, y = r.top;
+      if (x + t.width > innerWidth - 8) x = Math.max(8, r.left - 8 - t.width);
+      y = Math.max(8, Math.min(y, innerHeight - 8 - t.height));
+      flTip.style.left = `${x}px`; flTip.style.top = `${y}px`;
+    });
+    document.addEventListener('scroll', () => flTip.style.display = 'none', true);
+
     function closeBuildModal() {
       buildModalFor = null;
       closeModal('build-modal');
@@ -2542,7 +2575,7 @@
       const anim = buildAnim; buildAnim = null;
       // 왼쪽: 캐릭터 + 공명 체인
       const chainNodes = (st?.chain || Array.from({ length: 6 }, () => ({ name: '', desc: '' }))).map((c, i) => `
-        <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" title="${esc(`${i + 1}. ${c.name}\n${c.desc}`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}">` : i + 1}</button>`).join('');
+        <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" data-tip="${esc(`<b>${i + 1}. ${esc(c.name)}</b><p>${esc(c.desc)}</p>`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}">` : i + 1}</button>`).join('');
 
       // 가운데: 스탯 표
       const statRow = (stat) => {
@@ -2558,9 +2591,10 @@
       const w = st?.weapon || WEAPONS.find(x => x.name === build?.weapon?.name);
       const weaponHtml = w ? `
         <div class="bd-weapon"><img src="${w.image}" alt="" class="bd-weapon-img r${w.rank || 5}">
-          <div class="bd-weapon-info"><div class="bd-weapon-name">${esc(w.name)}</div>
-            <div class="bd-weapon-sub">${lvLabel(weaponLevel(build?.weapon))} · 재련 ${build?.weapon?.refine || 1}</div>
-            <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}공격력 ${st?.wAtk ?? w.atk} ${st?.wMain ? `· ${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} ${st.wMain.value}%` : ''}</div></div></div>`
+          <div class="bd-weapon-info">
+            <div class="bd-weapon-head"><span class="bd-weapon-name">${esc(w.name)}</span><span class="bd-weapon-lv">${lvLabel(weaponLevel(build?.weapon))} · R${build?.weapon?.refine || 1}</span></div>
+            <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}공격력 <b>${st?.wAtk ?? w.atk}</b></div>
+            ${st?.wMain ? `<div class="bd-weapon-sub">${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} <b>${st.wMain.value}%</b></div>` : ''}</div></div>`
         : `<div class="bd-weapon is-empty"><i data-lucide="plus" class="w-6 h-6"></i></div>`;
 
       // 오른쪽: 스킬
@@ -2569,14 +2603,16 @@
       const nodeVal = n => `+${n.v}${n.pct ? '%' : ''}`;
       const off = GROWTH_DATA[res.id].treeOff || [];
       const treeNode = n => `<div class="t2-node ${off.includes(`${n.col}-${n.tier}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('${n.col}-${n.tier}')" onkeydown="if(event.key==='Enter')this.click()">${statIcon(n.stat, 't2-node-ico')}
-          <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b>${statEffective(n.stat, sc.weights) ? '<small class="eff">유효 옵션</small>' : ''}</div></div>`;
+          <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b></div></div>`;
       const treeInh = (x, j) => `<div class="t2-inh ${off.includes(`inh-${j}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('inh-${j}')" onkeydown="if(event.key==='Enter')this.click()"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt=""></span>
           <div class="t2-tip"><b>${esc(x.name)}</b><small>고유 스킬</small><p>${esc(x.desc)}</p></div></div>`;
+      // 아이콘 그림의 무게중심을 원 가운데로 (data/build-data.json iconCenter: 벗어난 정도 %)
+      const skIconShift = name => { const c = BUILD_DATA?.iconCenter?.[name]; return c ? ` style="transform:translate(${-c[0]}%,${-c[1]}%)"` : ''; };
       const skillsHtml = `<div class="t2-tree">${SKILL_NAMES.map((n, i) => {
         const lv = +preset.skills[`s${i + 1}`] || 1, icon = stt?.skillIcons?.[i];
         const top = i === 2 ? (stt?.inherent || []).map(treeInh).reverse().join('') : (stt?.nodes || []).filter(x => x.col === i).sort((a, b) => b.tier - a.tier).map(treeNode).join('');
         return `<div class="t2-col"><i class="t2-line"></i>${top}
-          <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}" title="${esc(stt?.skills?.[i] || n)}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt="">` : `<b>${lv}</b>`}</div>
+          <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}" data-tip="${esc(`<b>${esc(stt?.skills?.[i] || n)}</b>`)}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)}>` : `<b>${lv}</b>`}</div>
           <div class="t2-name">${n.replace('공명 ', '')}</div>
           <div class="t2-lv ${lv >= 10 ? 'max' : ''}"><small>Lv.</small>${lv}<small>/10</small></div>
           <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" title="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" title="레벨 올리기">+</button></div></div>`;
@@ -2587,7 +2623,7 @@
       const echoCard = (e, i) => {
         if (!e) return `<button class="bd-echo is-empty" onclick="openEchoEditor(${i})"><div class="bd-echo-ph">${i + 1}번 에코</div><div class="bd-echo-empty-txt">눌러서 에코 추가</div></button>`;
         const ok = mainStatOk(res, e);
-        return `<button class="bd-echo" onclick="openEchoEditor(${i})" title="눌러서 수정">
+        return `<button class="bd-echo" onclick="openEchoEditor(${i})">
           <div class="bd-echo-head">
             ${e.img ? `<img class="bd-echo-img" src="${echoImgUrl(e.img)}" alt="">` : '<div class="bd-echo-img"></div>'}
             <div class="bd-echo-meta"><div class="bd-echo-name ${e.nameUncertain ? 'is-unsure' : ''}" title="${e.nameUncertain ? '이미지로 고른 에코예요. 맞는지 확인해 주세요' : esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
@@ -2619,13 +2655,11 @@
           </div>
           <div class="bd-mid">
             <div class="bd-card">
-              <div class="bd-label">스탯</div>
               <div class="bd-stats"><div>${left.map(statRow).join('')}</div><div>${right.map(statRow).join('')}</div></div>
             </div>
-            <button class="bd-card bd-weapon-card ${w ? '' : 'is-empty'}" onclick="openWeaponEditor()" title="${w ? '눌러서 무기 바꾸기' : '무기 추가'}">${weaponHtml}${w ? '<span class="bd-edit-hint">변경</span>' : ''}</button>
+            <button class="bd-card bd-weapon-card ${w ? '' : 'is-empty'}" onclick="openWeaponEditor()">${weaponHtml}${w ? '<span class="bd-edit-hint">변경</span>' : ''}</button>
           </div>
           <div class="bd-card bd-skills" style="--accent:${accent}">
-            <div class="bd-label">스킬 · 공명 회로</div>
             ${skillsHtml}
           </div>
         </div>
@@ -3301,14 +3335,14 @@
         const activeCircuit = CIRCUITS.find(c => c.id === party.circuitId);
         const slotsHtml = party.slots.map((resId, sIdx) => {
           if (!resId) {
-            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400/50 hover:bg-[#0f1422] cursor-pointer flex flex-col gap-1 items-center justify-center aspect-square sm:aspect-auto sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}" onclick="openSlotPicker(${pIdx}, ${sIdx})" title="눌러서 공명자 선택 (또는 목록에서 끌어오기)"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-500 sm:hidden">선택</span></div>`;
+            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400/50 hover:bg-[#0f1422] cursor-pointer flex flex-col gap-1 items-center justify-center aspect-square sm:aspect-auto sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}" onclick="openSlotPicker(${pIdx}, ${sIdx})"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-500 sm:hidden">선택</span></div>`;
           }
           const r = RAW_RESONATORS.find(item => item.id === resId) || { name: '알 수 없음', avatar: '', mainDmg: '', buffSummary: '', element: 'spectro' };
           return `
             <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md group flex items-center p-0 sm:p-2.5 aspect-square sm:aspect-auto sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
               <div class="absolute top-1.5 right-1.5 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="p-1 rounded bg-black/70 hover:bg-rose-900 text-slate-400 hover:text-white transition shadow"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
               <div class="flex items-center gap-0 sm:gap-2.5 w-full h-full min-w-0">
-                <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')" title="눌러서 세부 정보 보기" class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
+                <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')"class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
                   <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
                 </div>
@@ -3493,7 +3527,7 @@
         const big = setList.length === 1;
         return `<div class="flex items-center gap-1.5 min-w-0">
           <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center">${iconInner}</div>
-          <span class="${big ? 'text-base' : 'text-sm'} font-black ${generic ? 'text-slate-300' : 'text-slate-100'} break-keep">${esc(label)}</span>
+          <span class="${big ? 'text-base' : 'text-sm'} font-black text-slate-100 break-keep">${esc(label)}</span>
           <span class="flex-shrink-0 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[10px] font-black text-amber-400 leading-none">${s.count}세트</span>
         </div>`;
       }).join('<span class="text-slate-500 mx-1 text-base font-black">+</span>');
@@ -3541,8 +3575,13 @@
       const roleMeta = ROLE_META[char.role] || ROLE_META.main;
       const sprite = document.getElementById('detail-modal-sprite');
       if (char.focus) sprite.dataset.focus = char.focus.join(','); else delete sprite.dataset.focus;
+      // 새 그림을 다 불러오기 전까지 숨김 (이전 공명자 그림이 잠깐 보이는 것 방지)
+      sprite.style.visibility = 'hidden';
       sprite.src = char.sprite || char.avatar;
       bindArt(sprite);
+      const tok = sprite.dataset.tok = char.id;
+      const showSprite = () => { if (sprite.dataset.tok === tok) sprite.style.visibility = ''; };
+      if (sprite.complete) showSprite(); else { sprite.addEventListener('load', showSprite, { once: true }); sprite.addEventListener('error', showSprite, { once: true }); }
       document.getElementById('detail-modal-name').textContent = char.name;
       document.getElementById('detail-modal-rarity').innerHTML = Array(char.rarity || 5).fill('<i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>').join('');
       document.getElementById('detail-modal-title-element').innerHTML = `<div class="w-8 h-8 flex items-center justify-center drop-shadow-md mr-0.5">${getElementIconHtml(char.element)}</div>`;
@@ -4328,7 +4367,7 @@
 
           const makeSkill = (key, label) => {
             const val = preset.skills[key] || 1;
-            return `<div class="flex flex-col gap-1"><span class="text-[10px] text-slate-400 text-center whitespace-nowrap">${label}</span><select onchange="updateGrowthData('${r.id}','${preset.id}','skills','${key}',this.value)" class="bg-[#1a2130] border border-slate-700 ${val === 10 ? 'text-yellow-400 font-black' : 'text-white font-bold'} text-xs rounded px-1 py-1 text-center outline-none cursor-pointer hover:border-amber-400 transition">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" class="text-white" ${n === val ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
+            return `<div class="flex flex-col gap-1"><span class="text-[10px] text-slate-400 text-center whitespace-nowrap">${label}</span><select onchange="updateGrowthData('${r.id}','${preset.id}','skills','${key}',this.value)" class="bg-[#1a2130] border border-slate-700 ${val === 10 ? 'text-yellow-400 font-black' : 'text-white font-bold'} text-xs rounded px-1 py-1 text-center outline-none cursor-pointer hover:border-amber-400 transition sk-sel">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" class="text-white" ${n === val ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
           };
 
           let allStatsMet = true;
