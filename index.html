@@ -343,8 +343,6 @@
     .bd-echo-img { width: 58px; height: 58px; border-radius: 5px; object-fit: cover; background: #0e0e10; border: 1px solid #323234; flex-shrink: 0; }
     .bd-echo-meta { min-width: 0; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
     .bd-echo-name { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.25; }
-    .bd-echo-name.is-unsure { color: #e6d3a6; }
-    .bd-echo-name.is-unsure::after { content: ' ?'; }
     .bd-cost { font-size: 10px; font-weight: 800; color: #a3a3a5; border: 1px solid #414143; border-radius: 5px; padding: 0 5px; }
     .bd-echo-main, .bd-echo-flat, .bd-sub { display: flex; align-items: center; gap: 2px; font-size: 12px; }
     .bd-echo-main span, .bd-echo-flat span, .bd-sub span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -361,7 +359,7 @@
 
     /* 유효 옵션 강조 · 편집 */
     :root { --eff: #d9a27a; --eff-strong: #e8bc98; }
-    .dm-star { color: var(--eff); fill: var(--eff); }
+    .dm-star { color: #fbbf24; fill: #fbbf24; }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi, .bd-sub.w-mid { color: var(--eff); font-weight: 700; }
     .bd-sub.w-hi b { color: var(--eff-strong); }
@@ -2071,7 +2069,7 @@
       screenshotBusy = true; uploadAborted = false;
       showUploadBusy(1, files.length);
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=6');
+        const ocr = await import('./assets/wuwa-ocr.js?v=7');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
@@ -2144,7 +2142,7 @@
       const build = {
         level: r.level, chain: r.chain,
         weapon: r.weapon,
-        echoes: r.echoes.map(e => ({ name: e.name || null, img: e.img || null, nameUncertain: !!e.nameUncertain, cost: e.cost, main: e.main, mainFlat: e.mainFlat, subs: e.subs })),
+        echoes: r.echoes.map(e => ({ name: e.name || null, img: e.img || null, cost: e.cost, main: e.main, mainFlat: e.mainFlat, subs: e.subs })),
         source: { type: 'bot-card', at: new Date().toISOString() },
       };
       // 봇 카드 스킬 칸은 위에서 시계방향으로 기본 공격 · 공명 해방 · 공명 회로 · 변주 스킬 · 공명 스킬.
@@ -2591,7 +2589,7 @@
     function editorPickEcho(i) {
       const db = BUILD_DATA.echoes[i], e = editState.echo;
       const costChanged = e.cost !== db.cost;
-      Object.assign(e, { name: db.name, img: db.img, cost: db.cost, set: db.sets.includes(e.set) ? e.set : db.sets[0] || null, nameUncertain: false });
+      Object.assign(e, { name: db.name, img: db.img, cost: db.cost, set: db.sets.includes(e.set) ? e.set : db.sets[0] || null });
       if (costChanged || !e.main) {
         const [stat, value] = ECHO_MAIN_OPTIONS[db.cost][0];
         e.main = { stat, value, percent: true };
@@ -2785,7 +2783,7 @@
           <span class="bd-echo-del" role="button" aria-label="에코 삭제" onclick="event.stopPropagation(); deleteEchoAt(${i})"><i data-lucide="x"></i></span>
           <div class="bd-echo-head">
             ${e.img ? `<img class="bd-echo-img" src="${echoImgUrl(e.img)}" alt="">` : '<div class="bd-echo-img"></div>'}
-            <div class="bd-echo-meta"><div class="bd-echo-name ${e.nameUncertain ? 'is-unsure' : ''}" title="${e.nameUncertain ? '이미지로 추정한 에코입니다. 확인이 필요합니다' : esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
+            <div class="bd-echo-meta"><div class="bd-echo-name" title="${esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
               <span class="bd-cost">COST ${e.cost ?? '?'}</span></div>
           </div>
           <div class="bd-echo-main">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>

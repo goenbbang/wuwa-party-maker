@@ -290,9 +290,9 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
       const hit = matchEcho(await backend.feature(R({ x: x0 + E.icon.dx, y: E.icon.y, w: E.icon.w, h: E.icon.h })), echoDb, echo.cost);
       if (hit) {
         echo.name = hit.echo.name; echo.img = hit.echo.img; echo.matchScore = +hit.score.toFixed(3);
-        if (!hit.sure) { echo.nameUncertain = true; result.warnings.push(`에코 ${result.echoes.length + 1}: ${hit.echo.name}인지 확인 필요`); }
-        // 강화가 덜 된 에코는 고정 메인 수치로 코스트를 못 정하므로, 확실히 찾은 에코면 그 에코의 코스트를 씀
-        else if (echo.cost == null && hit.echo.cost) echo.cost = hit.echo.cost;
+        // 아이콘이 거의 같은 에코가 있어도 가장 비슷한 것으로 넣음 (틀리면 사용자가 바꿈)
+        // 강화가 덜 된 에코는 고정 메인 수치로 코스트를 못 정하므로 찾은 에코의 코스트를 씀
+        if (echo.cost == null && hit.echo.cost) echo.cost = hit.echo.cost;
       }
     }
     if (echo.cost == null) result.warnings.push(`에코 ${result.echoes.length + 1}: 코스트를 판단하지 못함`);
