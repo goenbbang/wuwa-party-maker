@@ -46,7 +46,7 @@
 
     /* 모달: 배경은 페이드, 내용은 살짝 아래에서 커지며 등장 */
     .fixed.inset-0[id$="-modal"] > div { transition: transform .18s cubic-bezier(.2,.8,.2,1), opacity .18s; }
-    .fixed.inset-0[id$="-modal"].opacity-0 > div { transform: translateY(6px) scale(.98); }
+    .fixed.inset-0[id$="-modal"].opacity-0 > div { transform: translateY(8px); }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
     /* 키보드 사용자용 포커스 표시 */
     button:focus-visible, [onclick]:focus-visible { outline: 2px solid var(--color-point); outline-offset: 2px; }
@@ -244,21 +244,20 @@
     .bd-tree span { color: #cbd5e1; font-weight: 700; }
     /* 세부 창 애니메이션: 에코 카드 차례로 등장 · 누를 수 있는 카드 테두리 빛 · 체인 변경 시 반짝임 */
     @keyframes bdUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .fx-in > * { animation: bdUp .35s cubic-bezier(.2, .8, .2, 1) both; animation-delay: var(--fx-d, 0ms); } .fx-in > :nth-child(n+21) { animation: none; }
     .bd-echoes.is-enter > .bd-echo { animation: bdUp .38s cubic-bezier(.2, .8, .2, 1) both; }
     .bd-echoes.is-enter > .bd-echo:nth-child(2) { animation-delay: .05s; } .bd-echoes.is-enter > .bd-echo:nth-child(3) { animation-delay: .1s; }
     .bd-echoes.is-enter > .bd-echo:nth-child(4) { animation-delay: .15s; } .bd-echoes.is-enter > .bd-echo:nth-child(5) { animation-delay: .2s; }
     button.bd-echo, .bd-weapon-card { transition: border-color .2s, box-shadow .25s, background .2s; }
-    button.bd-echo:hover, .bd-weapon-card:hover { border-color: color-mix(in srgb, var(--color-point) 70%, transparent) !important; box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-point) 30%, transparent), 0 0 18px color-mix(in srgb, var(--color-point) 22%, transparent); }
-    @keyframes bdFill { 0% { transform: scale(.55); } 60% { transform: scale(1.18); } 100% { transform: none; } }
-    .bd-chain.is-new { animation: bdFill .38s cubic-bezier(.2, .8, .2, 1); }
+    button.bd-echo:hover, .bd-weapon-card:hover { border-color: rgba(255, 255, 255, .28) !important; box-shadow: 0 0 14px rgba(255, 255, 255, .06); }
+    @keyframes bdFill { from { opacity: .35; } to { opacity: 1; } }
+    .bd-chain.is-new { animation: bdFill .3s ease-out; }
     @keyframes bdFlash { 0%, 30% { background: color-mix(in srgb, var(--color-point) 26%, transparent); } 100% { background: transparent; } }
     .bd-stat.is-changed { animation: bdFlash 1.1s ease-out; border-radius: 4px; }
-    .bd-memo { margin-left: 6px; min-width: 0; width: 220px; background: transparent; border: 0; border-bottom: 1px solid #263046; padding: 3px 4px; font-size: 12px; color: #cbd5e1; outline: none; }
-    .bd-memo:focus { border-color: var(--color-point); } .bd-memo::placeholder { color: #475569; }
     /* 세부 창 스킬 트리 (인게임 공명 회로 배치) */
     .bd-skills { overflow: visible; position: relative; z-index: 3; display: flex; flex-direction: column; }
     .t2-tree { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; margin-top: 8px; }
-    .t2-col { display: grid; grid-template-columns: 100%; grid-template-rows: 1fr 1fr auto auto auto auto auto; justify-items: center; align-items: center; row-gap: 4px; position: relative; }
+    .t2-col { display: grid; grid-template-columns: 100%; grid-template-rows: 1fr 1fr auto auto auto auto; justify-items: center; align-items: center; row-gap: 4px; position: relative; }
     .t2-col > * { grid-column: 1; }
     .t2-line { grid-row: 1 / 4; width: 2px; align-self: stretch; margin: 22px 0 30px; background: linear-gradient(#2a3346, #475569); z-index: 0; }
     .t2-node, .t2-inh { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
@@ -266,19 +265,20 @@
     .t2-node-ico, .t2-inh-ico { width: 38px; height: 38px; border-radius: 99px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
     .t2-node-ico { padding: 7px; background: #0b0f18; border: 1.5px solid #475569; }
     .t2-node small, .t2-inh small { font-size: 10.5px; color: #94a3b8; font-weight: 700; background: #0f1420; padding: 0 4px; margin-top: 2px; white-space: nowrap; }
-    .t2-node.eff .t2-node-ico { border-color: #fb923c; box-shadow: 0 0 8px #fb923c55; } .t2-node.eff small { color: #fb923c; }
-    .t2-inh-ico { background: radial-gradient(color-mix(in srgb, var(--accent) 27%, transparent), #0b0f18); border: 1.5px solid color-mix(in srgb, var(--accent) 67%, transparent); cursor: help; }
+    .t2-inh-ico { background: radial-gradient(color-mix(in srgb, var(--accent) 27%, transparent), #0b0f18); border: 1.5px solid color-mix(in srgb, var(--accent) 67%, transparent); }
     .t2-inh-ico img { width: 80%; height: 80%; object-fit: contain; }
     .t2-tip { display: none; position: absolute; left: 50%; transform: translateX(-50%); top: calc(100% + 8px); width: 230px; padding: 10px 12px; background: #0b0f18; border: 1px solid #334155; box-shadow: 0 10px 30px #000a; z-index: 9; text-align: left; }
     .t2-tip b { color: #fff; font-size: 13px; } .t2-tip small { margin-left: 6px; color: #64748b; font-size: 10px; background: none; padding: 0; } .t2-tip p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: #cbd5e1; white-space: normal; }
-    .t2-inh:hover .t2-tip, .t2-inh:focus .t2-tip { display: block; } .t2-inh:hover, .t2-inh:focus { z-index: 10; outline: none; }
+    .t2-inh:hover .t2-tip, .t2-inh:focus .t2-tip, .t2-node:hover .t2-tip, .t2-node:focus .t2-tip { display: block; } .t2-inh:hover, .t2-inh:focus, .t2-node:hover, .t2-node:focus { z-index: 10; outline: none; }
+    .t2-col:first-child .t2-tip { left: 0; transform: none; } .t2-col:last-child .t2-tip { left: auto; right: 0; transform: none; }
+ .t2-tip .eff { color: var(--eff); font-size: 11px; margin-left: 6px; }
     .t2-sk { grid-row: 3; position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 99px; display: flex; align-items: center; justify-content: center; background: radial-gradient(#1a2233, #0b0f18); border: 2px solid #475569; }
     .t2-sk img { width: 72%; height: 72%; object-fit: contain; } .t2-sk b { color: #fff; font-size: 21px; font-weight: 900; }
     .t2-sk.max { border-color: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent); } .t2-sk.forte { border-style: double; border-width: 4px; }
-    .t2-lv { grid-row: 4; font-size: 15px; font-weight: 900; color: #e2e8f0; line-height: 1; } .t2-lv small { font-size: 10px; color: #64748b; font-weight: 700; } .t2-lv.max { color: #fde68a; }
-    .t2-name { grid-row: 5; font-size: 11px; color: #cbd5e1; font-weight: 800; white-space: nowrap; margin-top: 2px; }
+    .t2-lv { grid-row: 5; font-size: 15px; font-weight: 900; color: #e2e8f0; line-height: 1; } .t2-lv small { font-size: 10px; color: #64748b; font-weight: 700; } .t2-lv.max { color: #fde68a; }
+    .t2-name { grid-row: 4; font-size: 11.5px; color: #e2e8f0; font-weight: 800; white-space: nowrap; margin-top: 4px; }
     .t2-rank { grid-row: 6; font-style: normal; font-size: 10px; color: #fde68a; font-weight: 800; } .t2-rank.off { color: transparent; }
-    .t2-step { grid-row: 7; display: flex; gap: 3px; } .t2-step button { width: 22px; height: 20px; line-height: 18px; font-size: 12px; color: #94a3b8; background: #0b0f18; border: 1px solid #263046; border-radius: 99px; }
+    .t2-step { grid-row: 6; display: flex; gap: 3px; } .t2-step button { width: 22px; height: 20px; line-height: 18px; font-size: 12px; color: #94a3b8; background: #0b0f18; border: 1px solid #263046; border-radius: 99px; }
     .t2-step button:hover { color: #fff; border-color: var(--color-point); }
     .bd-echoes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 12px 18px 18px; }
     @media (max-width: 1100px) { .bd-echoes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -308,36 +308,37 @@
     .bd-note { font-size: 11px; color: #475569; padding: 10px 18px 16px; line-height: 1.5; }
 
     /* 유효 옵션 강조 · 편집 */
-    .bd-stat.is-eff .bd-stat-name { color: #fb923c; font-weight: 800; }
-    .bd-sub.w-hi, .bd-sub.w-mid { color: #fb923c; font-weight: 700; }
-    .bd-sub.w-hi b { color: #fdba74; }
+    :root { --eff: #d9a27a; --eff-strong: #e8bc98; }
+    .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
+    .bd-sub.w-hi, .bd-sub.w-mid { color: var(--eff); font-weight: 700; }
+    .bd-sub.w-hi b { color: var(--eff-strong); }
     .bd-sub.w-lo { color: #64748b; }
-    .bd-eff-legend { color: #fb923c; }
+    .bd-eff-legend { color: var(--eff); }
     button.bd-echo { text-align: left; cursor: pointer; transition: border-color .15s, background .15s; }
-    button.bd-echo:hover { border-color: rgba(251, 146, 60, .55); background: #121a29; }
+    button.bd-echo:hover { border-color: rgba(255, 255, 255, .3); background: #121a29; }
     .bd-weapon-card { position: relative; text-align: left; cursor: pointer; width: 100%; transition: border-color .15s; }
-    .bd-weapon-card:hover { border-color: rgba(251, 146, 60, .55); }
+    .bd-weapon-card:hover { border-color: rgba(255, 255, 255, .3); }
     .bd-edit-hint { position: absolute; top: 10px; right: 12px; font-size: 10px; color: #64748b; border: 1px solid #263046; border-radius: 6px; padding: 1px 6px; }
     .bd-set { font-size: 10px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-    .ed-panel { max-width: 720px; max-height: 88vh; overflow-y: auto; }
-    .ed-panel.ed-small { max-width: 400px; }
-    .tg-row { display: grid; grid-template-columns: 1fr 14px 64px; gap: 6px; align-items: center; } .tg-row > span { font-size: 12px; color: #64748b; }
+    .ed-panel { max-width: 640px; max-height: 88vh; overflow-y: auto; }
+    .ed-panel.ed-small { max-width: 320px; } .ed-panel.ed-narrow { max-width: 440px; }
+    .tg-row { display: grid; grid-template-columns: 1fr 14px; gap: 6px; align-items: center; } .tg-row > span { font-size: 12px; color: #64748b; }
     .tg-preset { margin-left: 8px; font-size: 12px; font-weight: 700; color: #64748b; }
     .ed-form .tg-def { font-size: 10.5px; color: #64748b; white-space: nowrap; text-align: right; }
     .ed-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .ed-search { flex: 1; min-width: 0; width: 100%; background: #0b0f18; border: 1px solid #263046; border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #fff; outline: none; }
-    .ed-search:focus { border-color: rgba(251, 146, 60, .7); }
+    .ed-search:focus { border-color: rgba(255, 255, 255, .35); }
     .ed-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .ed-row label { font-size: 12px; color: #94a3b8; font-weight: 700; }
     .ed-seg { display: flex; border: 1px solid #263046; border-radius: 10px; overflow: hidden; }
     .ed-seg button { padding: 6px 11px; font-size: 12px; font-weight: 800; color: #94a3b8; }
-    .ed-seg button.on { background: #fb923c; color: #111; }
+    .ed-seg button.on { background: #e2e2e2; color: #111; }
     .ed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; max-height: 46vh; overflow-y: auto; padding: 2px; }
     .ed-pick { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px; border: 1px solid #1f2839; border-radius: 12px; background: #0f1420; font-size: 11.5px; font-weight: 700; color: #e2e8f0; text-align: center; line-height: 1.25; }
     .ed-pick img { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; }
     .ed-pick small { font-size: 10px; color: #64748b; font-weight: 600; }
     .ed-pick:hover { border-color: #334155; }
-    .ed-pick.on { border-color: #fb923c; background: rgba(251, 146, 60, .08); }
+    .ed-pick.on { border-color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .05); }
     .ed-empty { grid-column: 1 / -1; text-align: center; color: #64748b; font-size: 12px; padding: 20px; }
     .ed-echo-top { display: flex; align-items: center; gap: 12px; }
     .ed-echo-top img { width: 56px; height: 56px; border-radius: 12px; border: 1px solid #263046; object-fit: cover; }
@@ -346,11 +347,35 @@
     .ed-form { display: grid; grid-template-columns: 74px 1fr; gap: 8px 10px; align-items: center; }
     .ed-form > label { font-size: 12px; color: #94a3b8; font-weight: 700; }
     .ed-form select, .ed-form input { background: #0b0f18; border: 1px solid #263046; border-radius: 8px; padding: 6px 8px; font-size: 12.5px; color: #fff; outline: none; min-width: 0; }
-    .ed-form select:focus, .ed-form input:focus { border-color: rgba(251, 146, 60, .7); }
+    .ed-form select:focus, .ed-form input:focus { border-color: rgba(255, 255, 255, .35); }
     .ed-fixed { font-size: 12.5px; color: #cbd5e1; }
-    .ed-sub { display: grid; grid-template-columns: 1fr 90px 14px; gap: 6px; align-items: center; }
+    .ed-sub { display: grid; grid-template-columns: 1fr; } .ed-sub select { width: 100%; }
+    .ed-chips { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin-top: -3px; }
+    .ed-chips button { padding: 3px 0; font-size: 11px; font-weight: 700; color: #94a3b8; border: 1px solid #263046; border-radius: 5px; font-variant-numeric: tabular-nums; }
+    .ed-chips button:hover { color: #fff; } .ed-chips button.on { background: #e2e2e2; border-color: #e2e2e2; color: #111; }
+    .ed-lv { background: #0b0f18; border: 1px solid #263046; border-radius: 8px; padding: 5px 8px; font-size: 12px; color: #fff; }
     .ed-sub span { font-size: 12px; color: #64748b; }
-    .ed-del { margin-right: auto; color: #fca5a5; }
+    .ed-del { color: #fca5a5; }
+
+    /* 캐릭터 레벨 · 꺼진 스킬 트리 노드 */
+    .bd-lv { background: rgba(0, 0, 0, .55); border: 1px solid rgba(255, 255, 255, .18); border-radius: 6px; padding: 3px 6px; font-size: 13px; font-weight: 800; color: #fff; cursor: pointer; }
+    .t2-node, .t2-inh { cursor: pointer; }
+    .t2-node.off .t2-node-ico, .t2-inh.off .t2-inh-ico { opacity: .3; filter: grayscale(1); border-style: dashed; }
+    .t2-node-ico, .t2-inh-ico { transition: opacity .2s, filter .2s; }
+    /* 프리셋 전환 · 세트 아이콘 · 빈 무기 칸 */
+    .bd-presets { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid #263046; border-radius: 8px; margin-left: 6px; }
+    .bd-presets button { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; font-size: 11.5px; font-weight: 700; line-height: 1; color: #94a3b8; border-radius: 6px; }
+    .bd-presets button:hover { color: #fff; }
+    .bd-presets button.on { background: rgba(255, 255, 255, .1); color: #fff; }
+    .set-ico { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
+    .bd-echo-name { display: flex; align-items: center; gap: 5px; }
+    .ed-sets { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ed-sets button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 7px; border: 1px solid #263046; border-radius: 8px; font-size: 12px; font-weight: 700; color: #94a3b8; }
+    .ed-sets button .set-ico { width: 20px; height: 20px; }
+    .ed-sets button.on { border-color: rgba(255, 255, 255, .55); color: #fff; background: rgba(255, 255, 255, .05); }
+    .bd-weapon-card.is-empty { border-style: dashed !important; display: flex; align-items: center; justify-content: center; min-height: 90px; }
+    .bd-weapon.is-empty { padding: 0; color: #64748b; }
+    .bd-weapon-card.is-empty:hover .bd-weapon { color: #e2e8f0; }
 
     /* 이미지 업로드 창 */
     .up-panel { width: 100%; max-width: 560px; background: #0d111b; border: 1px solid #222b3d; border-radius: 18px; box-shadow: 0 24px 60px rgba(0,0,0,.6); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
@@ -372,25 +397,26 @@
     .up-run { padding: 7px 16px; border-radius: 10px; background: #f5a623; color: #111; font-size: 13px; font-weight: 900; transition: opacity .15s; }
     .up-run:disabled { opacity: .35; cursor: default; }
 
-    /* ===== 명조 테마 (html.theme-wuwa): 따뜻한 먹색 + 연금색 + 각진 모서리 ===== */
+    /* ===== 명조 테마 (html.theme-wuwa): 무채색 먹색 바탕 + 포인트에만 연금색, 모서리는 한 가지 둥글기로 통일 ===== */
     html.theme-wuwa {
       --color-point: #d9bf86;
       --color-attack: #d9bf86;
       --color-bg-base: #0c0c0e;
       --wg: #d9bf86;
-      --wg-dim: rgba(217, 191, 134, .22);
-      --wg-line: rgba(217, 191, 134, .14);
+      --wg-dim: rgba(255, 255, 255, .13);
+      --wg-line: rgba(255, 255, 255, .08);
       --wc1: #111113;
       --wc2: #17171a;
       --wc3: #1e1e22;
-      --wtext: #ece6da;
-      --wmuted: #8f8a80;
+      --wtext: #ecebe8;
+      --wmuted: #8e8d8a;
+      --wr: 8px;
+      --wr-s: 6px;
     }
     html.theme-wuwa body {
       color: var(--wtext);
       background:
-        radial-gradient(900px 500px at 85% -10%, rgba(217, 191, 134, .10), transparent 60%),
-        radial-gradient(700px 500px at -10% 110%, rgba(120, 140, 160, .08), transparent 60%),
+        radial-gradient(900px 500px at 85% -10%, rgba(255, 255, 255, .035), transparent 60%),
         repeating-linear-gradient(135deg, rgba(255, 255, 255, .012) 0 1px, transparent 1px 14px),
         #0c0c0e;
     }
@@ -406,88 +432,58 @@
     html.theme-wuwa .border-slate-600 { border-color: var(--wg-dim) !important; }
     /* 글자 */
     html.theme-wuwa .text-slate-200, html.theme-wuwa .text-slate-100 { color: var(--wtext) !important; }
-    html.theme-wuwa .text-slate-300 { color: #cfc8ba !important; }
+    html.theme-wuwa .text-slate-300 { color: #cfcdc8 !important; }
     html.theme-wuwa .text-slate-400, html.theme-wuwa .text-slate-500 { color: var(--wmuted) !important; }
     html.theme-wuwa .text-amber-400, html.theme-wuwa .text-amber-300 { color: var(--wg) !important; }
     html.theme-wuwa .bg-amber-500 { background-color: var(--wg) !important; }
     html.theme-wuwa [class~="text-[#f5a623]"] { color: var(--wg) !important; }
     html.theme-wuwa [class~="bg-[#f5a623]"] { background-color: var(--wg) !important; }
     html.theme-wuwa [class~="border-[#f5a623]"] { border-color: var(--wg) !important; }
-    /* 버튼: 각진 모서리 */
-    html.theme-wuwa button.rounded-lg, html.theme-wuwa button.rounded-xl, html.theme-wuwa .bm-btn {
-      border-radius: 2px !important;
-      clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
-    }
+    /* 모서리: 큰 상자 8px, 버튼 · 입력칸 6px (각진 모서리 · 잘린 모서리 없음) */
+    html.theme-wuwa .rounded-2xl, html.theme-wuwa .rounded-3xl, html.theme-wuwa [class~="rounded-[20px]"], html.theme-wuwa [class~="rounded-[24px]"] { border-radius: var(--wr) !important; }
+    html.theme-wuwa button.rounded-lg, html.theme-wuwa button.rounded-xl, html.theme-wuwa .bm-btn, html.theme-wuwa .up-run { border-radius: var(--wr-s) !important; }
+    html.theme-wuwa select, html.theme-wuwa input:not([type="checkbox"]):not([type="radio"]) { border-radius: var(--wr-s) !important; border-color: var(--wg-line) !important; color: var(--wtext) !important; }
+    html.theme-wuwa select:focus, html.theme-wuwa input:focus { border-color: rgba(255, 255, 255, .35) !important; box-shadow: none !important; }
+    /* 페이지 머리 */
+    html.theme-wuwa header { background: rgba(12, 12, 14, .95) !important; border-bottom: 1px solid var(--wg-line) !important; box-shadow: 0 6px 24px rgba(0, 0, 0, .4); }
     /* 세부 창 */
-    html.theme-wuwa #build-modal-panel {
-      background: linear-gradient(180deg, #151517, #0e0e10) !important;
+    html.theme-wuwa #build-modal-panel, html.theme-wuwa #edit-modal-panel, html.theme-wuwa .up-panel {
+      background: #121214 !important;
       border: 1px solid var(--wg-dim) !important;
-      border-radius: 4px !important;
-      box-shadow: 0 0 0 1px #000, 0 30px 80px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(217, 191, 134, .18) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .7) !important;
     }
-    html.theme-wuwa #build-modal-panel:before, html.theme-wuwa #build-modal-panel:after {
-      content: ''; position: absolute; width: 18px; height: 18px; border: 2px solid var(--wg); pointer-events: none; z-index: 4;
-    }
-    html.theme-wuwa #build-modal-panel:before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
-    html.theme-wuwa #build-modal-panel:after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
-    html.theme-wuwa .bd-head { border-bottom: 1px solid var(--wg-line) !important; background: linear-gradient(90deg, rgba(217, 191, 134, .08), transparent 50%) !important; }
-    html.theme-wuwa .bd-title b { letter-spacing: .04em; color: var(--wtext) !important; }
-    html.theme-wuwa .bd-title b:before { content: '◆'; color: var(--wg); font-size: 10px; margin-right: 8px; vertical-align: 3px; }
-    html.theme-wuwa .bd-tag { background: transparent !important; border: 1px solid var(--wg-dim) !important; color: var(--wg) !important; border-radius: 2px !important; }
-    html.theme-wuwa .bd-card {
-      background: linear-gradient(180deg, #19191c, #131315) !important;
-      border: 1px solid var(--wg-line) !important;
-      border-radius: 2px !important;
-      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-    }
-
-    html.theme-wuwa .bd-label { color: var(--wg) !important; letter-spacing: .08em; text-transform: uppercase; }
-    html.theme-wuwa .bd-label { padding-left: 13px; background: linear-gradient(45deg, transparent 30%, var(--wg) 30% 70%, transparent 70%) no-repeat 0 50% / 7px 7px; }
-
-    html.theme-wuwa .bd-label span { color: var(--wmuted) !important; }
-
-    html.theme-wuwa .eff { color: #f0b45a !important; }
-
-    html.theme-wuwa .bd-note { color: var(--wmuted) !important; }
-
-    html.theme-wuwa .bd-title b:before { content: none; }
-    /* 페이지 전체 */
-    html.theme-wuwa header { background: rgba(12, 12, 14, .95) !important; border-bottom: 1px solid var(--wg-dim) !important; box-shadow: 0 1px 0 rgba(0, 0, 0, .6), 0 6px 24px rgba(0, 0, 0, .4); }
-    html.theme-wuwa header nav button, html.theme-wuwa header button { letter-spacing: .02em; }
-    html.theme-wuwa .rounded-2xl, html.theme-wuwa .rounded-3xl, html.theme-wuwa [class~="rounded-[20px]"], html.theme-wuwa [class~="rounded-[24px]"] {
-      border-radius: 3px !important;
-      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-    }
-    html.theme-wuwa .rounded-2xl.border, html.theme-wuwa .rounded-3xl.border { box-shadow: inset 0 1px 0 rgba(217, 191, 134, .16) !important; }
-    html.theme-wuwa select, html.theme-wuwa input:not([type="checkbox"]):not([type="radio"]) { border-radius: 2px !important; border-color: var(--wg-line) !important; color: var(--wtext) !important; }
-    html.theme-wuwa select:focus, html.theme-wuwa input:focus { border-color: var(--wg) !important; box-shadow: 0 0 0 1px rgba(217, 191, 134, .3) !important; }
-    html.theme-wuwa .rounded-full:not(img) { border-radius: 2px !important; }
+    html.theme-wuwa .bd-head { border-bottom: 1px solid var(--wg-line) !important; background: none !important; }
+    html.theme-wuwa .bd-title b { letter-spacing: .02em; color: var(--wtext) !important; }
+    html.theme-wuwa .bd-card, html.theme-wuwa .bd-echo { background: #18181b !important; border: 1px solid var(--wg-line) !important; border-radius: var(--wr) !important; }
+    html.theme-wuwa .bd-label { color: var(--wtext) !important; letter-spacing: .02em; }
+    html.theme-wuwa .eff { color: var(--eff) !important; }
     /* 세부 창: 체인 · 에코 카드 */
-    html.theme-wuwa .bd-chain { border-radius: 99px !important; width: 40px !important; height: 40px !important; background: radial-gradient(#232327, rgba(17, 17, 19, .9)) !important; color: var(--wmuted) !important; border: 1px solid rgba(217, 191, 134, .3) !important; }
-    html.theme-wuwa .bd-chain.on { background: radial-gradient(#3a3226, #17140f) !important; border: 2px solid var(--wg) !important; box-shadow: 0 0 10px rgba(217, 191, 134, .5) !important; }
-    html.theme-wuwa .bd-echo { background: linear-gradient(180deg, #19191c, #121214) !important; border: 1px solid var(--wg-line) !important; border-radius: 2px !important; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); }
-    html.theme-wuwa button.bd-echo:hover { border-color: var(--wg-dim) !important; background: linear-gradient(180deg, #201f1c, #141416) !important; }
-    html.theme-wuwa .bd-echo-img { border-radius: 2px !important; border-color: var(--wg-dim) !important; }
-    html.theme-wuwa .bd-cost, html.theme-wuwa .bd-edit-hint { border-radius: 0 !important; border-color: var(--wg-dim) !important; color: var(--wg) !important; background: transparent !important; }
-    html.theme-wuwa .bd-echo-main span, html.theme-wuwa .bd-echo-main b { color: var(--wg) !important; }
-    html.theme-wuwa .bd-echo-foot { border-color: var(--wg-line) !important; }
-    html.theme-wuwa .bd-subs, html.theme-wuwa .bd-echo-flat { border-color: var(--wg-line) !important; }
-    html.theme-wuwa .bd-weapon-card img, html.theme-wuwa .bd-weapon img { border-radius: 2px !important; }
-    html.theme-wuwa .bd-char { clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); border-radius: 2px !important; }
-    html.theme-wuwa .bd-chain.on img { filter: sepia(.4) brightness(1.1) !important; }
-
+    html.theme-wuwa .bd-chain { width: 40px !important; height: 40px !important; background: rgba(17, 17, 19, .85) !important; color: var(--wmuted) !important; border: 1px solid rgba(255, 255, 255, .18) !important; }
+    html.theme-wuwa .bd-chain.on { background: rgba(40, 38, 34, .9) !important; border: 1.5px solid var(--wg) !important; box-shadow: 0 0 8px rgba(217, 191, 134, .3) !important; }
+    html.theme-wuwa button.bd-echo:hover { background: #1c1c20 !important; }
+    html.theme-wuwa .bd-echo-img, html.theme-wuwa .bd-weapon-img { border-radius: var(--wr-s) !important; border-color: var(--wg-dim) !important; }
+    html.theme-wuwa .bd-cost { border-radius: 4px !important; border-color: var(--wg-dim) !important; color: var(--wmuted) !important; background: transparent !important; }
+    html.theme-wuwa .bd-echo-main span, html.theme-wuwa .bd-echo-main b { color: var(--wtext) !important; }
+    html.theme-wuwa .bd-echo-main.is-off span, html.theme-wuwa .bd-echo-main.is-off b { color: #fca5a5 !important; }
+    html.theme-wuwa .bd-echo-main, html.theme-wuwa .bd-echo-foot, html.theme-wuwa .bd-subs, html.theme-wuwa .bd-echo-flat { border-color: var(--wg-line) !important; }
+    html.theme-wuwa .bd-char { border-radius: var(--wr) !important; }
+    html.theme-wuwa .bm-btn { background: #1a1a1d; border-color: var(--wg-dim); }
+    html.theme-wuwa .bm-btn:hover { border-color: rgba(255, 255, 255, .28); }
+    html.theme-wuwa .ed-form select, html.theme-wuwa .ed-form input, html.theme-wuwa .ed-search { background: #0f0f11; }
+    html.theme-wuwa .bd-presets, html.theme-wuwa .ed-sets button, html.theme-wuwa .ed-seg, html.theme-wuwa .ed-pick, html.theme-wuwa .bd-edit-hint { border-color: var(--wg-dim); }
+    html.theme-wuwa .ed-pick { background: #18181b; }
+    html.theme-wuwa .bd-dots { border-color: rgba(255, 255, 255, .1); }
+    html.theme-wuwa .bd-weapon-card.is-empty, html.theme-wuwa .bd-echo.is-empty { border-style: dashed !important; }
     /* 세부 창 스킬 트리 */
-    html.theme-wuwa .bd-skills { clip-path: none !important; }
-    html.theme-wuwa .t2-line { background: linear-gradient(rgba(217, 191, 134, .2), rgba(217, 191, 134, .5)); }
-    html.theme-wuwa .t2-node-ico { background: radial-gradient(#232327, #111113); border-color: rgba(217, 191, 134, .4); }
-    html.theme-wuwa .t2-node.eff .t2-node-ico { border-color: #f0b45a; box-shadow: 0 0 8px rgba(240, 180, 90, .45); }
-    html.theme-wuwa .t2-node small, html.theme-wuwa .t2-inh small { background: #18181b; }
-    html.theme-wuwa .t2-inh-ico { background: radial-gradient(#2a2620, #111113); border-color: rgba(217, 191, 134, .6); }
-    html.theme-wuwa .t2-tip { background: #121214; border-color: rgba(217, 191, 134, .35); } html.theme-wuwa .t2-tip b { color: #f1dcaa; }
-    html.theme-wuwa .t2-sk { background: radial-gradient(#232327, #111113); border-color: rgba(217, 191, 134, .35); }
-    html.theme-wuwa .t2-sk.max { border-color: #d9bf86; box-shadow: 0 0 12px rgba(217, 191, 134, .45); }
-    html.theme-wuwa .t2-lv.max, html.theme-wuwa .t2-rank { color: #f1dcaa; }
-    html.theme-wuwa .t2-step button { background: #111113; border-color: rgba(217, 191, 134, .2); }
+    html.theme-wuwa .t2-line { background: rgba(255, 255, 255, .14); }
+    html.theme-wuwa .t2-node-ico { background: #141416; border-color: rgba(255, 255, 255, .22); }
+    html.theme-wuwa .t2-inh-ico { background: #141416; border-color: rgba(255, 255, 255, .3); }
+    html.theme-wuwa .t2-tip { background: #121214; border-color: var(--wg-dim); border-radius: var(--wr-s); }
+    html.theme-wuwa .t2-sk { background: #141416; border-color: rgba(255, 255, 255, .22); }
+    html.theme-wuwa .t2-sk.max { border-color: var(--wg); box-shadow: none; }
+    html.theme-wuwa .t2-lv.max { color: var(--wg); }
+    html.theme-wuwa .t2-step button { background: #141416; border-color: rgba(255, 255, 255, .14); }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start pb-6 selection:bg-[#f5a623] selection:text-black">
@@ -1535,6 +1531,16 @@
       
       if (isGrowth) { populateGrowthPartyFilter(); renderGrowthTracker(); renderGrowthFilterBars(); }
       if (isWeapon) { renderWeaponFiltersBars(); renderWeaponCodex(); }
+      playEnter(isParty ? 'roster-grid' : isGrowth ? 'growth-cards-container' : 'weapon-codex-grid');
+    }
+
+    // 탭을 열 때만 카드가 아래에서 차례로 떠오름 (검색 · 필터로 다시 그릴 때는 안 함)
+    function playEnter(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      [...el.children].slice(0, 20).forEach((c, i) => c.style.setProperty('--fx-d', `${i * 30}ms`));
+      el.classList.remove('fx-in'); void el.offsetWidth; el.classList.add('fx-in');
+      clearTimeout(el._fx); el._fx = setTimeout(() => el.classList.remove('fx-in'), 1100);
     }
 
     // 기본 속성 아이콘 = 각 속성 에코 세트 아이콘 (관리자 설정에서 따로 지정하면 그게 우선)
@@ -1736,6 +1742,7 @@
       const preset = copyCurrent && cur
         ? { ...JSON.parse(JSON.stringify(cur)), id, label: `${presetLabel(cur, g.presets.indexOf(cur))} 복사본` }
         : newGrowthPreset(id);
+      if (cur) preset.skills = { ...cur.skills };
       g.presets.push(preset);
       g.activePresetId = id;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
@@ -1800,7 +1807,7 @@
       if (!GROWTH_DATA[resId]) return;
       const preset = GROWTH_DATA[resId].presets.find(p => p.id === presetId);
       if (!preset) return;
-      if (category === 'skills') preset.skills[field] = parseInt(value) || 1;
+      if (category === 'skills') GROWTH_DATA[resId].presets.forEach(p => { p.skills = { ...p.skills, [field]: parseInt(value) || 1 }; }); // 스킬 레벨은 모든 프리셋 공통
       else if (category === 'stats_current') preset.stats.current[field] = parseFloat(value) || 0;
       else if (category === 'remarks') preset.remarks = value;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
@@ -1891,7 +1898,7 @@
       if (!await confirmAsync('이미지 업로드', lines.join('\n'))) return;
       Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
       preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
-      if (r.level) preset.level = r.level.current;
+      if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level.current, r.level.max);
       afterGrowthChange();
       showToast(`${esc(res.name)} 스탯을 입력했습니다.`);
     }
@@ -1917,7 +1924,7 @@
       if (r.warnings.length) lines.push('확인 필요: ' + r.warnings.join(', '));
       if (!await confirmAsync('봇 카드 입력', lines.join('\n'))) return;
       preset.build = build;
-      if (r.level) preset.level = r.level;
+      if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level);
       afterGrowthChange();
       showToast(`${esc(res.name)} 에코 정보를 저장했습니다.`);
     }
@@ -2076,10 +2083,10 @@
     }
     function renderTargetEditor() {
       const t = targetEdit, res = RAW_RESONATORS.find(r => r.id === t.resId), v = t.vals;
-      const { preset, pi } = activeGrowthPreset(t.resId), def = res.targetStats || defaultTargetStats;
-      const num = (k, unit) => `<div class="tg-row"><input type="number" step="${unit ? 0.1 : 10}" value="${v[k]}" oninput="targetEdit.vals.${k}=parseFloat(this.value)||0"><span>${unit}</span><small class="tg-def">기본 ${def[k]}${unit}</small></div>`;
+      const { preset, pi } = activeGrowthPreset(t.resId);
+      const num = (k, unit) => `<div class="tg-row"><input type="number" step="${unit ? 0.1 : 10}" value="${v[k]}" oninput="targetEdit.vals.${k}=parseFloat(this.value)||0"><span>${unit}</span></div>`;
       document.getElementById('edit-modal-panel').innerHTML = `
-        <div class="ed-head"><div><div class="up-title">${esc(res.name)} 목표 스테이터스<small class="tg-preset">${esc(presetLabel(preset, pi))}</small></div></div><button class="bm-btn" onclick="closeModal('edit-modal')"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
+        <div class="ed-head"><div><div class="up-title">목표 스테이터스<small class="tg-preset">${esc(presetLabel(preset, pi))}</small></div></div><button class="bm-btn" onclick="closeModal('edit-modal')"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
         <div class="ed-form">
           <label>${TARGET_TYPES.find(x => x[0] === v.type)[1]}</label>${num('base', '')}
           <label>공명 효율</label>${num('regen', '%')}
@@ -2087,7 +2094,7 @@
           <label>크리티컬 피해</label>${num('cd', '%')}
         </div>
         <div class="up-foot"><button class="bm-btn" onclick="resetTargetStats()">기본값으로</button><button class="up-run" onclick="saveTargetStats()">저장</button></div>`;
-      document.getElementById('edit-modal-panel').classList.add('ed-small');
+      document.getElementById('edit-modal-panel').classList.remove('ed-narrow'); document.getElementById('edit-modal-panel').classList.add('ed-small');
       lucide.createIcons();
     }
     function saveTargetStats() {
@@ -2139,14 +2146,49 @@
     }
 
     // 캐릭터 90레벨 기본 + 무기 + 고유 스탯(스킬 트리) + 에코 메인·고정·부옵 합산. 세트 효과와 조건부 버프는 제외
+    // ---- 레벨 (캐릭터 레벨은 모든 프리셋 공통, 무기 레벨은 무기마다) ----
+    const LV_CAPS = [20, 40, 50, 60, 70, 80, 90];
+    // 돌파 단계를 모를 때는 그 레벨에서 돌파까지 마친 것으로 봄 (80 → 80/90)
+    const levelOf = (n, max) => { n = Math.max(1, Math.min(90, parseInt(n) || 90)); const br = max ? Math.max(0, LV_CAPS.indexOf(+max)) : LV_CAPS.slice(0, 6).filter(c => c <= n).length; return { lv: n, br: Math.min(br, 6) }; };
+    const charLevel = resId => GROWTH_DATA[resId]?.level || { lv: 90, br: 6 };
+    const weaponLevel = w => w?.br != null ? { lv: w.level ?? 90, br: w.br } : levelOf(w?.level ?? 90);
+    const lvLabel = l => `Lv.${l.lv}/${LV_CAPS[l.br]}`;
+    function growthRatio(table, l) {
+      const rows = BUILD_DATA?.growth?.[table];
+      if (!rows) return null;
+      const r = rows.find(x => x[0] === l.lv && x[1] === l.br) || rows.find(x => x[0] === l.lv) || rows[rows.length - 1], top = rows[rows.length - 1];
+      return r.slice(2).map((v, i) => v / top[i + 2]);
+    }
+    const levelOptions = (cur) => (BUILD_DATA?.growth?.role || []).slice().reverse().map(([lv, br]) => `<option value="${lv}-${br}" ${lv === cur.lv && br === cur.br ? 'selected' : ''}>${lvLabel({ lv, br })}</option>`).join('');
+    function setCharLevel(v) {
+      const [lv, br] = v.split('-').map(Number), res = RAW_RESONATORS.find(r => r.id === buildModalFor);
+      buildAnim = { prevTotals: computeBuildStats(res, activeGrowthPreset(res.id).preset)?.total };
+      GROWTH_DATA[res.id].level = { lv, br };
+      afterGrowthChange();
+    }
+
+    // 스킬 트리 노드 켜고 끄기 (모든 프리셋 공통, 기본은 전부 켜짐)
+    function toggleTreeNode(key) {
+      const res = RAW_RESONATORS.find(r => r.id === buildModalFor), g = GROWTH_DATA[res.id];
+      buildAnim = { prevTotals: computeBuildStats(res, activeGrowthPreset(res.id).preset)?.total };
+      const off = new Set(g.treeOff || []);
+      off.has(key) ? off.delete(key) : off.add(key);
+      g.treeOff = [...off];
+      afterGrowthChange();
+    }
+
     function computeBuildStats(res, preset) {
       const cd = BUILD_DATA?.characters?.[res.id];
       if (!cd) return null;
       const build = preset.build || {}, add = {};
       const put = (stat, percent, v) => { if (stat && v != null && !isNaN(v)) { const k = statKey(stat, percent); add[k] = (add[k] || 0) + +v; } };
-      Object.entries(cd.tree || {}).forEach(([k, v]) => put(k.replace(/%$/, ''), k.endsWith('%'), v));
+      const off = GROWTH_DATA[res.id]?.treeOff || [];
+      if (cd.skillTree?.nodes) cd.skillTree.nodes.forEach(n => { if (!off.includes(`${n.col}-${n.tier}`)) put(n.stat, n.pct, n.v); });
+      else Object.entries(cd.tree || {}).forEach(([k, v]) => put(k.replace(/%$/, ''), k.endsWith('%'), v));
       const weapon = WEAPONS.find(w => w.name === build.weapon?.name);
-      const wMain = weapon && parseWeaponMain(weapon.mainStat);
+      const wr = growthRatio('weapon', weaponLevel(build.weapon)) || [1, 1];
+      const wMain90 = weapon && parseWeaponMain(weapon.mainStat);
+      const wMain = wMain90 && { ...wMain90, value: Math.round(wMain90.value * wr[1] * 10) / 10 };
       if (wMain) put(wMain.stat, true, wMain.value);
       (build.echoes || []).forEach(e => {
         if (!e) return;
@@ -2154,19 +2196,21 @@
         if (e.mainFlat?.stat) put(e.mainFlat.stat, false, e.mainFlat.value);
         (e.subs || []).forEach(s => put(s.stat, s.percent, s.value));
       });
-      const wAtk = weapon ? parseFloat(weapon.atk) || 0 : 0;
+      const wAtk = weapon ? Math.round((parseFloat(weapon.atk) || 0) * wr[0]) : 0;
       const g = k => add[k] || 0;
+      const rr = growthRatio('role', charLevel(res.id)) || [1, 1, 1];
+      const cb = { ...cd.base, atk: Math.round(cd.base.atk * rr[0]), hp: Math.round(cd.base.hp * rr[1]), def: Math.round(cd.base.def * rr[2]) };
       const total = {
-        'HP': cd.base.hp * (1 + g('HP%') / 100) + g('HP'),
-        '공격력': (cd.base.atk + wAtk) * (1 + g('공격력%') / 100) + g('공격력'),
-        '방어력': cd.base.def * (1 + g('방어력%') / 100) + g('방어력'),
+        'HP': cb.hp * (1 + g('HP%') / 100) + g('HP'),
+        '공격력': (cb.atk + wAtk) * (1 + g('공격력%') / 100) + g('공격력'),
+        '방어력': cb.def * (1 + g('방어력%') / 100) + g('방어력'),
         '크리티컬': cd.base.cr + g('크리티컬'),
         '크리티컬 피해': cd.base.cd + g('크리티컬 피해'),
         '공명 효율': cd.base.regen + g('공명 효율'),
         '치료 효과 보너스': g('치료 효과 보너스'),
       };
       Object.keys(STAT_ICON).filter(k => k.endsWith('피해 보너스')).forEach(k => { total[k] = g(k); });
-      return { total, base: { ...cd.base, atk: cd.base.atk + wAtk }, weapon, wMain, chain: cd.chain || [], tree: cd.tree || {} };
+      return { total, base: { ...cb, atk: cb.atk + wAtk }, weapon, wAtk, wMain, chain: cd.chain || [], tree: cd.tree || {} };
     }
 
     // 이 캐릭터에게 유효한 스탯인지 (에코 점수 가중치가 0.4 이상)
@@ -2189,7 +2233,8 @@
     function stepBuildSkill(i, d) {
       const { preset } = activeGrowthPreset(buildModalFor);
       const k = `s${i + 1}`;
-      preset.skills[k] = Math.min(10, Math.max(1, (+preset.skills[k] || 1) + d));
+      const lv = Math.min(10, Math.max(1, (+preset.skills[k] || 1) + d));
+      GROWTH_DATA[buildModalFor].presets.forEach(p => { p.skills = { ...p.skills, [k]: lv }; }); // 스킬 레벨은 모든 프리셋 공통
       afterGrowthChange();
     }
 
@@ -2207,6 +2252,14 @@
       ['일반 공격 피해 보너스', '일반 공격 피해 보너스', true, 6.4, 11.6], ['강공격 피해 보너스', '강공격 피해 보너스', true, 6.4, 11.6],
       ['공명 스킬 피해 보너스', '공명 스킬 피해 보너스', true, 6.4, 11.6], ['공명 해방 피해 보너스', '공명 해방 피해 보너스', true, 6.4, 11.6],
     ];
+    // 부 옵션 수치 단계 (인게임 고정값)
+    const ROLL_PCT = [6.4, 7.1, 7.9, 8.6, 9.4, 10.1, 10.9, 11.6];
+    const SUB_ROLLS = {
+      '크리티컬': [6.3, 6.9, 7.5, 8.1, 8.7, 9.3, 9.9, 10.5], '크리티컬 피해': [12.6, 13.8, 15, 16.2, 17.4, 18.6, 19.8, 21],
+      '공격력%': ROLL_PCT, 'HP%': ROLL_PCT, '방어력%': [8.1, 9, 10, 10.9, 11.8, 12.8, 13.8, 14.7], '공명 효율': [6.8, 7.6, 8.4, 9.2, 10, 10.8, 11.6, 12.4],
+      '공격력': [30, 40, 50, 60], 'HP': [320, 360, 390, 430, 470, 510, 540, 580], '방어력': [40, 50, 60, 70],
+      '일반 공격 피해 보너스': ROLL_PCT, '강공격 피해 보너스': ROLL_PCT, '공명 스킬 피해 보너스': ROLL_PCT, '공명 해방 피해 보너스': ROLL_PCT,
+    };
     const subOptKey = s => s ? ECHO_SUB_OPTIONS.find(o => o[1] === s.stat && o[2] === !!s.percent)?.[0] || '' : '';
     let editState = null;
 
@@ -2221,7 +2274,8 @@
     function openWeaponEditor() {
       const res = RAW_RESONATORS.find(r => r.id === buildModalFor);
       const { preset } = activeGrowthPreset(res.id);
-      editState = { kind: 'weapon', q: '', refine: preset.build?.weapon?.refine || 1, pick: preset.build?.weapon?.name || null };
+      const wl = weaponLevel(preset.build?.weapon);
+      editState = { kind: 'weapon', q: '', refine: preset.build?.weapon?.refine || 1, pick: preset.build?.weapon?.name || null, wlv: `${wl.lv}-${wl.br}` };
       renderEditor(); openModal('edit-modal');
     }
 
@@ -2237,7 +2291,7 @@
       };
       while (editState.echo.subs.length < 5) editState.echo.subs.push(null);
       const db = e && BUILD_DATA?.echoes.find(x => x.name === e.name);
-      if (db && !editState.echo.set) editState.echo.set = db.sets[0] || null;
+      if (db && !editState.echo.set) editState.echo.set = echoSetOf(RAW_RESONATORS.find(r => r.id === buildModalFor), editState.echo) || db.sets[0] || null;
       renderEditor(); openModal('edit-modal');
     }
 
@@ -2259,8 +2313,7 @@
       else if (field === 'set') e.set = val || null;
       else if (field === 'subStat') {
         const o = ECHO_SUB_OPTIONS.find(o => o[0] === val);
-        e.subs[i] = o ? { stat: o[1], percent: o[2], value: e.subs[i]?.value ?? o[4] } : null;
-        if (o && (e.subs[i].value < o[3] || e.subs[i].value > o[4])) e.subs[i].value = o[4];
+        e.subs[i] = o ? { stat: o[1], percent: o[2], value: null } : null; // 종류를 바꾸면 수치는 칩에서 다시 고름
       } else if (field === 'subVal') { if (e.subs[i]) e.subs[i].value = val === '' ? null : +val; return; }
       renderEditor();
     }
@@ -2272,7 +2325,9 @@
       if (editState.kind === 'weapon') {
         if (!editState.pick) { showToast('무기를 골라 주세요.'); return; }
         const prev = build.weapon || {};
-        build.weapon = { ...prev, name: editState.pick, level: 90, refine: +editState.refine, ascension: prev.ascension ?? 6 };
+        const [lv, br] = editState.wlv.split('-').map(Number);
+        build.weapon = { ...prev, name: editState.pick, level: lv, br, refine: +editState.refine };
+        delete build.weapon.ascension;
       } else {
         const e = editState.echo;
         if (!e.name) { showToast('에코를 골라 주세요.'); return; }
@@ -2297,19 +2352,32 @@
       closeModal('edit-modal'); afterGrowthChange();
     }
 
+    // 에코 세트 아이콘 (게임 데이터의 세트 목록에서 이름으로 찾음)
+    function setIconHtml(name, cls = 'set-ico') {
+      const url = ECHO_SETS.find(x => x.name === name)?.iconUrl;
+      return url ? `<img class="${cls}" src="${url}" alt="" title="${esc(name)}">` : '';
+    }
+
+    // 저장된 세트가 없으면 (봇 카드로 읽은 에코) 캐릭터 추천 세트 → 세트가 하나뿐인 에코 순으로 추정
+    function echoSetOf(res, e) {
+      if (e.set) return e.set;
+      const sets = BUILD_DATA?.echoes.find(x => x.name === e.name)?.sets || [];
+      return sets.find(s => (res.echoSet?.sets || []).some(r => r.name === s)) || (sets.length === 1 ? sets[0] : null);
+    }
+
     function renderEditor() {
       const box = document.getElementById('edit-modal-panel'), s = editState;
       if (!s) return;
-      box.classList.remove('ed-small');
+      box.classList.remove('ed-small'); box.classList.toggle('ed-narrow', s.kind === 'echo' && s.step !== 'pick');
       const res = RAW_RESONATORS.find(r => r.id === buildModalFor);
       const head = (title, sub) => `<div class="ed-head"><div><div class="up-title">${title}</div>${sub ? `<div class="up-desc">${sub}</div>` : ''}</div><button class="bm-btn" onclick="closeModal('edit-modal')"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>`;
       if (s.kind === 'weapon') {
         const q = s.q.trim();
         const list = WEAPONS.filter(w => w.weaponType === res.weaponType && (!q || w.name.includes(q))).sort((a, b) => (b.rank || 0) - (a.rank || 0));
-        box.innerHTML = `${head('무기 설정', `${esc(res.weaponType)} · Lv.90 기준`)}
+        box.innerHTML = `${head('무기 설정', esc(res.weaponType))}
           <input class="ed-search" placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(); const el=document.querySelector('#edit-modal .ed-search'); el.focus(); el.setSelectionRange(el.value.length, el.value.length)">
           <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()"><img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없어요</div>'}</div>
-          <div class="ed-row"><label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
+          <div class="ed-row"><label>레벨</label><select class="ed-lv" onchange="editState.wlv=this.value">${levelOptions((([lv, br]) => ({ lv, br }))(s.wlv.split('-').map(Number)))}</select><label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
           <div class="up-foot"><button class="up-run" onclick="saveEditor()">저장</button></div>`;
       } else if (s.step === 'pick') {
         const q = s.q.trim();
@@ -2322,20 +2390,19 @@
       } else {
         const e = s.echo, db = BUILD_DATA?.echoes.find(x => x.name === e.name);
         const opt = (v, cur, label = v) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
-        box.innerHTML = `${head(`${s.slot + 1}번 에코`, '메인 옵션과 부옵을 고쳐 저장하면 점수와 스탯이 다시 계산돼요')}
+        box.innerHTML = `${head(`${s.slot + 1}번 에코`)}
           <div class="ed-echo-top">${e.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : ''}<div><b>${esc(e.name)}</b><span class="bd-cost">COST ${e.cost}</span></div>
             <button class="bm-btn" onclick="editState.step='pick'; editState.costFilter=0; renderEditor()">에코 바꾸기</button></div>
           <div class="ed-form">
-            <label>세트</label><select onchange="editorSet('set', this.value)">${(db?.sets || [e.set]).filter(Boolean).map(x => opt(x, e.set)).join('')}</select>
+            <label>세트</label><div class="ed-sets">${(db?.sets || [e.set]).filter(Boolean).map(x => `<button class="${x === e.set ? 'on' : ''}" onclick="editorSet('set', '${esc(x)}')">${setIconHtml(x)}<span>${esc(x)}</span></button>`).join('')}</div>
             <label>메인 옵션</label><select onchange="editorSet('main', this.value)">${ECHO_MAIN_OPTIONS[e.cost].map(([st, v]) => opt(st, e.main?.stat, `${st} ${v}%`)).join('')}</select>
-            <label>고정 옵션</label><div class="ed-fixed">${esc(e.mainFlat?.stat || '')} ${e.mainFlat?.value ?? ''}</div>
             ${e.subs.map((sub, i) => {
               const k = subOptKey(sub), o = ECHO_SUB_OPTIONS.find(o => o[0] === k);
-              return `<label>부옵 ${i + 1}</label><div class="ed-sub"><select onchange="editorSet('subStat', this.value, ${i})"><option value="">없음</option>${ECHO_SUB_OPTIONS.filter(o => o[0] === k || !e.subs.some(x => subOptKey(x) === o[0])).map(o => opt(o[0], k)).join('')}</select>
-                <input type="number" step="${o && !o[2] ? 10 : 0.1}" ${o ? `min="${o[3]}" max="${o[4]}"` : 'disabled'} value="${sub?.value ?? ''}" oninput="editorSet('subVal', this.value, ${i})"><span>${o ? (o[2] ? '%' : '') : ''}</span></div>`;
+              return `<label>부 옵션 ${i + 1}</label><div class="ed-sub"><select onchange="editorSet('subStat', this.value, ${i})"><option value="">없음</option>${ECHO_SUB_OPTIONS.filter(o => o[0] === k || !e.subs.some(x => subOptKey(x) === o[0])).map(o => opt(o[0], k)).join('')}</select>
+                </div>${o ? `<span></span><div class="ed-chips">${(SUB_ROLLS[o[0]] || []).map(v => `<button class="${sub?.value != null && Math.abs(sub.value - v) < 0.15 * (o[2] ? 1 : 10) ? 'on' : ''}" onclick="editorSet('subVal', ${v}, ${i}); renderEditor()">${v}${o[2] ? '' : ''}</button>`).join('')}</div>` : ''}`;
             }).join('')}
           </div>
-          <div class="up-foot"><button class="bm-btn ed-del" onclick="removeEchoFromSlot()">이 칸 비우기</button><button class="up-run" onclick="saveEditor()">저장</button></div>`;
+          <div class="up-foot"><button class="bm-btn ed-del" onclick="removeEchoFromSlot()">삭제</button><button class="up-run" onclick="saveEditor()">저장</button></div>`;
       }
       lucide.createIcons();
     }
@@ -2372,25 +2439,26 @@
       const weaponHtml = w ? `
         <div class="bd-weapon"><img src="${w.image}" alt="" class="bd-weapon-img r${w.rank || 5}">
           <div class="bd-weapon-info"><div class="bd-weapon-name">${esc(w.name)}</div>
-            <div class="bd-weapon-sub">Lv.90 · 재련 ${build?.weapon?.refine || 1}</div>
-            <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}${w.atk} ${st?.wMain ? `· ${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} ${st.wMain.value}%` : ''}</div></div></div>`
-        : `<div class="bd-weapon is-empty">무기가 없어요. 눌러서 고르거나 봇 카드를 올려 주세요.</div>`;
+            <div class="bd-weapon-sub">${lvLabel(weaponLevel(build?.weapon))} · 재련 ${build?.weapon?.refine || 1}</div>
+            <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}공격력 ${st?.wAtk ?? w.atk} ${st?.wMain ? `· ${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} ${st.wMain.value}%` : ''}</div></div></div>`
+        : `<div class="bd-weapon is-empty"><i data-lucide="plus" class="w-6 h-6"></i></div>`;
 
       // 오른쪽: 스킬
-      const prio = res.skillPriority || [];
       // 오른쪽: 인게임식 스킬 트리 (스탯 노드 2단 + 스킬 아이콘, 공명 회로 위는 고유 스킬)
       const stt = BUILD_DATA?.characters?.[res.id]?.skillTree;
       const nodeVal = n => `+${n.v}${n.pct ? '%' : ''}`;
-      const treeNode = n => `<div class="t2-node ${statEffective(n.stat, sc.weights) ? 'eff' : ''}" title="${esc(n.stat)} ${nodeVal(n)}">${statIcon(n.stat, 't2-node-ico')}<small>${nodeVal(n)}</small></div>`;
-      const treeInh = x => `<div class="t2-inh" tabindex="0"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt=""></span><small>고유 스킬</small>
+      const off = GROWTH_DATA[res.id].treeOff || [];
+      const treeNode = n => `<div class="t2-node ${off.includes(`${n.col}-${n.tier}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('${n.col}-${n.tier}')" onkeydown="if(event.key==='Enter')this.click()">${statIcon(n.stat, 't2-node-ico')}
+          <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b>${statEffective(n.stat, sc.weights) ? '<small class="eff">유효 옵션</small>' : ''}</div></div>`;
+      const treeInh = (x, j) => `<div class="t2-inh ${off.includes(`inh-${j}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('inh-${j}')" onkeydown="if(event.key==='Enter')this.click()"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt=""></span>
           <div class="t2-tip"><b>${esc(x.name)}</b><small>고유 스킬</small><p>${esc(x.desc)}</p></div></div>`;
       const skillsHtml = `<div class="t2-tree">${SKILL_NAMES.map((n, i) => {
-        const lv = +preset.skills[`s${i + 1}`] || 1, rank = prio.indexOf(n), icon = stt?.skillIcons?.[i];
+        const lv = +preset.skills[`s${i + 1}`] || 1, icon = stt?.skillIcons?.[i];
         const top = i === 2 ? (stt?.inherent || []).map(treeInh).reverse().join('') : (stt?.nodes || []).filter(x => x.col === i).sort((a, b) => b.tier - a.tier).map(treeNode).join('');
         return `<div class="t2-col"><i class="t2-line"></i>${top}
           <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}" title="${esc(stt?.skills?.[i] || n)}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt="">` : `<b>${lv}</b>`}</div>
+          <div class="t2-name">${n.replace('공명 ', '')}</div>
           <div class="t2-lv ${lv >= 10 ? 'max' : ''}"><small>Lv.</small>${lv}<small>/10</small></div>
-          <div class="t2-name">${n.replace('공명 ', '')}</div>${rank >= 0 ? `<em class="t2-rank">${rank + 1}순위</em>` : '<em class="t2-rank off">-</em>'}
           <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" title="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" title="레벨 올리기">+</button></div></div>`;
       }).join('')}</div>`;
 
@@ -2402,8 +2470,8 @@
         return `<button class="bd-echo" onclick="openEchoEditor(${i})" title="눌러서 수정">
           <div class="bd-echo-head">
             ${e.img ? `<img class="bd-echo-img" src="${echoImgUrl(e.img)}" alt="">` : '<div class="bd-echo-img"></div>'}
-            <div class="bd-echo-meta"><div class="bd-echo-name ${e.nameUncertain ? 'is-unsure' : ''}" title="${e.nameUncertain ? '이미지로 고른 에코예요. 맞는지 확인해 주세요' : ''}">${esc(e.name || '에코')}</div>
-              <span class="bd-cost">COST ${e.cost ?? '?'}</span>${e.set ? `<span class="bd-set">${esc(e.set)}</span>` : ''}</div>
+            <div class="bd-echo-meta"><div class="bd-echo-name ${e.nameUncertain ? 'is-unsure' : ''}" title="${e.nameUncertain ? '이미지로 고른 에코예요. 맞는지 확인해 주세요' : esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
+              <span class="bd-cost">COST ${e.cost ?? '?'}</span></div>
           </div>
           <div class="bd-echo-main ${ok === false ? 'is-off' : ''}" title="${ok === false ? '추천 메인 옵션과 달라요' : ''}">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>
           ${e.mainFlat ? `<div class="bd-echo-flat">${statIcon(e.mainFlat.stat, 'bd-ico-s')}<span>${esc(e.mainFlat.stat)}</span><b>${e.mainFlat.value ?? '?'}</b></div>` : ''}
@@ -2416,8 +2484,7 @@
       document.getElementById('build-modal-panel').innerHTML = `
         <div class="bd-head">
           <div class="bd-title"><span class="bd-el">${getElementIconHtml(res.element)}</span><b>${esc(res.name)}</b>
-            <span class="bd-tag">${esc(presetLabel(preset, pi))}</span><span class="bd-tag">Lv.90</span><span class="bd-tag">공명 체인 ${chain}</span>
-            <input class="bd-memo" value="${esc(preset.remarks || '')}" placeholder="메모" maxlength="40" onchange="updateGrowthData('${res.id}','${preset.id}','remarks','',this.value)"></div>
+            <div class="bd-presets">${GROWTH_DATA[res.id].presets.map((p, j) => `<button class="${j === pi ? 'on' : ''}" onclick="switchGrowthPresetTab('${res.id}', '${p.id}'); renderBuildModal()">${esc(presetLabel(p, j))}</button>`).join('')}</div></div>
           <div class="bm-actions">
             <button class="bm-btn" onclick="openUploadModal(buildModalFor)" title="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i><span class="bm-btn-text">이미지 업로드</span></button>
             <button class="bm-btn" onclick="openDetailModal('${res.id}')" title="캐릭터 정보"><i data-lucide="info" class="w-3.5 h-3.5"></i><span class="bm-btn-text">캐릭터 정보</span></button>
@@ -2428,17 +2495,17 @@
           <div class="bd-card bd-char" style="--accent:${accent}">
             <img class="bd-art" src="${res.sprite || res.avatar}" alt="" crossorigin="anonymous">
             <div class="bd-chains">${chainNodes}</div>
-            <div class="bd-char-foot"><span>공명 체인 ${chain}/6</span></div>
+            <div class="bd-char-foot"><select class="bd-lv" onchange="setCharLevel(this.value)" title="캐릭터 레벨 (모든 프리셋 공통)">${levelOptions(charLevel(res.id))}</select></div>
           </div>
           <div class="bd-mid">
             <div class="bd-card">
-              <div class="bd-label">스탯<span>${st ? 'Lv.90 기본 + 무기 + 고유 스탯 + 에코' : '데이터를 불러오는 중'}${statAt ? ` · 스크린샷 ${date(statAt)}` : ''}</span></div>
+              <div class="bd-label">스탯</div>
               <div class="bd-stats"><div>${left.map(statRow).join('')}</div><div>${right.map(statRow).join('')}</div></div>
             </div>
-            <button class="bd-card bd-weapon-card" onclick="openWeaponEditor()" title="눌러서 무기 바꾸기">${weaponHtml}<span class="bd-edit-hint">변경</span></button>
+            <button class="bd-card bd-weapon-card ${w ? '' : 'is-empty'}" onclick="openWeaponEditor()" title="${w ? '눌러서 무기 바꾸기' : '무기 추가'}">${weaponHtml}${w ? '<span class="bd-edit-hint">변경</span>' : ''}</button>
           </div>
           <div class="bd-card bd-skills" style="--accent:${accent}">
-            <div class="bd-label">스킬 · 공명 회로<span>+/− 로 레벨 조절</span></div>
+            <div class="bd-label">스킬 · 공명 회로</div>
             ${skillsHtml}
           </div>
         </div>
@@ -4227,7 +4294,7 @@
       populateGrowthPartyFilter();
       initDragToScroll();
       if (IS_ADMIN) { document.getElementById('admin-bar').classList.remove('hidden'); updateAdminBar(); }
-      lucide.createIcons();
+      lucide.createIcons();  playEnter('roster-grid');
     }
   </script>
 </body>
