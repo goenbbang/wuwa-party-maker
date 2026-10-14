@@ -2668,9 +2668,15 @@
       return sets.find(s => (res.echoSet?.sets || []).some(r => r.name === s)) || (sets.length === 1 ? sets[0] : null);
     }
 
-    function renderEditor() {
-      const box = document.getElementById('edit-modal-panel'), s = editState;
+    // gridOnly: 검색어 입력 중에는 목록만 다시 그림 (입력칸을 새로 만들면 한글 조합이 끊김)
+    function renderEditor(gridOnly = false) {
+      const panel = document.getElementById('edit-modal-panel'), s = editState;
       if (!s) return;
+      const box = { set innerHTML(html) {
+        if (!gridOnly) { panel.innerHTML = html; return; }
+        const t = document.createElement('div'); t.innerHTML = html;
+        panel.querySelector('.ed-grid')?.replaceWith(t.querySelector('.ed-grid'));
+      }, classList: panel.classList };
       box.classList.remove('ed-small'); box.classList.toggle('ed-narrow', s.kind === 'echo' && s.step !== 'pick');
       const res = RAW_RESONATORS.find(r => r.id === buildModalFor);
       const head = (title, sub) => `<div class="ed-head"><div><div class="up-title">${title}</div>${sub ? `<div class="up-desc">${sub}</div>` : ''}</div><button class="x-btn" onclick="closeModal('edit-modal')" aria-label="닫기"><i data-lucide="x" class="w-5 h-5"></i></button></div>`;
@@ -2678,7 +2684,7 @@
         const q = s.q.trim();
         const list = WEAPONS.filter(w => w.weaponType === res.weaponType && (!q || w.name.includes(q))).sort((a, b) => (b.rank || 0) - (a.rank || 0));
         box.innerHTML = `${head('무기 설정')}
-          <input class="ed-search" placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(); const el=document.querySelector('#edit-modal .ed-search'); el.focus(); el.setSelectionRange(el.value.length, el.value.length)">
+          <input class="ed-search" placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
           <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()">${s.pick === w.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없습니다</div>'}</div>
           <div class="ed-row"><label>레벨</label>${pickBtn('wlv', s.wlv, levelOpts((([lv, br]) => ({ lv, br }))(s.wlv.split('-').map(Number))), 'ed-lv', 'aria-label="무기 레벨"')}<label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
           <div class="up-foot"><button class="up-run" onclick="saveEditor()">저장</button></div>`;
@@ -2686,7 +2692,7 @@
         const q = s.q.trim();
         const list = BUILD_DATA.echoes.map((e, i) => ({ e, i })).filter(({ e }) => (!s.costFilter || e.cost === s.costFilter) && (!q || e.name.includes(q) || e.sets.some(x => x.includes(q))));
         box.innerHTML = `${head(`${s.slot + 1}번 에코 고르기`)}
-          <div class="ed-row"><input class="ed-search" placeholder="에코 이름 · 세트 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(); const el=document.querySelector('#edit-modal .ed-search'); el.focus(); el.setSelectionRange(el.value.length, el.value.length)">
+          <div class="ed-row"><input class="ed-search" placeholder="에코 이름 · 세트 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
             <div class="ed-seg">${[[0, '전체'], [4, 'COST 4'], [3, 'COST 3'], [1, 'COST 1']].map(([c, l]) => `<button class="${s.costFilter === c ? 'on' : ''}" onclick="editState.costFilter=${c}; renderEditor()">${l}</button>`).join('')}</div></div>
           <div class="ed-grid echo">${list.map(({ e, i }) => `<button class="ed-pick ep ${s.echo.name === e.name ? 'on' : ''}" onclick="editorPickEcho(${i})" title="${esc(e.sets.join(', '))}">${s.echo.name === e.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<div class="ep-img"><img src="${echoImgUrl(e.img)}" alt="" loading="lazy"><div class="ep-sets">${e.sets.map(x => setIconHtml(x, 'ep-set')).join('')}</div><span class="ep-cost">COST ${e.cost}</span></div><span class="ep-name">${esc(e.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없습니다</div>'}</div>
           ${s.echo.name ? `<div class="up-foot"><button class="bm-btn" onclick="editState.step='stats'; renderEditor()">돌아가기</button></div>` : ''}`;
@@ -2790,7 +2796,7 @@
       };
 
       const statAt = preset.stats.source?.at, buildAt = build?.source?.at;
-      const panel = document.getElementById('build-modal-panel'), oldArt = panel.querySelector('.bd-art');
+      const panel = document.getElementById('build-modal-panel'), oldArt = panel.querySelector('.bd-art'), oldEl = panel.querySelector('.bd-el');
       panel.innerHTML = `
         <div class="bd-head">
           <div class="bd-title"><span class="bd-el">${getElementIconHtml(res.element)}</span><b>${esc(res.name)}</b>
@@ -2820,6 +2826,8 @@
         <div class="bd-echoes ${anim?.enter ? 'is-enter' : ''}">${[0, 1, 2, 3, 4].map(i => echoCard(echoes[i], i)).join('')}</div>`;
       lucide.createIcons();
       // 같은 일러스트면 이전 이미지를 그대로 옮겨 붙여서 다시 그릴 때 깜박이지 않게
+      const newEl = panel.querySelector('.bd-el');
+      if (oldEl && newEl && oldEl.innerHTML === newEl.innerHTML) newEl.replaceWith(oldEl);
       const art = panel.querySelector('.bd-art');
       if (oldArt && art && oldArt.src === art.src) { art.replaceWith(oldArt); artObserver.observe(oldArt.parentElement); placeArt(oldArt); }
       else bindArt(art);
