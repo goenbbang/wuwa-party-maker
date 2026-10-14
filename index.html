@@ -645,7 +645,7 @@
           <div class="up-title">이미지 업로드</div>
           <div class="up-desc" id="upload-target-desc">WuWa Bot 프로필 카드나 게임 스탯 창 캡처를 올리면 자동으로 입력돼요.</div>
         </div>
-        <button class="bm-btn" onclick="closeUploadModal()" title="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+        <button class="bm-btn" onclick="closeUploadModal()" aria-label="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
       </div>
       <input type="file" id="upload-file-input" accept="image/*" multiple class="hidden" onchange="addUploadFiles(this.files); this.value=''">
       <div id="upload-drop" class="up-drop" onclick="document.getElementById('upload-file-input').click()">
@@ -699,11 +699,11 @@
     </div>
     
     <div class="flex items-center gap-1.5 sm:gap-2.5 justify-end flex-shrink-0">
-      <button title="공명자 편집" aria-label="공명자 편집" onclick="openModal('visual-editor-modal'); initVisualEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i><span class="hidden lg:inline">공명자 편집</span></button>
-      <button title="무기 편집" aria-label="무기 편집" onclick="openModal('weapon-editor-modal'); renderWeaponEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="sword" class="w-4 h-4 text-rose-400"></i><span class="hidden lg:inline">무기 편집</span></button>
-      <button title="에코 세트 편집" aria-label="에코 세트 편집" onclick="openModal('echo-set-editor-modal'); renderEchoSetEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-purple-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="layers" class="w-4 h-4 text-purple-400"></i><span class="hidden lg:inline">에코 세트 편집</span></button>
-      <button title="회로 편집" aria-label="회로 편집" onclick="openModal('circuit-editor-modal'); initCircuitEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-cyan-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i><span class="hidden lg:inline">회로 편집</span></button>
-      <button onclick="openModal('admin-settings-modal'); initAdminSettingsModal();" class="admin-only p-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-slate-300 hover:text-amber-400 transition shadow-sm active:scale-95" title="사이트 설정"><i data-lucide="sliders" class="w-4 h-4"></i></button>
+      <button aria-label="공명자 편집" onclick="openModal('visual-editor-modal'); initVisualEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i><span class="hidden lg:inline">공명자 편집</span></button>
+      <button aria-label="무기 편집" onclick="openModal('weapon-editor-modal'); renderWeaponEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="sword" class="w-4 h-4 text-rose-400"></i><span class="hidden lg:inline">무기 편집</span></button>
+      <button aria-label="에코 세트 편집" onclick="openModal('echo-set-editor-modal'); renderEchoSetEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-purple-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="layers" class="w-4 h-4 text-purple-400"></i><span class="hidden lg:inline">에코 세트 편집</span></button>
+      <button aria-label="회로 편집" onclick="openModal('circuit-editor-modal'); initCircuitEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-cyan-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i><span class="hidden lg:inline">회로 편집</span></button>
+      <button onclick="openModal('admin-settings-modal'); initAdminSettingsModal();" class="admin-only p-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-slate-300 hover:text-amber-400 transition shadow-sm active:scale-95" aria-label="사이트 설정"><i data-lucide="sliders" class="w-4 h-4"></i></button>
     </div>
   <div class="basis-full -mx-4 sm:-mx-6 -mb-3 sm:-mb-3.5 mt-0.5 flex items-center justify-start gap-4 px-4 py-2 border-t border-slate-800 md:hidden overflow-x-auto no-scrollbar whitespace-nowrap">
     <button onclick="switchMainView('party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
@@ -766,7 +766,7 @@
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
             <input type="text" id="growth-search-input" oninput="renderGrowthTrackerDebounced()" placeholder="이름 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
           </div>
-          <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" title="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
+          <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" aria-label="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
           <div class="flex items-center gap-2 ml-1">
             <span class="text-xs font-bold text-slate-400">소속 파티:</span>
             <select id="growth-filter-party" onchange="renderGrowthTracker()" class="bg-[#121622] border border-[#212a3d] text-amber-300 font-bold text-xs rounded-lg px-2 py-1.5 outline-none focus:border-amber-400 cursor-pointer">
@@ -828,7 +828,7 @@
               <span id="detail-modal-name" class="text-3xl font-black text-white tracking-tight drop-shadow-md">이름</span>
               <div id="detail-modal-rarity" class="flex items-center gap-0.5 drop-shadow-md ml-1"></div>
               <div id="detail-modal-buffs-card" class="relative ml-auto hidden">
-                <button type="button" onclick="toggleDetailBuffs(); event.stopPropagation()" title="파티 버프 · 디버프" aria-label="파티 버프 · 디버프 보기" class="buff-btn w-9 h-9 inline-flex items-center justify-center rounded-xl bg-black/55 transition backdrop-blur-sm">
+                <button type="button" onclick="toggleDetailBuffs(); event.stopPropagation()" aria-label="파티 버프 · 디버프 보기" class="buff-btn w-9 h-9 inline-flex items-center justify-center rounded-xl bg-black/55 transition backdrop-blur-sm">
                   <img id="detail-modal-buffs-icon" src="" alt="" class="w-5 h-5 object-contain pointer-events-none" crossorigin="anonymous">
                   <span id="detail-modal-buffs-count" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full buff-count text-[10px] leading-[18px] font-black text-center"></span>
                 </button>
@@ -1170,7 +1170,7 @@
                 <div class="flex items-center gap-1.5">
                   <label class="text-[11px] font-bold text-slate-400 flex-shrink-0">탭 이름</label>
                   <input type="text" id="edit-echo-build-label" placeholder="예: 메인딜 / 서브딜 / 추천 / 대안" oninput="currentEchoBuilds[currentEchoBuildIdx].label = this.value; renderEditorEchoBuildTabs()" class="flex-1 min-w-0 bg-[#171d2b] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
-                  <button type="button" onclick="removeEditorEchoBuild()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0" title="이 빌드 삭제"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  <button type="button" onclick="removeEditorEchoBuild()" class="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition flex-shrink-0" aria-label="이 빌드 삭제"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
               </div>
               <div class="space-y-2 pb-3 border-b border-slate-800">
@@ -2082,7 +2082,7 @@
 
     function renderUploadList() {
       document.getElementById('upload-list').innerHTML = uploadFiles.map((u, i) => `
-        <div class="up-item"><img src="${u.url}" alt=""><button onclick="removeUploadFile(${i})" title="빼기"><i data-lucide="x" class="w-3 h-3"></i></button><span>${esc(u.file.name || '붙여넣은 이미지')}</span></div>`).join('');
+        <div class="up-item"><img src="${u.url}" alt=""><button onclick="removeUploadFile(${i})" aria-label="빼기"><i data-lucide="x" class="w-3 h-3"></i></button><span>${esc(u.file.name || '붙여넣은 이미지')}</span></div>`).join('');
       const btn = document.getElementById('upload-run-btn');
       btn.disabled = !uploadFiles.length;
       btn.textContent = uploadFiles.length ? `${uploadFiles.length}장 입력하기` : '입력하기';
@@ -2615,7 +2615,7 @@
           <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}" data-tip="${esc(`<b>${esc(stt?.skills?.[i] || n)}</b>`)}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)}>` : `<b>${lv}</b>`}</div>
           <div class="t2-name">${n.replace('공명 ', '')}</div>
           <div class="t2-lv ${lv >= 10 ? 'max' : ''}"><small>Lv.</small>${lv}<small>/10</small></div>
-          <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" title="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" title="레벨 올리기">+</button></div></div>`;
+          <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" aria-label="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" aria-label="레벨 올리기">+</button></div></div>`;
       }).join('')}</div>`;
 
       // 아래: 에코 5칸
@@ -2642,16 +2642,16 @@
           <div class="bd-title"><span class="bd-el">${getElementIconHtml(res.element)}</span><b>${esc(res.name)}</b>
             ${renderPresetDropdown(res.id, GROWTH_DATA[res.id], 'modal')}</div>
           <div class="bm-actions">
-            <button class="bm-btn" onclick="openUploadModal(buildModalFor)" title="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i><span class="bm-btn-text">이미지 업로드</span></button>
-            <button class="bm-btn" onclick="openDetailModal('${res.id}')" title="캐릭터 정보"><i data-lucide="info" class="w-3.5 h-3.5"></i><span class="bm-btn-text">캐릭터 정보</span></button>
-            <button class="bm-btn" onclick="closeBuildModal()" title="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+            <button class="bm-btn" onclick="openUploadModal(buildModalFor)" aria-label="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i><span class="bm-btn-text">이미지 업로드</span></button>
+            <button class="bm-btn" onclick="openDetailModal('${res.id}')" aria-label="캐릭터 정보"><i data-lucide="info" class="w-3.5 h-3.5"></i><span class="bm-btn-text">캐릭터 정보</span></button>
+            <button class="bm-btn" onclick="closeBuildModal()" aria-label="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
           </div>
         </div>
         <div class="bd-top ${anim?.enter ? 'is-enter' : ''}">
           <div class="bd-card bd-char" style="--accent:${accent}">
             <img class="bd-art" src="${res.sprite || res.avatar}" alt="" crossorigin="anonymous" ${res.focus ? `data-focus="${res.focus.join(',')}"` : ''}>
             <div class="bd-chains">${chainNodes}</div>
-            <div class="bd-char-foot"><select class="bd-lv" onchange="setCharLevel(this.value)" title="캐릭터 레벨 (모든 프리셋 공통)">${levelOptions(charLevel(res.id))}</select></div>
+            <div class="bd-char-foot"><select class="bd-lv" onchange="setCharLevel(this.value)" aria-label="캐릭터 레벨 (모든 프리셋 공통)">${levelOptions(charLevel(res.id))}</select></div>
           </div>
           <div class="bd-mid">
             <div class="bd-card">
@@ -4320,13 +4320,13 @@
         return `
           <div class="preset-dd-item ${active ? 'is-active' : ''}" onclick="selectGrowthPreset('${resId}','${p.id}')">
             <span class="preset-dd-name">${esc(presetLabel(p, i))}</span>
-            <button title="이름 변경" onclick="event.stopPropagation(); startRenameGrowthPreset('${resId}','${p.id}')"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-            <button title="삭제" class="is-danger" onclick="event.stopPropagation(); deleteGrowthPreset('${resId}','${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+            <button aria-label="이름 변경" onclick="event.stopPropagation(); startRenameGrowthPreset('${resId}','${p.id}')"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+            <button aria-label="삭제" class="is-danger" onclick="event.stopPropagation(); deleteGrowthPreset('${resId}','${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
           </div>`;
       }).join('');
       return `
         <div class="preset-dd ${where === 'modal' ? 'is-modal' : ''}">
-          <button class="preset-dd-btn ${open ? 'is-open' : ''}" onclick="togglePresetMenu('${resId}', '${where}')" title="프리셋 선택">
+          <button class="preset-dd-btn ${open ? 'is-open' : ''}" onclick="togglePresetMenu('${resId}', '${where}')" aria-label="프리셋 선택">
             <span class="preset-dd-name">${esc(presetLabel(gData.presets[ai], ai))}</span><i data-lucide="chevron-down" class="w-3 h-3 flex-shrink-0"></i>
           </button>
           ${open ? `
@@ -4405,7 +4405,7 @@
         return `
           <div class="bg-[#121622] border border-[#21293b] rounded-2xl p-4 flex flex-col transition-colors ${isGraduated ? 'card-graduated' : 'hover:border-amber-500/40'}">
             <div class="flex gap-3 border-b border-[#1e2638] pb-2.5 relative">
-              <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 cursor-pointer hover:border-amber-400 transition relative group" onclick="openBuildModal('${r.id}')" title="육성 상세 보기">
+              <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 cursor-pointer hover:border-amber-400 transition relative group" onclick="openBuildModal('${r.id}')" aria-label="육성 상세 보기">
                 <button onclick="event.stopPropagation(); toggleFavorite('${r.id}')" class="absolute top-1 left-1 z-10 p-0.5 transition drop-shadow-md">
                   <i data-lucide="star" class="w-4 h-4 ${gData.isFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-300/80 group-hover:text-white'} drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"></i>
                 </button>
@@ -4416,7 +4416,7 @@
                   <div class="text-sm font-black text-white truncate mr-1">${esc(r.name)}</div>
                   <div class="w-5 h-5 drop-shadow-md flex-shrink-0 mr-1.5">${elemIcon}</div>
                   ${renderPresetDropdown(r.id, gData)}
-                  <button onclick="openTargetEditor('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" title="목표 수치 수정"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                  <button onclick="openTargetEditor('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="목표 수치 수정"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <button onclick="openBuildModal('${r.id}')" class="growth-more mt-1.5 self-start flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-amber-300 transition">자세히 보기<i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
               </div>
