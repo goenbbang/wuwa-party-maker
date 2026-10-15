@@ -468,6 +468,27 @@
     .up-stage-note { font-size: 12px; color: #a3a3a5; line-height: 1.5; }
     .up-stage-note.warn { color: var(--wg, #d9bf86); }
     .up-stage .up-foot { align-self: stretch; margin-top: 10px; }
+    .ua-card { align-self: stretch; display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid var(--wg-dim, #3a3426); background: rgba(255, 255, 255, .02); text-align: left; }
+    .ua-head { display: flex; align-items: center; gap: 10px; }
+    .ua-head img { width: 44px; height: 44px; object-fit: cover; border: 1px solid #323234; }
+    .ua-head b { display: block; font-size: 14px; color: #fff; }
+    .ua-head span { font-size: 11px; color: #a3a3a5; }
+    .ua-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+    .ua-stats div { display: flex; justify-content: space-between; font-size: 12px; color: #a3a3a5; }
+    .ua-stats b { color: #fff; font-weight: 800; }
+    .ua-gear { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid #262628; }
+    .ua-wp { display: flex; align-items: center; gap: 8px; }
+    .ua-wp img, .ua-wp i { width: 32px; height: 32px; object-fit: contain; }
+    .ua-wp b { display: block; font-size: 12px; color: #fff; }
+    .ua-wp span { font-size: 11px; color: #a3a3a5; }
+    .ua-echoes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .ua-echo { position: relative; aspect-ratio: 1; border: 1px solid #323234; background: #0d0d0f; }
+    .ua-echo img { width: 100%; height: 100%; object-fit: cover; }
+    .ua-echo span { position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
+    .ua-row { align-self: stretch; display: flex; align-items: center; gap: 10px; }
+    .ua-row label { flex-shrink: 0; width: 44px; text-align: left; font-size: 12px; font-weight: 700; color: #a3a3a5; }
+    .ua-row .ed-seg { flex-wrap: wrap; }
+    .up-stage-note.ua-warn { align-self: stretch; text-align: left; color: #fca5a5; }
     .up-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .up-list:empty { display: none; }
     .up-item { position: relative; border: 1px solid #29292b; border-radius: 5px; overflow: hidden; background: #0e0e10; aspect-ratio: 16 / 10; }
@@ -783,7 +804,7 @@
         <div><h4 class="font-bold text-sm text-white" id="confirm-modal-title">확인</h4><p class="text-xs text-slate-400" id="confirm-modal-message">이 작업을 진행합니다.</p></div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-        <button id="confirm-btn-cancel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold transition">닫기</button>
+        <button id="confirm-btn-cancel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold transition">취소</button>
         <button id="confirm-btn-ok" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs text-white font-bold transition">확인</button>
       </div>
     </div>
@@ -1072,7 +1093,7 @@
       </div>
       <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 pr-1 overflow-y-auto flex-1 py-1" id="fatigue-char-list"></div>
       <div class="pt-3 border-t border-slate-800 flex justify-end gap-2 mt-2">
-        <button onclick="closeModal('fatigue-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="closeModal('fatigue-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
         <button onclick="applyFatigueModalSelection()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition shadow-md">적용</button>
       </div>
     </div>
@@ -1095,7 +1116,7 @@
       </div>
       <div class="flex-1 overflow-y-auto py-4 pr-1"><div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="owned-checklist-container"></div></div>
       <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
-        <button onclick="closeModal('owned-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="closeModal('owned-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
         <button onclick="saveOwnershipModal()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition shadow-md">적용</button>
       </div>
     </div>
@@ -1157,7 +1178,7 @@
           <button onclick="resetAllStoredData()" class="text-xs text-rose-400 hover:text-rose-300 underline font-medium px-2 py-1">전체 데이터 초기화</button>
         </div>
         <div class="flex gap-2">
-          <button onclick="closeModal('admin-settings-modal')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">닫기</button>
+          <button onclick="closeModal('admin-settings-modal')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">취소</button>
           <button onclick="saveAdminSettings()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 font-bold text-black text-xs shadow-md">저장</button>
         </div>
       </div>
@@ -1202,7 +1223,7 @@
           <div class="flex justify-between pt-2">
             <button onclick="deleteCurrentCircuit()" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-400 border border-rose-900/50">삭제</button>
             <div class="flex gap-2">
-              <button onclick="closeModal('circuit-editor-modal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-bold">닫기</button>
+              <button onclick="closeModal('circuit-editor-modal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-bold">취소</button>
               <button onclick="saveCurrentCircuitForm()" class="px-4 py-2 rounded-xl bg-cyan-500 text-black font-extrabold text-xs">저장</button>
             </div>
           </div>
@@ -1359,7 +1380,7 @@
           <div class="p-4 border-t border-slate-800 bg-[#0e1118] flex justify-between items-center z-10 w-full">
             <button onclick="deleteCurrentResonator()" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-400 border border-rose-900/50">삭제</button>
             <div class="flex gap-2">
-              <button onclick="closeModal('visual-editor-modal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-bold">닫기</button>
+              <button onclick="closeModal('visual-editor-modal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-bold">취소</button>
               <button onclick="saveCurrentResonatorForm()" class="px-4 py-2 rounded-xl bg-amber-500 text-black font-extrabold text-xs shadow-md">저장</button>
             </div>
           </div>
@@ -1429,7 +1450,7 @@
       </div>
       <textarea id="import-base64-textarea" rows="4" placeholder="코드 붙여넣기" class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none"></textarea>
       <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">닫기</button>
+        <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
         <button onclick="applyBase64Import()" class="px-4 py-2 text-xs font-bold rounded-xl bg-[#f5a623] hover:bg-[#e0961d] text-black transition">적용</button>
       </div>
     </div>
@@ -2104,16 +2125,66 @@
     function showUploadBusy(i, n) {
       showUploadStage(`<div class="up-spin"></div><div class="up-stage-msg">이미지를 읽는 중입니다${n > 1 ? ` (${i}/${n})` : ''}</div>`);
     }
-    // msg: 한 줄 안내, notes: [[문구, 강조 여부]] → 저장하면 true
-    // alt: 업로드 창에서 지정한 공명자와 이미지 속 공명자가 다를 때, 지정한 공명자에 저장하는 선택지 (답 'alt')
-    function askUpload(msg, notes = [], alt = null, name = '') {
+    // 업로드 확인: 인식 결과 요약 + 저장할 공명자 · 프리셋 선택 → 저장하면 { res, preset }, 취소하면 null
+    // cands: [인식된 공명자, 업로드 창에서 지정한 공명자(다를 때만)]
+    function askUploadSave(r, cands) {
       return new Promise(resolve => {
-        uploadAsk = resolve;
-        showUploadStage(`<div class="up-stage-msg">${esc(msg)}</div>${notes.map(([t, warn]) => `<div class="up-stage-note ${warn ? 'warn' : ''}">${esc(t)}</div>`).join('')}
-          <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button>${alt ? `<button class="bm-btn" onclick="answerUpload('alt')">${esc(alt.name)}에 저장</button>` : ''}<button class="up-run" onclick="answerUpload(true)">${alt ? `${esc(name)}에 저장` : '저장'}</button></div>`);
+        const res = cands[0];
+        uploadAsk = { r, cands, resId: res.id, presetId: activeGrowthPreset(res.id).preset.id, resolve };
+        renderUploadAsk();
       });
     }
-    function answerUpload(ok) { const a = uploadAsk; uploadAsk = null; a?.(ok); }
+    function answerUpload(ok) {
+      const a = uploadAsk; uploadAsk = null;
+      if (!a) return;
+      const res = a.cands.find(x => x.id === a.resId);
+      a.resolve(ok ? { res, preset: GROWTH_DATA[res.id].presets.find(p => p.id === a.presetId) } : null);
+    }
+    function pickUploadRes(id) { uploadAsk.resId = id; uploadAsk.presetId = activeGrowthPreset(id).preset.id; renderUploadAsk(); }
+    function pickUploadPreset(id) { uploadAsk.presetId = id; renderUploadAsk(); }
+
+    // 저장될 4가지 스탯 (스탯 창: 읽은 값, 봇 카드: 카드 레벨 · 무기 · 에코로 계산한 값)
+    function uploadStatValues(res, r, preset) {
+      const type = getTargetStats(res, preset).type, baseKey = type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력');
+      let st = r.stats || {};
+      if (r.kind === 'bot-card') {
+        const g = GROWTH_DATA[res.id], old = g.level;
+        if (r.level) g.level = levelOf(r.level);
+        st = computeBuildStats(res, { ...preset, build: botCardBuild(r) })?.total || {};
+        g.level = old;
+      }
+      const v = (k, d) => st[k] == null ? null : Math.round(st[k] * 10 ** d) / 10 ** d;
+      return [[baseKey, v(baseKey, 0), ''], ['공명 효율', v('공명 효율', 1), '%'], ['크리티컬', v('크리티컬', 1), '%'], ['크리티컬 피해', v('크리티컬 피해', 1), '%']];
+    }
+
+    function renderUploadAsk() {
+      const a = uploadAsk, r = a.r, res = a.cands.find(x => x.id === a.resId), g = GROWTH_DATA[res.id];
+      const preset = g.presets.find(p => p.id === a.presetId), bot = r.kind === 'bot-card';
+      const lv = bot ? r.level : r.level?.current;
+      const sub = [lv ? `Lv.${lv}` : '', bot && r.chain != null ? `공명 체인 ${r.chain}` : ''].filter(Boolean).join(' · ');
+      const stats = uploadStatValues(res, r, preset);
+      const weapon = bot && r.weapon?.name ? WEAPONS.find(w => w.name === r.weapon.name) : null;
+      const warns = [], notes = [];
+      if (a.cands.length > 1) warns.push(`선택한 공명자(${a.cands[1].name})와 인식된 공명자(${a.cands[0].name})가 다릅니다.`);
+      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) warns.push(bot ? '기존 무기 · 에코 정보는 덮어씌워집니다.' : '기존 스탯 수치는 덮어씌워집니다.');
+      if (bot && Object.values(preset.stats.current).some(v => v)) warns.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
+      r.warnings.forEach(w => warns.push(w));
+      if (!isOwned(res.id)) notes.push('보유 공명자가 아니어서 목록에는 보이지 않습니다.');
+      const seg = (items, on, fn) => `<div class="ed-seg">${items.map(([id, label]) => `<button class="${id === on ? 'on' : ''}" onclick="${fn}('${id}')">${esc(label)}</button>`).join('')}</div>`;
+      showUploadStage(`
+        <div class="ua-card">
+          <div class="ua-head"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
+          <div class="ua-stats">${stats.map(([k, v, u]) => `<div><span>${k}</span><b>${v == null ? '-' : v + u}</b></div>`).join('')}</div>
+          ${bot ? `<div class="ua-gear">
+            <div class="ua-wp">${weapon ? `<img src="${weapon.image}" alt="">` : '<i></i>'}<div><b>${esc(r.weapon?.name || '무기 없음')}</b>${r.weapon?.level ? `<span>Lv.${r.weapon.level}</span>` : ''}</div></div>
+            <div class="ua-echoes">${[0, 1, 2, 3, 4].map(i => { const e = r.echoes[i]; return `<div class="ua-echo">${e?.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : ''}${e ? `<span>${e.cost ?? '?'}</span>` : ''}</div>`; }).join('')}</div>
+          </div>` : ''}
+        </div>
+        ${a.cands.length > 1 ? `<div class="ua-row"><label>공명자</label>${seg(a.cands.map(x => [x.id, x.name]), a.resId, 'pickUploadRes')}</div>` : ''}
+        <div class="ua-row"><label>프리셋</label>${seg(g.presets.map((p, i) => [p.id, presetLabel(p, i)]), a.presetId, 'pickUploadPreset')}</div>
+        ${warns.map(t => `<div class="up-stage-note ua-warn">${esc(t)}</div>`).join('')}${notes.map(t => `<div class="up-stage-note">${esc(t)}</div>`).join('')}
+        <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`);
+    }
 
     let screenshotBusy = false;
     // fallbackResId: 이름을 못 읽었을 때 쓸 캐릭터 (상세 창에서 올린 경우)
@@ -2185,48 +2256,38 @@
       if (buildModalFor) renderBuildModal();
     }
 
-    async function applyStatScreen(res, r, alt = null, confirmed = false) {
-      const st = r.stats, type = getTargetStats(res, activeGrowthPreset(res.id).preset).type;
-      const baseKey = type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력');
-      const values = { base: st[baseKey], regen: st['공명 효율'], cr: st['크리티컬'], cd: st['크리티컬 피해'] };
-      if (Object.values(values).every(v => v == null)) { showToast(`${esc(res.name)}: 스탯을 읽지 못했습니다.`); return; }
-      const { preset, pi } = activeGrowthPreset(res.id);
-      const notes = [];
-      if (!isOwned(res.id)) notes.push(['보유 공명자가 아니어서 목록에는 보이지 않습니다.']);
-      r.warnings.forEach(w => notes.push([w, true]));
-      if (alt) notes.unshift([`선택한 공명자(${alt.name})와 이미지 속 이름(${res.name})이 다릅니다.`, true]);
-      const ans = confirmed || await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 스탯을 저장합니다.`, notes, alt, res.name);
-      if (ans === 'alt') return applyStatScreen(alt, r, null, true); // 확인 창에서 이미 고른 공명자라 다시 묻지 않음
-      if (!ans) return;
-      Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
+    async function applyStatScreen(res, r, alt = null) {
+      if (['공격력', 'HP', '방어력', '공명 효율', '크리티컬', '크리티컬 피해'].every(k => r.stats[k] == null)) { showToast(`${esc(res.name)}: 스탯을 읽지 못했습니다.`); return; }
+      const pick = await askUploadSave(r, alt ? [res, alt] : [res]);
+      if (!pick) return;
+      ({ res } = pick);
+      const preset = pick.preset, [base, regen, cr, cd] = uploadStatValues(res, r, preset).map(x => x[1]);
+      Object.entries({ base, regen, cr, cd }).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
       preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
+      GROWTH_DATA[res.id].activePresetId = preset.id;
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level.current, r.level.max);
       afterGrowthChange();
       showToast(`${esc(res.name)} 스탯을 입력했습니다.`);
     }
 
-    // 봇 카드: 레벨 · 공명 체인 · 무기 · 에코를 프리셋의 build 에 저장 (스탯 칸은 건드리지 않음)
-    async function applyBotCard(res, r, alt = null, confirmed = false) {
-      const { preset, pi } = activeGrowthPreset(res.id);
-      const build = {
-        level: r.level, chain: r.chain,
-        weapon: r.weapon,
-        echoes: r.echoes.map(e => ({ name: e.name || null, img: e.img || null, cost: e.cost, main: e.main, mainFlat: e.mainFlat, subs: e.subs })),
-        source: { type: 'bot-card', at: new Date().toISOString() },
-      };
+    // 봇 카드: 레벨 · 공명 체인 · 무기 · 에코를 프리셋의 build 에 저장 (스탯 칸은 계산값을 쓰도록 비움)
+    const botCardBuild = r => ({
+      level: r.level, chain: r.chain,
+      weapon: r.weapon,
+      echoes: r.echoes.map(e => ({ name: e.name || null, img: e.img || null, cost: e.cost, main: e.main, mainFlat: e.mainFlat, subs: e.subs })),
+      source: { type: 'bot-card', at: new Date().toISOString() },
+    });
+    async function applyBotCard(res, r, alt = null) {
       // 봇 카드 스킬 칸은 위에서 시계방향으로 기본 공격 · 공명 해방 · 공명 회로 · 변주 스킬 · 공명 스킬.
       // r.skills 는 [위, 왼쪽 위, 오른쪽 위, 왼쪽 아래, 오른쪽 아래] 순서라 s1~s5 순으로 바꿈
       const sk = r.skills || [], skills = [sk[0], sk[1], sk[4], sk[2], sk[3]].map(v => v >= 1 && v <= 10 ? v : null);
-      const notes = [];
-      if (preset.build) notes.push(['이 프리셋의 기존 에코 정보는 새 카드로 바뀝니다.']);
-      if (Object.values(preset.stats.current).some(v => v)) notes.push(['직접 입력한 스탯 수치는 세부 육성창 계산값으로 바뀝니다.']);
-      r.warnings.forEach(w => notes.push([w, true]));
-      if (alt) notes.unshift([`선택한 공명자(${alt.name})와 이미지 속 이름(${res.name})이 다릅니다.`, true]);
-      const ans = confirmed || await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`, notes, alt, res.name);
-      if (ans === 'alt') return applyBotCard(alt, r, null, true); // 확인 창에서 이미 고른 공명자라 다시 묻지 않음
-      if (!ans) return;
-      preset.build = build;
+      const pick = await askUploadSave(r, alt ? [res, alt] : [res]);
+      if (!pick) return;
+      ({ res } = pick);
+      const preset = pick.preset;
+      preset.build = botCardBuild(r);
       preset.stats.current = { base: 0, regen: 0, cr: 0, cd: 0 };
+      GROWTH_DATA[res.id].activePresetId = preset.id;
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level);
       if (r.chain != null) GROWTH_DATA[res.id].chain = r.chain;
       // 스킬 레벨은 모든 프리셋 공통
@@ -2296,15 +2357,12 @@
       modal.addEventListener('drop', e => addUploadFiles(e.dataTransfer?.files));
     })();
 
-    // Ctrl+V: 업로드 창이 열려 있으면 목록에 추가, 육성 탭이나 상세 창에서는 업로드 창을 열고 추가
+    // Ctrl+V: 업로드 창이 열려 있을 때만 목록에 추가
     document.addEventListener('paste', e => {
-      const uploadOpen = modalStack.includes('upload-modal');
-      const growthOpen = !document.getElementById('view-growth')?.classList.contains('hidden');
-      if (!uploadOpen && !growthOpen && !buildModalFor) return;
+      if (!modalStack.includes('upload-modal') || screenshotBusy) return;
       const files = [...(e.clipboardData?.items || [])].filter(i => i.kind === 'file' && i.type.startsWith('image/')).map(i => i.getAsFile()).filter(Boolean);
       if (!files.length) return;
       e.preventDefault();
-      if (!uploadOpen) openUploadModal(buildModalFor);
       addUploadFiles(files);
     });
 
@@ -2743,9 +2801,9 @@
         const list = WEAPONS.filter(w => w.weaponType === res.weaponType && (!q || w.name.includes(q))).sort((a, b) => (b.rank || 0) - (a.rank || 0));
         box.innerHTML = `${head('무기 설정')}
           <input class="ed-search" placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
-          <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()">${s.pick === w.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없습니다</div>'}</div>
           <div class="ed-row"><label>레벨</label>${pickBtn('wlv', s.wlv, levelOpts((([lv, br]) => ({ lv, br }))(s.wlv.split('-').map(Number))), 'ed-lv', 'aria-label="무기 레벨"')}<label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
-          <div class="up-foot"><button class="up-run" onclick="saveEditor()">저장</button></div>`;
+          <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()">${s.pick === w.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없습니다</div>'}</div>
+          <div class="up-foot"><button class="bm-btn" onclick="closeModal('edit-modal')">취소</button><button class="up-run" onclick="saveEditor()">저장</button></div>`;
       } else if (s.step === 'pick') {
         const q = s.q.trim();
         const list = BUILD_DATA.echoes.map((e, i) => ({ e, i })).filter(({ e }) => (!s.costFilter || e.cost === s.costFilter) && (!q || e.name.includes(q) || e.sets.some(x => x.includes(q))));
