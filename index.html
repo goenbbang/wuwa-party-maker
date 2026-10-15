@@ -1565,7 +1565,7 @@
         <h3 id="import-modal-title" class="text-base font-extrabold text-white"></h3>
         <button onclick="closeModal('import-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <p class="text-[11px] text-slate-400">내보내기로 복사한 코드를 붙여넣어 주세요. 현재 데이터는 덮어써집니다.</p>
+      <p class="text-[11px] text-slate-400">내보내기로 복사한 코드를 붙여넣어 주세요. 현재 데이터는 사라집니다.</p>
       <textarea id="import-base64-textarea" rows="4" placeholder="코드 붙여넣기" class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none"></textarea>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
@@ -2378,7 +2378,7 @@
             </div>
             <div class="ua-stats">${rows.map(([k, x], i) => `<div${i < 2 ? ' class="ua-main"' : ''}><span>${esc(k)}</span><b>${fmtEchoVal(x)}</b></div>`).join('')}</div>
           </div>
-          ${notes(r.warnings.length ? [`오류 사항 : ${r.warnings.join(' · ')}`] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 덮어써집니다.`] : [])}
+          ${notes(r.warnings.length ? [`오류 사항 : ${r.warnings.join(' · ')}`] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 사라집니다.`] : [])}
           ${foot}`);
         return;
       }
@@ -2390,7 +2390,7 @@
       const alerts = [], overwrite = [];
       if (a.cands.length > 1) alerts.push(`선택한 공명자(${a.cands[1].name})와 인식된 공명자(${a.cands[0].name})가 다릅니다.`);
       if (r.warnings.length) alerts.push(`오류 사항 : ${r.warnings.join(' · ')}`);
-      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) overwrite.push(bot ? '기존 무기 · 에코 정보는 사라집니다.' : '기존 스탯 수치는 덮어써집니다.');
+      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) overwrite.push(bot ? '기존 무기 · 에코 정보는 사라집니다.' : '기존 스탯 수치는 사라집니다.');
       if (bot && Object.values(preset.stats.current).some(v => v)) overwrite.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
       const info = isOwned(res.id) ? '' : '보유 공명자가 아니어서 목록에는 보이지 않습니다.';
       showUploadStage(`
