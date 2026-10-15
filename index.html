@@ -51,6 +51,9 @@
     .pk-item { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; color: #cfcdc8; cursor: pointer; text-align: left; white-space: nowrap; }
     .pk-item:hover { background: rgba(255, 255, 255, .06); color: #fff; }
     .pk-item.is-active { color: var(--wg, #d9bf86); }
+    .pk-item.is-add { color: #a3a3a5; }
+    .pk-item.is-add:hover { color: #d9bf86; }
+    .pk-sep { height: 1px; margin: 4px 2px; background: rgba(255, 255, 255, .1); }
     .sk-pick { width: 100%; justify-content: center; position: relative; padding: 4px 16px 4px 4px !important; }
     .sk-pick .pk-label { flex: 0 1 auto; } .sk-pick .pk-chev { position: absolute; right: 4px; }
     .pf-sel.pk-btn { padding-right: 9px !important; min-width: 92px; }
@@ -760,12 +763,14 @@
     html.theme-wuwa .drag-slot-active, html.theme-wuwa .drag-party-active { border: 1px solid var(--wg) !important; background-color: rgba(217, 191, 134, .08) !important; }
     html.theme-wuwa .circuit-slot:not(.is-on):hover { border-color: var(--wg) !important; }
     /* 직각 박스: 원형 요소(체인·스킬 노드·점·스피너·체크)만 둥글게 유지 */
-    html.theme-wuwa *:not(.rounded-full):not(.bd-chain):not(.t2-node-ico):not(.t2-inh-ico):not(.t2-sk):not(.t2-step button):not(.mode-dot):not(.mode-pair):not(.up-spin):not(.ed-check):not(.ep-cost) { border-radius: 0 !important; }
+    html.theme-wuwa *:not(.rounded-full):not(.bd-chain):not(.t2-node-ico):not(.t2-inh-ico):not(.t2-sk):not(.t2-step button):not(.mode-dot):not(.mode-pair):not(.up-spin):not(.ed-check):not(.ep-cost):not(.wtag-r) { border-radius: 0 !important; }
       html.theme-wuwa .stat-met { border-color: rgba(217, 191, 134, .45) !important; }
     html.theme-wuwa .preset-dd.is-modal .preset-dd-btn:hover, html.theme-wuwa .preset-dd.is-modal .preset-dd-btn.is-open { border-color: rgba(255, 255, 255, .3); }
     html.theme-wuwa button.tb-btn:hover { border-color: rgba(255, 255, 255, .28) !important; color: var(--wtext); }
     html.theme-wuwa button.tb-btn:hover i { color: var(--wtext); }
 
+    .hp-panel { max-width: 860px !important; }
+    .wtag-sig { background: var(--eff); border-color: var(--eff); color: #111; }
     /* even font scale */
     @media (min-width: 1280px) { #growth-cards-container { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (min-width: 1440px) { #growth-cards-container { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -1882,11 +1887,13 @@
     window.addEventListener('popstate', () => {
       if (skipNextPop) { skipNextPop = false; armHistory(); return; }   // 화면 버튼으로 닫으면서 생긴 뒤로가기
       const top = modalStack[modalStack.length - 1];
+      if (top === 'detail-modal' && detailTrail.length) { openDetailModal(detailTrail.pop(), true); return; }
       if (top) {
         closeModal(top, true);
         const back = modalReturn?.from === top ? modalReturn : null;   // 다른 창에서 넘어왔으면 그 창으로 돌아감
         modalReturn = null;
-        if (back) back.reopen(); else armHistory();                     // 아직 열린 창이 남아 있으면 다시 대비
+        // 아직 열린 창이 남아 있으면 방금 쓴 기록을 다시 쌓아 둠
+        if (back) back.reopen(); else if (modalStack.length) history.pushState({ wuwaModal: true }, '');
         return;
       }
       const v = viewFromHash();
@@ -1914,7 +1921,10 @@
       if (!fromHistory && modalReturn?.from === id) modalReturn = null;   // 버튼으로 닫으면 되돌아가지 않음
       if (!modalStack.length) document.documentElement.classList.remove('modal-open');
       // 버튼·바깥 클릭으로 마지막 창을 닫았으면 쌓아 둔 기록도 정리
-      if (!fromHistory && !modalStack.length && history.state?.wuwaModal) { skipNextPop = true; history.back(); }
+      // 세부 공략 창에서 공명자를 옮겨 다녔으면 그만큼 쌓인 기록도 함께 정리
+      const extra = id === 'detail-modal' ? detailTrail.length : 0;
+      if (id === 'detail-modal') detailTrail.length = 0;
+      if (!fromHistory && !modalStack.length && history.state?.wuwaModal) { skipNextPop = true; history.go(-1 - extra); }
       if (id === 'confirm-modal' && confirmCancel) { const c = confirmCancel; confirmCancel = null; c(); }
       if (id === 'upload-modal') { uploadAborted = screenshotBusy; answerUpload(false); }
       if (id === 'owned-modal' && ownedBackup) { state.ownedResonators = ownedBackup; ownedBackup = null; }   // 적용 없이 닫으면 되돌림
@@ -2192,16 +2202,23 @@
       switchGrowthPresetTab(resId, presetId);
     }
 
-    function addGrowthPreset(resId, copyCurrent) {
+    // 프리셋 하나 추가 (fromId 프리셋의 스킬 레벨은 이어받고, copy 면 전부 복사). 새 id 를 돌려줌
+    function createGrowthPreset(resId, fromId, copy) {
       const g = GROWTH_DATA[resId];
-      if (!g) return;
       const id = String(Math.max(0, ...g.presets.map(x => parseInt(x.id) || 0)) + 1);
-      const cur = g.presets.find(x => x.id === g.activePresetId);
-      const preset = copyCurrent && cur
+      const cur = g.presets.find(x => x.id === fromId);
+      const preset = copy && cur
         ? { ...JSON.parse(JSON.stringify(cur)), id, label: `${presetLabel(cur, g.presets.indexOf(cur))} 복사본` }
         : newGrowthPreset(id);
       if (cur) preset.skills = { ...cur.skills };
       g.presets.push(preset);
+      return id;
+    }
+
+    function addGrowthPreset(resId, copyCurrent) {
+      const g = GROWTH_DATA[resId];
+      if (!g) return;
+      const id = createGrowthPreset(resId, g.activePresetId, copyCurrent);
       g.activePresetId = id;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
       // 만들자마자 이름을 붙일 수 있게 (본문도 새 프리셋으로 다시 그림)
@@ -2339,7 +2356,14 @@
       a.resolve(ok ? { res, preset: GROWTH_DATA[res.id].presets.find(p => p.id === a.presetId), slot: a.slotUse } : null);
     }
     function pickUploadRes(id) { uploadAsk.resId = id; uploadAsk.presetId = activeGrowthPreset(id).preset.id; uploadAsk.slot = null; renderUploadAsk(); }
-    function pickUploadPreset(id) { uploadAsk.presetId = id; uploadAsk.slot = null; renderUploadAsk(); }
+    function pickUploadPreset(id) {
+      if (id === '__new' || id === '__copy') {
+        id = createGrowthPreset(uploadAsk.resId, uploadAsk.presetId, id === '__copy');
+        storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
+        refreshGrowthViews();
+      }
+      uploadAsk.presetId = id; uploadAsk.slot = null; renderUploadAsk();
+    }
     function pickUploadSlot(i) { uploadAsk.slot = +i; renderUploadAsk(); }
 
     // 에코 한 개: 빈칸이 있으면 첫 빈칸, 꽉 찼으면 고른 칸 (처음엔 같은 코스트의 첫 칸)
@@ -2387,7 +2411,7 @@
     function renderUploadAsk() {
       const a = uploadAsk, r = a.r, res = a.cands.find(x => x.id === a.resId), g = GROWTH_DATA[res.id];
       const preset = g.presets.find(p => p.id === a.presetId), bot = r.kind === 'bot-card';
-      const ddPreset = pickBtn('uaPreset', a.presetId, g.presets.map((p, i) => [p.id, presetLabel(p, i)]), 'preset-dd-btn ua-dd', 'aria-label="저장할 프리셋"');
+      const ddPreset = pickBtn('uaPreset', a.presetId, [...g.presets.map((p, i) => [p.id, presetLabel(p, i)]), ['__new', '+ 새 프리셋'], ['__copy', '+ 현재 프리셋 복사']], 'preset-dd-btn ua-dd', 'aria-label="저장할 프리셋"');
       const ddRes = a.cands.length > 1 ? pickBtn('uaRes', a.resId, a.cands.map(x => [x.id, x.name]), 'preset-dd-btn ua-dd', 'aria-label="저장할 공명자"') : '';
       const notes = (alerts, info, overwrite) => alerts.length || overwrite.length || info ? `<div class="ua-notes">${alerts.map(t => `<div class="ua-alert"><i data-lucide="alert-triangle"></i><span>${esc(t)}</span></div>`).join('')}${info ? `<div class="up-stage-note">${esc(info)}</div>` : ''}${overwrite.map(t => `<div class="ua-over">${esc(t)}</div>`).join('')}</div>` : '';
       const foot = `<div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`;
@@ -2401,8 +2425,7 @@
         showUploadStage(`
           <div class="ua-top">${ddPreset}${ddRes}${ddSlot}</div>
           <div class="ua-card">
-            <div class="ua-head">
-              <div class="ua-who"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b><span>${esc(presetLabel(preset, g.presets.indexOf(preset)))}</span></div></div>
+            <div class="ua-head" style="grid-template-columns: 1fr">
               <div class="ua-wp">${e.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : '<i></i>'}<div><b>${esc(e.name || '에코를 찾지 못함')}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
             </div>
             <div class="ua-stats">${rows.map(([k, x], i) => `<div${i < 2 ? ' class="ua-main"' : ''}><span>${esc(k)}</span><b>${fmtEchoVal(x)}</b></div>`).join('')}</div>
@@ -4168,7 +4191,13 @@
       closeModal('detail-modal'); initGrowthDataFor(id); openBuildModal(id);
       modalReturn = { from: 'build-modal', reopen: () => openDetailModal(id) };
     }
-    function openDetailModal(resId) {
+    // 세부 공략 창 안에서 다른 공명자로 넘어간 기록 (뒤로가기로 한 단계씩 돌아감)
+    const detailTrail = [];
+    function openDetailModal(resId, fromBack = false) {
+      if (!fromBack && modalStack[modalStack.length - 1] === 'detail-modal' && detailModalChar && detailModalChar !== resId) {
+        detailTrail.push(detailModalChar);
+        history.pushState({ wuwaModal: true }, '');
+      }
       detailModalChar = resId;
       const char = RAW_RESONATORS.find(r => r.id === resId);
       if (!char) return;
@@ -4215,8 +4244,8 @@
           <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] md:w-[96px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
               <img loading="lazy" decoding="async" src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
-              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
-              ${w.pct != null ? `<span class="absolute top-1 right-1 z-10 px-1 py-0.5 rounded bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums">${Number(w.pct).toFixed(1)}%</span>` : ''}
+              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="wtag-r absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
+              ${w.pct != null ? `<span class="wtag-r absolute top-1 right-1 z-10 px-1.5 py-0.5 rounded-md bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums">${Number(w.pct).toFixed(1)}%</span>` : ''}
             </div>
             <div class="border-t ${borderClass} py-1 px-1 bg-[#0e121a] flex items-center justify-center flex-shrink-0 z-10 relative overflow-hidden">
               <span class="weapon-name-text font-extrabold text-[11px] sm:text-xs text-slate-200 block whitespace-nowrap text-center leading-tight">${esc(w.name)}</span>
@@ -4419,7 +4448,7 @@
     // 옛 버전 저장본(에코 cost4/3/1 형식, '일반 공격', 이름으로 된 동료, 무기 복사본 등)도 여기서 한 번에 변환
     // 추천 무기 분류: 전무 → 대체 한정 5성 → 상시 5성 → 4성 → 특수
     const WEAPON_TAGS = {
-      sig:      { label: '전무', cls: 'bg-amber-500/90 border-amber-300 text-black' },
+      sig:      { label: '전무', cls: 'wtag-sig' },
       alt:      { label: '한정 5성', cls: '', hidden: true },
       standard: { label: '상시', cls: '', hidden: true },
       r4:       { label: '4성', cls: '', hidden: true },
@@ -4953,7 +4982,8 @@
       if (same) return;
       const opts = JSON.parse(btn.dataset.opts), el = document.createElement('div');
       el.className = 'pk-menu';
-      el.innerHTML = opts.map(([v, l]) => `<div class="pk-item ${String(v) === btn.dataset.value ? 'is-active' : ''}" data-v="${esc(v)}">${esc(l)}</div>`).join('');
+      // '__' 로 시작하는 값은 추가 동작 (구분선 아래에 따로 표시)
+      el.innerHTML = opts.map(([v, l], i) => { const add = String(v).startsWith('__'), first = add && !String(opts[i - 1]?.[0]).startsWith('__'); return `${first ? '<div class="pk-sep"></div>' : ''}<div class="pk-item ${add ? 'is-add' : ''} ${String(v) === btn.dataset.value ? 'is-active' : ''}" data-v="${esc(v)}">${esc(l)}</div>`; }).join('');
       document.body.append(el);
       const r = btn.getBoundingClientRect();
       el.style.minWidth = `${r.width}px`;
@@ -4967,7 +4997,7 @@
         if (!it) return;
         closePickMenu();
         if (it.dataset.v === btn.dataset.value) return;
-        btn.dataset.value = it.dataset.v; btn.querySelector('.pk-label').textContent = it.textContent;
+        if (!it.classList.contains('is-add')) { btn.dataset.value = it.dataset.v; btn.querySelector('.pk-label').textContent = it.textContent; }
         PICK[btn.dataset.pick]?.(btn, it.dataset.v);
       });
       btn.classList.add('is-open');
