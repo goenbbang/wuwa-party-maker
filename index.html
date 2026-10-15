@@ -471,27 +471,30 @@
     .up-stage-note { font-size: 12px; color: #a3a3a5; line-height: 1.5; }
     .up-stage-note.warn { color: var(--wg, #d9bf86); }
     .up-stage .up-foot { align-self: stretch; margin-top: 10px; }
+    .up-stage.is-ask { padding: 0; gap: 14px; }
+    .ua-top { align-self: stretch; display: flex; gap: 6px; }
+    .preset-dd-btn.ua-dd { height: 26px; max-width: 180px; padding: 0 10px; gap: 6px; font-size: 12px; font-weight: 700; }
+    html.theme-wuwa .preset-dd-btn.ua-dd { color: var(--wtext); border-color: var(--wg-dim); }
+    html.theme-wuwa .preset-dd-btn.ua-dd:hover, html.theme-wuwa .preset-dd-btn.ua-dd.is-open { border-color: rgba(255, 255, 255, .3); }
     .ua-card { align-self: stretch; display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid var(--wg-dim, #3a3426); background: rgba(255, 255, 255, .02); text-align: left; }
-    .ua-head { display: flex; align-items: center; gap: 10px; }
-    .ua-head img { width: 44px; height: 44px; object-fit: cover; border: 1px solid #323234; }
-    .ua-head b { display: block; font-size: 14px; color: #fff; }
-    .ua-head span { font-size: 11px; color: #a3a3a5; }
-    .ua-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+    .ua-head { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; }
+    .ua-who, .ua-wp { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .ua-who img { width: 44px; height: 44px; object-fit: cover; border: 1px solid #323234; flex-shrink: 0; }
+    .ua-wp img, .ua-wp i { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+    .ua-who b, .ua-wp b { display: block; font-size: 14px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ua-wp b { font-size: 13px; }
+    .ua-who span, .ua-wp span { font-size: 11px; color: #a3a3a5; }
+    .ua-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; padding-top: 10px; border-top: 1px solid #262628; }
     .ua-stats div { display: flex; justify-content: space-between; font-size: 12px; color: #a3a3a5; }
     .ua-stats b { color: #fff; font-weight: 800; }
-    .ua-gear { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid #262628; }
-    .ua-wp { display: flex; align-items: center; gap: 8px; }
-    .ua-wp img, .ua-wp i { width: 32px; height: 32px; object-fit: contain; }
-    .ua-wp b { display: block; font-size: 12px; color: #fff; }
-    .ua-wp span { font-size: 11px; color: #a3a3a5; }
     .ua-echoes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .ua-echo { position: relative; aspect-ratio: 1; border: 1px solid #323234; background: #0d0d0f; }
+    .ua-echo { position: relative; aspect-ratio: 1; border: 1px solid #323234; background: #0d0d0f; overflow: hidden; }
     .ua-echo img { width: 100%; height: 100%; object-fit: cover; }
-    .ua-echo span { position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
-    .ua-row { align-self: stretch; display: flex; align-items: center; gap: 10px; }
-    .ua-row label { flex-shrink: 0; width: 44px; text-align: left; font-size: 12px; font-weight: 700; color: #a3a3a5; }
-    .ua-row .ed-seg { flex-wrap: wrap; }
-    .up-stage-note.ua-warn { align-self: stretch; text-align: left; color: #fca5a5; }
+    .ua-echo .bd-cost, html.theme-wuwa .ua-echo .bd-cost { position: absolute; left: 4px; bottom: 4px; line-height: 15px; background: rgba(13, 13, 15, .85) !important; color: #d4d4d6 !important; }
+    .ua-notes { align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ua-alert { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 700; color: #fca5a5; line-height: 1.45; }
+    .ua-alert svg { width: 15px; height: 15px; flex-shrink: 0; color: #fb7185; }
+    .ua-over { font-size: 12px; color: #fca5a5; line-height: 1.45; }
     .up-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .up-list:empty { display: none; }
     .up-item { position: relative; border: 1px solid #29292b; border-radius: 5px; overflow: hidden; background: #0e0e10; aspect-ratio: 16 / 10; }
@@ -2124,7 +2127,7 @@
     function showUploadStage(html) {
       document.getElementById('upload-pick').classList.add('hidden');
       const st = document.getElementById('upload-stage');
-      st.innerHTML = html; st.classList.remove('hidden');
+      st.innerHTML = html; st.classList.remove('hidden'); st.classList.toggle('is-ask', !!uploadAsk);
       lucide.createIcons();
     }
     function resetUploadStage() {
@@ -2173,25 +2176,24 @@
       const sub = [lv ? `Lv.${lv}` : '', bot && r.chain != null ? `공명 체인 ${r.chain}` : ''].filter(Boolean).join(' · ');
       const stats = uploadStatValues(res, r, preset);
       const weapon = bot && r.weapon?.name ? WEAPONS.find(w => w.name === r.weapon.name) : null;
-      const warns = [], notes = [];
-      if (a.cands.length > 1) warns.push(`선택한 공명자(${a.cands[1].name})와 인식된 공명자(${a.cands[0].name})가 다릅니다.`);
-      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) warns.push(bot ? '기존 무기 · 에코 정보는 덮어씌워집니다.' : '기존 스탯 수치는 덮어씌워집니다.');
-      if (bot && Object.values(preset.stats.current).some(v => v)) warns.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
-      r.warnings.forEach(w => warns.push(w));
-      if (!isOwned(res.id)) notes.push('보유 공명자가 아니어서 목록에는 보이지 않습니다.');
-      const seg = (items, on, fn) => `<div class="ed-seg">${items.map(([id, label]) => `<button class="${id === on ? 'on' : ''}" onclick="${fn}('${id}')">${esc(label)}</button>`).join('')}</div>`;
+      // 경고: 공명자 불일치 · 인식 오류(아이콘) → 덮어쓰기 안내(항상 마지막)
+      const alerts = [], overwrite = [];
+      if (a.cands.length > 1) alerts.push(`선택한 공명자(${a.cands[1].name})와 인식된 공명자(${a.cands[0].name})가 다릅니다.`);
+      if (r.warnings.length) alerts.push(`오류 사항 : ${r.warnings.join(' · ')}`);
+      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) overwrite.push(bot ? '기존 무기 · 에코 정보는 덮어씌워집니다.' : '기존 스탯 수치는 덮어씌워집니다.');
+      if (bot && Object.values(preset.stats.current).some(v => v)) overwrite.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
+      const info = isOwned(res.id) ? '' : '보유 공명자가 아니어서 목록에는 보이지 않습니다.';
       showUploadStage(`
+        <div class="ua-top">${pickBtn('uaPreset', a.presetId, g.presets.map((p, i) => [p.id, presetLabel(p, i)]), 'preset-dd-btn ua-dd', 'aria-label="저장할 프리셋"')}${a.cands.length > 1 ? pickBtn('uaRes', a.resId, a.cands.map(x => [x.id, x.name]), 'preset-dd-btn ua-dd', 'aria-label="저장할 공명자"') : ''}</div>
         <div class="ua-card">
-          <div class="ua-head"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
+          <div class="ua-head">
+            <div class="ua-who"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
+            ${bot ? `<div class="ua-wp">${weapon ? `<img src="${weapon.image}" alt="">` : '<i></i>'}<div><b>${esc(r.weapon?.name || '무기 없음')}</b>${r.weapon?.level ? `<span>Lv.${r.weapon.level}</span>` : ''}</div></div>` : ''}
+          </div>
           <div class="ua-stats">${stats.map(([k, v, u]) => `<div><span>${k}</span><b>${v == null ? '-' : v + u}</b></div>`).join('')}</div>
-          ${bot ? `<div class="ua-gear">
-            <div class="ua-wp">${weapon ? `<img src="${weapon.image}" alt="">` : '<i></i>'}<div><b>${esc(r.weapon?.name || '무기 없음')}</b>${r.weapon?.level ? `<span>Lv.${r.weapon.level}</span>` : ''}</div></div>
-            <div class="ua-echoes">${[0, 1, 2, 3, 4].map(i => { const e = r.echoes[i]; return `<div class="ua-echo">${e?.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : ''}${e ? `<span>${e.cost ?? '?'}</span>` : ''}</div>`; }).join('')}</div>
-          </div>` : ''}
+          ${bot ? `<div class="ua-echoes">${[0, 1, 2, 3, 4].map(i => { const e = r.echoes[i]; return `<div class="ua-echo">${e?.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : ''}${e ? `<span class="bd-cost">COST ${e.cost ?? '?'}</span>` : ''}</div>`; }).join('')}</div>` : ''}
         </div>
-        ${a.cands.length > 1 ? `<div class="ua-row"><label>공명자</label>${seg(a.cands.map(x => [x.id, x.name]), a.resId, 'pickUploadRes')}</div>` : ''}
-        <div class="ua-row"><label>프리셋</label>${seg(g.presets.map((p, i) => [p.id, presetLabel(p, i)]), a.presetId, 'pickUploadPreset')}</div>
-        ${warns.map(t => `<div class="up-stage-note ua-warn">${esc(t)}</div>`).join('')}${notes.map(t => `<div class="up-stage-note">${esc(t)}</div>`).join('')}
+        ${alerts.length || overwrite.length || info ? `<div class="ua-notes">${alerts.map(t => `<div class="ua-alert"><i data-lucide="alert-triangle"></i><span>${esc(t)}</span></div>`).join('')}${info ? `<div class="up-stage-note">${esc(info)}</div>` : ''}${overwrite.map(t => `<div class="ua-over">${esc(t)}</div>`).join('')}</div>` : ''}
         <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`);
     }
 
@@ -2311,7 +2313,7 @@
 
     function openUploadModal(resId = null) {
       uploadTarget = resId;
-      if (!screenshotBusy) resetUploadStage();
+      if (!screenshotBusy) { resetUploadStage(); clearUploadFiles(); } // 다시 열면 이전에 넣은 이미지는 비움
       const res = resId && RAW_RESONATORS.find(r => r.id === resId);
       document.getElementById('upload-target-desc').textContent = res
         ? `${res.name}의 WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.`
@@ -4677,6 +4679,8 @@
       emain: (b, v) => editorSet('main', v),
       esub: (b, v) => editorSet('subStat', v, +b.dataset.i),
       eval: (b, v) => editorSet('subVal', v, +b.dataset.i),
+      uaPreset: (b, v) => pickUploadPreset(v),
+      uaRes: (b, v) => pickUploadRes(v),
     };
     function pickBtn(kind, value, opts, cls = '', attrs = '') {
       const cur = opts.find(o => String(o[0]) === String(value)) || opts[0] || ['', ''];
