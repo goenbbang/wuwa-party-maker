@@ -776,6 +776,8 @@
     @media (max-width: 720px) { .bd-char { min-height: 340px; } }   /* 체인 6개와 레벨 버튼이 겹치지 않게 */
     .ua-stats .is-warn b, .ua-stats .is-warn span { color: #fca5a5; }
     .wtag-sig { background: var(--eff); border-color: var(--eff); color: #111; }
+    .bd-stat-tgt { font-size: 12px; font-weight: 600; color: #747476; margin-right: 6px; font-variant-numeric: tabular-nums; }
+    .bd-stat-tgt.is-met { color: #6fbf8e; }
     /* even font scale */
     @media (min-width: 1280px) { #growth-cards-container { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (min-width: 1440px) { #growth-cards-container { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -3148,13 +3150,17 @@
       const chainNodes = (st?.chain || Array.from({ length: 6 }, () => ({ name: '', desc: '' }))).map((c, i) => `
         <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" data-tip="${esc(`<b>${i + 1}. ${gameText(c.name)}</b><p>${gameText(c.desc)}</p>`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}">` : i + 1}</button>`).join('');
 
-      // 가운데: 스탯 표
+      // 가운데: 스탯 표 (목표가 있는 스탯은 현재 수치 왼쪽에 (목표) 를 작게, 달성하면 초록)
+      const tg = getTargetStats(res, preset), tgBase = tg.type === 'hp' ? 'HP' : (tg.type === 'def' ? '방어력' : '공격력');
+      const TGT = { [tgBase]: +tg.base, '공명 효율': +tg.regen, '크리티컬': +tg.cr, '크리티컬 피해': +tg.cd };
+      const fmtTgt = (stat, t) => FLAT_STATS.includes(stat) ? Math.round(t).toLocaleString() : `${Math.round(t * 10) / 10}%`;
       const statRow = (stat) => {
-        const v = st ? st.total[stat] : null;
+        const v = st ? st.total[stat] : null, t = TGT[stat];
+        const tgt = t ? `<small class="bd-stat-tgt ${v != null && v >= t ? 'is-met' : ''}">(${fmtTgt(stat, t)})</small>` : '';
         const eff = statEffective(stat, sc.weights);
         const changed = anim?.prevTotals && v != null && Math.abs((anim.prevTotals[stat] ?? 0) - v) > 1e-6;
         return `<div class="bd-stat ${eff ? 'is-eff' : ''} ${changed ? 'is-changed' : ''}">${statIcon(stat)}<span class="bd-stat-name">${stat.replace(' 보너스', '')}</span><span class="bd-dots"></span>
-          <b>${v != null ? fmtStat(stat, v) : '-'}</b></div>`;
+          ${tgt}<b>${v != null ? fmtStat(stat, v) : '-'}</b></div>`;
       };
       const left = ['HP', '공격력', '방어력', '크리티컬', '크리티컬 피해', '공명 효율', '치료 효과 보너스'];
       const right = [ELEMENT_DMG[res.element], '일반 공격 피해 보너스', '강공격 피해 보너스', '공명 스킬 피해 보너스', '공명 해방 피해 보너스', '변주 스킬 피해 보너스'].filter(Boolean);
