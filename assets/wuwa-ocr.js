@@ -33,6 +33,22 @@ function levenshtein(a, b) {
 }
 
 // 후보 중 가장 비슷한 것 (유사도 0~1). 기준 미달이면 null
+// 봇 카드 메인 옵션 보정. 코스트별 +25 메인 수치표
+const BOT_MAIN_VALUES = {
+  4: [['크리티컬', 22], ['크리티컬 피해', 44], ['공격력', 33], ['HP', 33], ['방어력', 41.5], ['치료 효과 보너스', 26.4]],
+  3: [['공격력', 30], ['HP', 30], ['방어력', 38], ['공명 효율', 32]],
+  1: [['공격력', 18], ['HP', 22.8], ['방어력', 18]],
+};
+function fixBotMain(echo) {
+  const m = echo.main, tbl = BOT_MAIN_VALUES[echo.cost];
+  if (!m || !tbl) return;
+  const max = Math.max(...tbl.map((x) => x[1]), 30);
+  // 아이콘을 숫자로 읽어 앞에 한 자리가 붙는 경우 (32% → "232", 30% → "130")
+  if (m.value != null && m.value > max) { const t = String(m.value).slice(1); if (+t > 0 && +t <= max) m.value = +t; }
+  // 라벨을 못 읽었으면 수치로 찾고 (값이 하나뿐일 때), 그래도 모르면 한글 모델이 못 읽는 HP 로 봄
+  if (!m.stat) { const hit = tbl.filter((x) => x[1] === m.value); m.stat = hit.length === 1 ? hit[0][0] : 'HP'; }
+}
+
 export function bestMatch(text, candidates, min = 0.5) {
   const t = clean(text);
   if (!t) return null;
@@ -383,7 +399,7 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
 
   const chain = [];
   for (const r of BOT_CARD.chainStars) chain.push(await backend.brightness(R(r)));
-  result.chain = chain.filter((v) => v > 145).length;
+  result.chain = chain.filter((v) => v > 134).length;   // 잠긴 별 ≈126, 열린 별(아이콘) ≈138~155
 
   result.skills = [];
   for (const r of BOT_CARD.skills) {
@@ -445,6 +461,8 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
       }
     }
     if (echo.cost == null) result.warnings.push(`에코 ${result.echoes.length + 1}: 코스트를 판단하지 못함`);
+    fixBotMain(echo);
+    echo.subs = echo.subs.filter((x) => x.value != null);   // 덜 강화된 에코는 부옵 칸이 비어 있음
     result.echoes.push(echo);
   }
   return result;
