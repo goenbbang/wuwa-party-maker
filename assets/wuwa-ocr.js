@@ -79,14 +79,33 @@ export async function createWorkers(Tesseract, langPath) {
 // 1) 전체를 한글로 읽어 스탯 6줄의 위치를 찾고, 각 줄 오른쪽 숫자는 숫자 전용으로 다시 읽는다.
 // 2) 스탯 첫 줄 위쪽을 이름 영역과 레벨 영역으로 나눠 따로 크게 읽는다.
 // 이미지 전체를 한글로 읽어 줄 목록으로 (좌표는 원본 기준)
-export async function readPageLines(backend, workers) {
+// 라벨과 숫자 사이가 넓으면 한 줄이 두 덩어리로 나뉘어 읽힘. 높이가 겹치는 덩어리를 왼쪽부터 이어 한 줄로 합침
+function mergeRows(lines) {
+  const rows = [];
+  for (const l of [...lines].sort((a, b) => a.bbox.y0 - b.bbox.y0)) {
+    const cy = (l.bbox.y0 + l.bbox.y1) / 2;
+    const row = rows.find((r) => cy > r.bbox.y0 && cy < r.bbox.y1 && Math.abs(cy - (r.bbox.y0 + r.bbox.y1) / 2) < (r.bbox.y1 - r.bbox.y0) * 0.5);
+    if (row) row.parts.push(l), Object.assign(row.bbox, { x0: Math.min(row.bbox.x0, l.bbox.x0), y0: Math.min(row.bbox.y0, l.bbox.y0), x1: Math.max(row.bbox.x1, l.bbox.x1), y1: Math.max(row.bbox.y1, l.bbox.y1) });
+    else rows.push({ parts: [l], bbox: { ...l.bbox } });
+  }
+  return rows.map((r) => ({ text: r.parts.sort((a, b) => a.bbox.x0 - b.bbox.x0).map((p) => p.text).join(' '), bbox: r.bbox }));
+}
+
+// 배경이 밝고 복잡하면 자동 영역 나누기(psm 3)가 글자를 거의 못 찾음. 그럴 땐 한 덩어리 글로 보고(psm 4) 다시 읽어 더 많이 읽힌 쪽을 씀
+export async function readPageLines(backend, workers, psm = '3') {
   const W = backend.width, H = backend.height, scale = Math.max(1, 1200 / W);
-  await workers.kor.setParameters({ tessedit_pageseg_mode: '3' });
+  await workers.kor.setParameters({ tessedit_pageseg_mode: psm });
   const page = await workers.kor.recognize(await backend.crop({ x: 0, y: 0, w: W, h: H }, scale));
-  return (page.data.lines || []).map((l) => ({
+  const raw = (page.data.lines || []).map((l) => ({
     text: l.text.trim(),
     bbox: { x0: l.bbox.x0 / scale, y0: l.bbox.y0 / scale, x1: l.bbox.x1 / scale, y1: l.bbox.y1 / scale },
-  })).filter((l) => l.text);
+  })).filter((l) => /[가-힣A-Za-z0-9]/.test(l.text));
+  const lines = mergeRows(raw);
+  if (psm !== '3') return lines;
+  const score = (ls) => ls.filter((l) => /[가-힣]{2,}/.test(l.text) && /\d/.test(l.text)).length;
+  if (score(lines) >= 5) return lines;
+  const alt = await readPageLines(backend, workers, '4');
+  return score(alt) > score(lines) ? alt : lines;
 }
 
 export async function parseStatScreen(backend, workers, { names = [], aliases = {}, lines = null } = {}) {
@@ -127,7 +146,8 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
   const headText = (await workers.kor.recognize(await backend.crop(clip({ x: 0, y: 0, w: W, h: top * 0.45 }), Math.max(2, 1000 / W)))).data.text;
   const headLines = headText.split('\n').map((t) => t.trim()).filter(Boolean);
   let named = null;
-  for (const t of [...headLines, headLines.join(' ')]) {
+  const pageHead = lines.filter((l) => l.bbox.y1 <= top).map((l) => l.text.replace(/[^가-힣·\s]/g, '').trim()).filter((t) => t.length >= 2);
+  for (const t of [...headLines, headLines.join(' '), ...pageHead]) {
     const r = resolveName(t, names, aliases);
     if (r.matched && (!named || r.confidence > named.confidence)) named = r;
   }
@@ -158,6 +178,7 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
 export const BOT_CARD = {
   base: { w: 1920, h: 1080 },
   name: { x: 60, y: 15, w: 125, h: 70 },
+  elementIcon: { x: 18, y: 24, w: 46, h: 48 },
   level: { x: 205, y: 40, w: 60, h: 25 },
   // 공명 체인 별 가운데. 켜진 별은 안에 체인 아이콘(밝은 금색)이 있고 꺼진 별은 가운데가 어두움
   chainStars: [190, 264, 344, 424, 504, 584].map((x) => ({ x: x - 8, y: 564, w: 16, h: 16 })),
@@ -242,6 +263,8 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
   for (let x = 140; x < 420; x += 2) if (await backend.goldFraction(R({ x, y: 42, w: 2, h: 22 })) > 0.5) { badge = x; break; }
   const nameBox = badge ? { ...BOT_CARD.name, w: Math.max(60, badge - 8 - BOT_CARD.name.x) } : BOT_CARD.name;
   result.name = resolveName(await readKor(nameBox), names, aliases).name;
+  // 이름 왼쪽 속성 아이콘 색 (방랑자처럼 이름이 같고 속성만 다른 공명자 구분용)
+  if (backend.vividMean) result.element = elementByColor(await backend.vividMean(R(BOT_CARD.elementIcon)));
   const lv = (await readNum(badge ? { ...BOT_CARD.level, x: badge + 21 } : BOT_CARD.level)).match(/(\d{1,2})/);
   result.level = lv ? +lv[1] : null;
 
@@ -373,6 +396,18 @@ export async function parseEchoPanel(backend, workers, { echoDb = null, lines })
   return result;
 }
 
+// 속성 아이콘의 평균 색상(색상환 각도)으로 속성을 고름
+const ELEMENT_HUE = { fusion: 15, spectro: 50, aero: 155, glacio: 205, electro: 270, havoc: 330 };
+function elementByColor(rgb) {
+  if (!rgb) return null;
+  const [r, g, b] = rgb.map((v) => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  if (d < 0.1) return null;
+  let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  h = (h * 60 + 360) % 360;
+  const dist = (a) => Math.min(Math.abs(a - h), 360 - Math.abs(a - h));
+  return Object.keys(ELEMENT_HUE).sort((a, b) => dist(ELEMENT_HUE[a]) - dist(ELEMENT_HUE[b]))[0];
+}
+
 // ---------- 이미지 종류 판별 ----------
 
 export function detectKind(backend) {
@@ -418,6 +453,13 @@ export async function createCanvasBackend(file) {
         const o = (gy * S + gx) * 3; v[o] = r / n; v[o + 1] = g / n; v[o + 2] = b / n;
       }
       return normalize(v);
+    },
+    // 채도가 높은 픽셀만 평균 낸 색 (아이콘의 흰 테두리 · 어두운 배경 제외)
+    async vividMean({ x, y, w, h }) {
+      const d = sctx.getImageData(x, y, w, h).data, sum = [0, 0, 0];
+      let n = 0;
+      for (let i = 0; i < d.length; i += 4) if (Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]) > 60) { sum[0] += d[i]; sum[1] += d[i + 1]; sum[2] += d[i + 2]; n++; }
+      return n > 10 ? sum.map((v) => v / n) : null;
     },
     async brightness({ x, y, w, h }) {
       const d = sctx.getImageData(x, y, w, h).data;

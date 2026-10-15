@@ -715,6 +715,28 @@
     @media (max-width: 639px) { .wt-btn .wt-ico { display: none; } }
     @media (min-width: 640px) { #codex-weapon-bar .wt-btn { padding-left: 8px; padding-right: 8px; } }
     .wt-tag { display: inline-flex; align-items: center; gap: 3px; }
+    .help-btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; width: 30px; height: 30px; }
+    .help-btn, html.theme-wuwa .help-btn, html.theme-wuwa .help-btn.tb-btn { border-radius: 50% !important; }
+    .hp-panel { max-height: calc(100vh - 32px); overflow-y: auto; gap: 22px !important; }
+    .hp-h { font-size: 13px; font-weight: 800; color: var(--wg, #d9bf86); margin-bottom: 8px; }
+    .hp-kinds { display: flex; flex-direction: column; gap: 8px; }
+    .hp-kind { display: grid; grid-template-columns: 240px 1fr; gap: 16px; padding: 12px; border: 1px solid #2a2a2d; background: rgba(255, 255, 255, .02); }
+    .hp-img { height: 150px; display: flex; align-items: center; justify-content: center; background: #0b0b0d; border: 1px solid #232325; overflow: hidden; }
+    .hp-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .hp-kind b { display: block; font-size: 13px; color: #fff; margin-bottom: 4px; }
+    .hp-kind p, .hp-steps li, .hp-notes li { font-size: 12px; line-height: 1.6; color: #cfcdc8; }
+    .hp-kind p + p { margin-top: 4px; color: #a3a3a5; }
+    .hp-kind code { padding: 0 4px; background: #232325; color: #e8d7a6; font-size: 11.5px; }
+    .hp-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .hp-links a { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid rgba(245, 158, 11, .4); color: #fcd34d; font-size: 11.5px; font-weight: 700; transition: background .15s; }
+    .hp-links a:hover { background: rgba(245, 158, 11, .1); }
+    .hp-links svg { width: 12px; height: 12px; }
+    .hp-steps { list-style: decimal; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+    .hp-steps b, .hp-notes b { color: #fff; }
+    .hp-more { display: inline-flex; align-items: center; gap: 1px; margin: 0 2px; font-size: 11px; font-weight: 700; color: #a3a3a5; vertical-align: -1px; }
+    .hp-more svg { width: 13px; height: 13px; }
+    .hp-notes { list-style: disc; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+    @media (max-width: 639px) { .hp-kind { grid-template-columns: 1fr; } .hp-img { height: 160px; } }
     .rc-tags .role-main { border-color: rgba(244, 63, 94, .4); background: rgba(76, 5, 25, .7); color: #fda4af; }
     .rc-tags .role-sub { border-color: rgba(139, 92, 246, .4); background: rgba(46, 16, 101, .7); color: #c4b5fd; }
     .rc-tags .role-support { border-color: rgba(16, 185, 129, .4); background: rgba(2, 44, 34, .7); color: #6ee7b7; }
@@ -787,7 +809,7 @@
       <div class="up-head">
         <div>
           <div class="up-title">이미지 업로드</div>
-          <div class="up-desc" id="upload-target-desc">WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.</div>
+          <div class="up-desc" id="upload-target-desc">wuwa bot 프로필 카드, 속성 상세정보, 에코 상세정보 캡처 이미지를 업로드해 주세요.</div>
         </div>
         <button class="bm-btn" onclick="closeUploadModal()" aria-label="닫기"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
       </div>
@@ -841,14 +863,15 @@
       <div class="flex items-center gap-8 hidden md:flex">
         <a href="#party" onclick="return tabClick(event, 'party')" id="tab-btn-party" class="text-sm font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</a>
         <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 육성 현황표</a>
-        <a href="#codex" onclick="return tabClick(event, 'codex')" id="tab-btn-codex" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 도감</a>
-        <a href="#weapon" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">무기 도감</a>
+        <a href="#characters" onclick="return tabClick(event, 'codex')" id="tab-btn-codex" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 도감</a>
+        <a href="#weapons" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">무기 도감</a>
       </div>
     </div>
     
     <div class="flex items-center gap-1.5 sm:gap-2.5 justify-end flex-shrink-0">
-      <button aria-label="데이터 내보내기" onclick="openExportModal()" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">내보내기</span></button>
-      <button aria-label="데이터 불러오기" onclick="openImportModal()" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">불러오기</span></button>
+      <button aria-label="데이터 내보내기" onclick="openExportModal()" class="tb-btn flex items-center gap-1.5 p-1.5 lg:px-3 lg:py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-xs text-amber-300 font-bold transition shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-amber-400"></i><span class="hidden lg:inline">내보내기</span></button>
+      <button aria-label="데이터 불러오기" onclick="openImportModal()" class="tb-btn flex items-center gap-1.5 p-1.5 lg:px-3 lg:py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-xs text-amber-300 font-bold transition shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-amber-400"></i><span class="hidden lg:inline">불러오기</span></button>
+      <button aria-label="사용 방법" onclick="openModal('help-modal')" class="help-btn rounded-full tb-btn flex-shrink-0 bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-amber-300 text-sm font-black transition shadow-sm active:scale-95">?</button>
       <button aria-label="공명자 편집" onclick="openModal('visual-editor-modal'); initVisualEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i><span class="hidden lg:inline">공명자 편집</span></button>
       <button aria-label="무기 편집" onclick="openModal('weapon-editor-modal'); renderWeaponEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="sword" class="w-4 h-4 text-rose-400"></i><span class="hidden lg:inline">무기 편집</span></button>
       <button aria-label="에코 세트 편집" onclick="openModal('echo-set-editor-modal'); renderEchoSetEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-purple-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="layers" class="w-4 h-4 text-purple-400"></i><span class="hidden lg:inline">에코 세트 편집</span></button>
@@ -860,9 +883,9 @@
     <div class="w-px h-3 bg-slate-700"></div>
     <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">육성 현황표</a>
     <div class="w-px h-3 bg-slate-700"></div>
-    <a href="#codex" onclick="return tabClick(event, 'codex')" id="tab-btn-codex-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 도감</a>
+    <a href="#characters" onclick="return tabClick(event, 'codex')" id="tab-btn-codex-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 도감</a>
     <div class="w-px h-3 bg-slate-700"></div>
-    <a href="#weapon" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</a>
+    <a href="#weapons" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</a>
   </div>
   </header>
 
@@ -929,7 +952,7 @@
         </div>
       </div>
       
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 w-full pt-1">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 w-full">
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto sm:min-w-[540px]" id="growth-element-bars"></div>
         <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="growth-role-bars"></div>
@@ -973,9 +996,9 @@
         <button onclick="resetWeaponFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
       </div>
       <div class="flex flex-wrap items-center gap-2 w-full">
-        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="weapon-rank-filter-bar"></div>
-        <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="weapon-type-filter-bar"></div>
+        <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="weapon-rank-filter-bar"></div>
       </div>
     </div>
     <!-- 무기 도감 5열 배치 -->
@@ -999,7 +1022,7 @@
               <div id="detail-modal-rarity" class="flex items-center gap-0.5 drop-shadow-md ml-1"></div>
               <div id="detail-modal-buffs-card" class="relative ml-auto hidden">
                 <button type="button" onclick="toggleDetailBuffs(); event.stopPropagation()" aria-label="파티 버프 · 디버프 보기" class="buff-btn w-9 h-9 inline-flex items-center justify-center rounded-xl bg-black/55 transition backdrop-blur-sm">
-                  <img id="detail-modal-buffs-icon" src="" alt="" class="w-5 h-5 object-contain pointer-events-none" crossorigin="anonymous">
+                  <img id="detail-modal-buffs-icon" src="" alt="" class="w-7 h-7 object-contain pointer-events-none" crossorigin="anonymous">
                   <span id="detail-modal-buffs-count" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full buff-count text-[10px] leading-[18px] font-black text-center"></span>
                 </button>
                 <div id="detail-modal-buffs-pop" onclick="event.stopPropagation()" style="width:max-content;min-width:230px;max-width:min(400px,84vw)" class="hidden absolute bottom-full right-0 mb-2.5 z-30 p-3 rounded-xl bg-[#121622]/95 border border-slate-600 shadow-2xl backdrop-blur-md origin-bottom-right">
@@ -1462,13 +1485,87 @@
     </div>
   </div>
   
+  <!-- 사용 방법 (이미지 업로드 · 수치 · 데이터 백업) -->
+  <div id="help-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150" onclick="if(event.target===this)closeModal('help-modal')">
+    <div class="hp-panel bg-[#0f131d] w-full max-w-2xl rounded-2xl p-5 border border-slate-700 shadow-2xl relative flex flex-col gap-5">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <h3 class="text-base font-extrabold text-white">사용 방법</h3>
+        <button onclick="closeModal('help-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition" aria-label="닫기"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <section>
+        <h4 class="hp-h">이미지 등록 방법</h4>
+        <ol class="hp-steps">
+          <li><b>이미지 업로드</b> 버튼 또는 공명자 카드의 <b>이미지 아이콘</b>을 눌러 주세요.</li>
+          <li><b>파일 선택</b>, <b>끌어다 놓기</b>, <b>붙여넣기</b>로 이미지를 올려 주세요. 여러 장을 한 번에 올릴 수 있습니다.</li>
+          <li>인식된 정보를 확인한 뒤 저장해 주세요.</li>
+        </ol>
+      </section>
+      <section>
+        <h4 class="hp-h">올릴 수 있는 이미지</h4>
+        <div class="hp-kinds">
+          <div class="hp-kind">
+            <div class="hp-img"><img src="images/guide/guide-botcard.webp" alt="wuwa bot 프로필 카드 예시" loading="lazy"></div>
+            <div>
+              <b>wuwa bot 프로필 카드</b>
+              <p>레벨, 공명 체인, 스킬, 무기, 에코 정보가 입력됩니다.</p>
+              <p>명조 계정과 디스코드 계정 연동 → 명조 공식 디스코드 서버 → wuwa-bot-command 채널 → <code>/생성</code> 명령어로 프로필 이미지를 만들 수 있습니다.</p>
+              <div class="hp-links">
+                <a href="https://discord.gg/wutheringwaves" target="_blank" rel="noopener"><i data-lucide="external-link"></i>명조 공식 디스코드</a>
+                <a href="https://wutheringwaves-dc.kurogames-global.com/?lang=ko" target="_blank" rel="noopener"><i data-lucide="external-link"></i>디스코드 계정 연동</a>
+              </div>
+            </div>
+          </div>
+          <div class="hp-kind">
+            <div class="hp-img"><img src="images/guide/guide-stat.webp" alt="속성 상세정보 예시" loading="lazy"></div>
+            <div>
+              <b>속성 상세정보</b>
+              <p>육성 현황표에 공명자의 스테이터스가 입력됩니다.</p>
+              <p>인게임 메뉴 → 공명자 → 속성 상세정보에서 스테이터스가 적혀 있는 곳을 캡처해 주세요.</p>
+            </div>
+          </div>
+          <div class="hp-kind">
+            <div class="hp-img"><img src="images/guide/guide-echo.webp" alt="에코 상세정보 예시" loading="lazy"></div>
+            <div>
+              <b>에코 상세정보</b>
+              <p>세부 육성 창의 비어 있는 에코 칸에 에코가 추가됩니다.</p>
+              <p>인게임 메뉴 → 공명자 → 에코에서 등록할 에코의 옵션이 적혀 있는 곳을 캡처해 주세요.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h4 class="hp-h">육성 현황표</h4>
+        <ul class="hp-notes">
+          <li>육성 현황표의 스테이터스 칸에는 기본적으로 <span class="hp-more">자세히 보기<i data-lucide="chevron-right"></i></span>에 있는 스테이터스 값이 보여집니다.</li>
+          <li>육성 현황표의 칸에 수치를 직접 입력하거나 속성 상세정보 이미지를 등록하면 해당 수치가 표시됩니다.</li>
+          <li>입력한 수치를 지우면 다시 <span class="hp-more">자세히 보기<i data-lucide="chevron-right"></i></span>의 스테이터스 값으로 돌아갑니다.</li>
+        </ul>
+      </section>
+      <section>
+        <h4 class="hp-h">데이터 저장과 백업</h4>
+        <ul class="hp-notes">
+          <li>파티 편성과 육성 정보는 현재 사용하는 브라우저에만 저장됩니다. 브라우저 캐시나 사이트 데이터를 지우면 사라집니다.</li>
+          <li>상단의 <b>내보내기</b>로 백업 코드를 생성할 수 있습니다. <b>불러오기</b>로 코드를 입력해 데이터를 불러올 수 있습니다.</li>
+        </ul>
+      </section>
+      <section>
+        <h4 class="hp-h">참고 및 주의사항</h4>
+        <ul class="hp-notes">
+          <li>이름과 수치가 잘리거나 가려지지 않게 캡처해 주세요. 흐리거나 너무 작은 이미지는 잘못 읽힐 수 있습니다.</li>
+          <li>이미 입력된 정보가 있는 프리셋에 이미지를 등록하면 기존 정보가 사라지게 됩니다.</li>
+          <li>잘못 읽힌 값은 저장한 뒤 세부 육성 창에서 직접 고칠 수 있습니다.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
   <div id="import-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-150">
     <div class="bg-[#0f131d] w-full max-w-lg rounded-2xl p-5 border border-slate-700 shadow-2xl relative flex flex-col gap-3">
       <div class="flex items-center justify-between pb-2 border-b border-slate-800">
         <h3 id="import-modal-title" class="text-base font-extrabold text-white"></h3>
         <button onclick="closeModal('import-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <p class="text-[11px] text-slate-400">내보내기로 복사한 코드를 붙여넣어 주세요. 현재 데이터는 덮어씌워집니다.</p>
+      <p class="text-[11px] text-slate-400">내보내기로 복사한 코드를 붙여넣어 주세요. 현재 데이터는 덮어써집니다.</p>
       <textarea id="import-base64-textarea" rows="4" placeholder="코드 붙여넣기" class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none"></textarea>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
@@ -1756,8 +1853,17 @@
     window.addEventListener('popstate', () => {
       if (skipNextPop) { skipNextPop = false; armHistory(); return; }   // 화면 버튼으로 닫으면서 생긴 뒤로가기
       const top = modalStack[modalStack.length - 1];
-      if (top) { closeModal(top, true); armHistory(); }                 // 아직 열린 창이 남아 있으면 다시 대비
+      if (top) {
+        closeModal(top, true);
+        const back = modalReturn?.from === top ? modalReturn : null;   // 다른 창에서 넘어왔으면 그 창으로 돌아감
+        modalReturn = null;
+        if (back) back.reopen(); else armHistory();                     // 아직 열린 창이 남아 있으면 다시 대비
+        return;
+      }
+      const v = viewFromHash();
+      if (v !== currentMainView) switchMainView(v);
     });
+    let modalReturn = null;   // { from: 창 id, reopen: 뒤로가기로 다시 열 창 }
 
     function openModal(id) {
       const modal = document.getElementById(id);
@@ -1776,6 +1882,7 @@
       const i = modalStack.indexOf(id);
       if (i < 0) return;   // 이미 닫는 중
       modalStack.splice(i, 1);
+      if (!fromHistory && modalReturn?.from === id) modalReturn = null;   // 버튼으로 닫으면 되돌아가지 않음
       if (!modalStack.length) document.documentElement.classList.remove('modal-open');
       // 버튼·바깥 클릭으로 마지막 창을 닫았으면 쌓아 둔 기록도 정리
       if (!fromHistory && !modalStack.length && history.state?.wuwaModal) { skipNextPop = true; history.back(); }
@@ -1794,10 +1901,15 @@
 
     // 상단 탭은 링크(#party 등)라 휠클릭·우클릭으로 새 탭에서 열 수 있음. 일반 클릭만 화면 안에서 전환
     const MAIN_VIEWS = ['party', 'growth', 'codex', 'weapon'];
+    // 주소 뒤 이름 (#characters 등). 예전 주소(#codex, #weapon)도 그대로 열림
+    const VIEW_HASH = { party: '', growth: 'growth', codex: 'characters', weapon: 'weapons' };
+    const viewFromHash = () => { const h = location.hash.slice(1); return MAIN_VIEWS.find(v => VIEW_HASH[v] === h) || (MAIN_VIEWS.includes(h) ? h : 'party'); };
+    // 탭을 옮길 때마다 방문 기록을 남겨 뒤로가기로 이전 탭에 돌아감
     function tabClick(e, view) {
       if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return true;
+      if (view === currentMainView) return false;
       switchMainView(view);
-      history.replaceState(history.state, '', view === 'party' ? location.pathname + location.search : '#' + view);
+      history.pushState(null, '', VIEW_HASH[view] ? '#' + VIEW_HASH[view] : location.pathname + location.search);
       return false;
     }
 
@@ -2266,7 +2378,7 @@
             </div>
             <div class="ua-stats">${rows.map(([k, x], i) => `<div${i < 2 ? ' class="ua-main"' : ''}><span>${esc(k)}</span><b>${fmtEchoVal(x)}</b></div>`).join('')}</div>
           </div>
-          ${notes(r.warnings.length ? [`오류 사항 : ${r.warnings.join(' · ')}`] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 덮어씌워집니다.`] : [])}
+          ${notes(r.warnings.length ? [`오류 사항 : ${r.warnings.join(' · ')}`] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 덮어써집니다.`] : [])}
           ${foot}`);
         return;
       }
@@ -2278,7 +2390,7 @@
       const alerts = [], overwrite = [];
       if (a.cands.length > 1) alerts.push(`선택한 공명자(${a.cands[1].name})와 인식된 공명자(${a.cands[0].name})가 다릅니다.`);
       if (r.warnings.length) alerts.push(`오류 사항 : ${r.warnings.join(' · ')}`);
-      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) overwrite.push(bot ? '기존 무기 · 에코 정보는 덮어씌워집니다.' : '기존 스탯 수치는 덮어씌워집니다.');
+      if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) overwrite.push(bot ? '기존 무기 · 에코 정보는 사라집니다.' : '기존 스탯 수치는 덮어써집니다.');
       if (bot && Object.values(preset.stats.current).some(v => v)) overwrite.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
       const info = isOwned(res.id) ? '' : '보유 공명자가 아니어서 목록에는 보이지 않습니다.';
       showUploadStage(`
@@ -2303,7 +2415,7 @@
       screenshotBusy = true; uploadAborted = false;
       showUploadBusy(1, files.length);
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=8');
+        const ocr = await import('./assets/wuwa-ocr.js?v=9');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
@@ -2313,6 +2425,8 @@
           const r = await ocr.parseImage(file, workers, { names, weapons, echoDb });
           if (uploadAborted) break;
           if (r.kind === 'echo') { await applyEchoShot(r, fallbackResId); continue; }
+          // 방랑자는 이름이 같고 속성만 달라서 카드의 속성 아이콘 색으로 고름
+          if (r.element && /^방랑자/.test(r.name || '')) r.name = RAW_RESONATORS.find(x => /^방랑자/.test(x.name) && x.element === r.element)?.name || r.name;
           const res = RAW_RESONATORS.find(x => x.name === r.name) || RAW_RESONATORS.find(x => x.id === fallbackResId);
           if (!res) { showToast(`캐릭터 이름을 읽지 못했습니다${r.name ? ` (${esc(r.name)})` : ''}.`); continue; }
           if (res.name !== r.name) r.warnings.push(`이름(${r.name || '읽지 못함'})을 찾지 못해 ${res.name}에 입력합니다`);
@@ -2415,8 +2529,8 @@
       if (!screenshotBusy) { resetUploadStage(); clearUploadFiles(); } // 다시 열면 이전에 넣은 이미지는 비움
       const res = resId && RAW_RESONATORS.find(r => r.id === resId);
       document.getElementById('upload-target-desc').textContent = res
-        ? `${res.name}의 WuWa Bot 프로필 카드, 스테이터스 창, 에코 상세 창 캡처 이미지를 업로드해 주세요.`
-        : 'WuWa Bot 프로필 카드, 스테이터스 창, 에코 상세 창 캡처 이미지를 업로드해 주세요.';
+        ? `${res.name}의 wuwa bot 프로필 카드, 속성 상세정보, 에코 상세정보 캡처 이미지를 업로드해 주세요.`
+        : 'wuwa bot 프로필 카드, 속성 상세정보, 에코 상세정보 캡처 이미지를 업로드해 주세요.';
       renderUploadList();
       openModal('upload-modal');
     }
@@ -4021,7 +4135,9 @@
     let detailModalChar = null;
     function openGrowthFromDetail() {
       if (!detailModalChar) return;
-      closeModal('detail-modal'); initGrowthDataFor(detailModalChar); openBuildModal(detailModalChar);
+      const id = detailModalChar;
+      closeModal('detail-modal'); initGrowthDataFor(id); openBuildModal(id);
+      modalReturn = { from: 'build-modal', reopen: () => openDetailModal(id) };
     }
     function openDetailModal(resId) {
       detailModalChar = resId;
@@ -4978,9 +5094,9 @@
       initDragToScroll();
       if (IS_ADMIN) { document.getElementById('admin-bar').classList.remove('hidden'); updateAdminBar(); }
       lucide.createIcons();
-      const startView = location.hash.slice(1);
-      if (MAIN_VIEWS.includes(startView) && startView !== 'party') switchMainView(startView); else playEnter('roster-grid');
-      window.addEventListener('hashchange', () => { const v = location.hash.slice(1) || 'party'; if (MAIN_VIEWS.includes(v) && v !== currentMainView) switchMainView(v); });
+      const startView = viewFromHash();
+      if (startView !== 'party') { switchMainView(startView); history.replaceState(history.state, '', '#' + VIEW_HASH[startView]); } else playEnter('roster-grid');
+      window.addEventListener('hashchange', () => { const v = viewFromHash(); if (v !== currentMainView) switchMainView(v); });
     }
   </script>
 </body>
