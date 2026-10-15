@@ -61,6 +61,7 @@
     html.modal-open, html.modal-open body { overflow: hidden; }
     input:not([type="checkbox"]):not([type="radio"]), select { vertical-align: middle; }
     .card-graduated { border-color: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
+    .card-graduated:hover { border-color: #34d399 !important; box-shadow: 0 0 16px rgba(52, 211, 153, 0.4); }
 
     /* 모달: 배경은 페이드, 내용은 살짝 아래에서 커지며 등장 */
     .fixed.inset-0[id$="-modal"] > div { transition: transform .2s cubic-bezier(.2,.8,.2,1); }
@@ -265,11 +266,11 @@
     .bd-tree { margin-top: 10px; padding-top: 10px; border-top: 1px solid #29292b; font-size: 11px; color: #747476; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
     .bd-tree span { color: #d4d4d6; font-weight: 700; }
     /* 세부 창 애니메이션: 에코 카드 차례로 등장 · 누를 수 있는 카드 테두리 빛 · 체인 변경 시 반짝임 */
-    @keyframes bdUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @keyframes bdUp { from { opacity: 0; transform: translateY(12px); } } /* to 생략: 요소 자신의 투명도(편성된 공명자 흐림 등)까지 자연스럽게 */
     .fx-in > * { animation: bdUp .35s cubic-bezier(.2, .8, .2, 1) both; animation-delay: var(--fx-d, 0ms); } .fx-in > :nth-child(n+21) { animation: none; }
     /* 창이 열릴 때 안쪽 요소가 차례로 살짝 올라오며 등장 (모두 0.3초 안에 시작) */
-    @keyframes bdPop { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
-    @keyframes bdFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes bdPop { from { opacity: 0; transform: scale(.82); } }
+    @keyframes bdFade { from { opacity: 0; } }
     .bd-top.is-enter > .bd-char, .bd-top.is-enter > .bd-mid > *, .bd-top.is-enter > .bd-skills, .bd-echoes.is-enter > .bd-echo,
     .dm-in .dm-right > *, .dm-in .dm-name { animation: bdUp .32s cubic-bezier(.2, .8, .2, 1) backwards; }
     .bd-top.is-enter > .bd-mid > :nth-child(1) { animation-delay: .04s; } .bd-top.is-enter > .bd-mid > :nth-child(2) { animation-delay: .08s; }
@@ -356,7 +357,7 @@
     .bd-note { font-size: 11px; color: #555557; padding: 10px 18px 16px; line-height: 1.5; }
 
     /* 유효 옵션 강조 · 편집 */
-    :root { --eff: #e3b96a; --eff-strong: #e3b96a; } /* 앰버 골드 (이전 주황빛: #d9a27a / #e8bc98) */
+    :root { --eff: #deae72; --eff-strong: #deae72; } /* 앰버~주황 중간 (앰버 #e3b96a, 이전 주황빛 #d9a27a) */
     .dm-star { color: #fbbf24; fill: #fbbf24; }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
     .bd-stat:not(.is-eff) b { color: #a3a3a5; }
@@ -478,6 +479,7 @@
     /* 창 닫기 X (모든 창 공통: 아이콘만, 올리면 금색) */
     .x-btn { flex-shrink: 0; padding: 6px; border-radius: 8px; color: #8e8d8a; transition: color .15s; }
     .x-btn:hover { color: var(--wg, #d9bf86); }
+    .slot-x { padding: 4px; color: #a3a3a5; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .9)); }
     html.theme-wuwa .x-btn { border-radius: var(--wr-s); }
     .up-foot { display: flex; justify-content: flex-end; gap: 8px; }
     /* 창 아래 버튼은 모두 같은 규격 (다른 창의 닫기 · 적용 버튼과 같은 크기) */
@@ -658,6 +660,9 @@
     #fatigue-modal > div, #owned-modal > div { padding-top: 14px !important; }
     @media (min-width: 768px) { html.theme-wuwa [class~="md:rounded-3xl"] { border-radius: 8px !important; } }
   
+    /* 파티 편성: 드래그 대상·회로 선택 호버를 마우스 호버와 같은 금빛 테두리로 */
+    html.theme-wuwa .drag-slot-active, html.theme-wuwa .drag-party-active { border: 1px solid var(--wg) !important; background-color: rgba(217, 191, 134, .08) !important; }
+    html.theme-wuwa .circuit-slot:not(.is-on):hover { border-color: var(--wg) !important; }
     /* 직각 박스: 원형 요소(체인·스킬 노드·점·스피너·체크)만 둥글게 유지 */
     html.theme-wuwa *:not(.rounded-full):not(.bd-chain):not(.t2-node-ico):not(.t2-inh-ico):not(.t2-sk):not(.t2-step button):not(.mode-dot):not(.mode-pair):not(.up-spin):not(.ed-check):not(.ep-cost) { border-radius: 0 !important; }
   </style>
@@ -760,17 +765,17 @@
 
   <header class="sticky top-0 z-40 w-full px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap md:flex-nowrap items-center justify-between gap-x-3 gap-y-2 border-b border-[#161d2b] bg-[#06080d]/95 backdrop-blur-md">
     <div class="flex items-center gap-6">
-      <div class="flex items-center gap-3">
+      <a href="./" onclick="return tabClick(event, 'party')" class="flex items-center gap-3">
         <div id="app-header-logo-container" class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md shadow-amber-500/20 bg-gradient-to-br from-amber-500 to-amber-600">
           <img src="images/logo.png" alt="" class="w-full h-full object-contain" crossorigin="anonymous">
         </div>
         <h1 class="text-base sm:text-lg font-black tracking-tight text-white select-none whitespace-nowrap">공명자 관리기록부</h1>
-      </div>
+      </a>
       <div class="w-px h-5 bg-slate-700/80 hidden md:block"></div>
       <div class="flex items-center gap-8 hidden md:flex">
-        <button onclick="switchMainView('party')" id="tab-btn-party" class="text-sm font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
-        <button onclick="switchMainView('growth')" id="tab-btn-growth" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 육성 현황표</button>
-        <button onclick="switchMainView('weapon')" id="tab-btn-weapon" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">무기 도감</button>
+        <a href="#party" onclick="return tabClick(event, 'party')" id="tab-btn-party" class="text-sm font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</a>
+        <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 육성 현황표</a>
+        <a href="#weapon" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">무기 도감</a>
       </div>
     </div>
     
@@ -782,11 +787,11 @@
       <button onclick="openModal('admin-settings-modal'); initAdminSettingsModal();" class="admin-only p-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-slate-300 hover:text-amber-400 transition shadow-sm active:scale-95" aria-label="사이트 설정"><i data-lucide="sliders" class="w-4 h-4"></i></button>
     </div>
   <div class="basis-full -mx-4 sm:-mx-6 -mb-3 sm:-mb-3.5 mt-0.5 flex items-center justify-start gap-4 px-4 py-2 border-t border-slate-800 md:hidden overflow-x-auto no-scrollbar whitespace-nowrap">
-    <button onclick="switchMainView('party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</button>
+    <a href="#party" onclick="return tabClick(event, 'party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</a>
     <div class="w-px h-3 bg-slate-700"></div>
-    <button onclick="switchMainView('growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 육성 현황표</button>
+    <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 육성 현황표</a>
     <div class="w-px h-3 bg-slate-700"></div>
-    <button onclick="switchMainView('weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</button>
+    <a href="#weapon" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</a>
   </div>
   </header>
 
@@ -843,11 +848,11 @@
             <input type="text" id="growth-search-input" oninput="renderGrowthTrackerDebounced()" placeholder="이름 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
           </div>
           <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" aria-label="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
-          <div class="flex items-center gap-2 ml-1">
+          <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-slate-400">소속 파티:</span>
             <span id="growth-filter-party-box"></span>
           </div>
-          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95 ml-1"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
+          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
         </div>
         
         <div class="flex flex-wrap items-center gap-2">
@@ -1688,6 +1693,15 @@
         if (id === 'circuit-modal') state.activeCircuitPartyIndex = null;
         if (id === 'build-modal') buildModalFor = null;
       }, dur + 30);
+    }
+
+    // 상단 탭은 링크(#party 등)라 휠클릭·우클릭으로 새 탭에서 열 수 있음. 일반 클릭만 화면 안에서 전환
+    const MAIN_VIEWS = ['party', 'growth', 'weapon'];
+    function tabClick(e, view) {
+      if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return true;
+      switchMainView(view);
+      history.replaceState(history.state, '', view === 'party' ? location.pathname + location.search : '#' + view);
+      return false;
     }
 
     function switchMainView(view) {
@@ -3496,15 +3510,15 @@
         const activeCircuit = CIRCUITS.find(c => c.id === party.circuitId);
         const slotsHtml = party.slots.map((resId, sIdx) => {
           if (!resId) {
-            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400/50 hover:bg-[#0f1422] cursor-pointer flex flex-col gap-1 items-center justify-center aspect-square sm:aspect-auto sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}" onclick="openSlotPicker(${pIdx}, ${sIdx})"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-500 sm:hidden">선택</span></div>`;
+            return `<div class="party-slot relative rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] hover:border-amber-400 hover:bg-[#0f1422] cursor-pointer flex flex-col gap-1 items-center justify-center aspect-square sm:aspect-auto sm:h-[105px]" data-pidx="${pIdx}" data-sidx="${sIdx}" onclick="openSlotPicker(${pIdx}, ${sIdx})"><i data-lucide="plus" class="w-6 h-6 text-slate-600"></i><span class="text-[10px] font-bold text-slate-500 sm:hidden">선택</span></div>`;
           }
           const r = RAW_RESONATORS.find(item => item.id === resId) || { name: '알 수 없음', avatar: '', mainDmg: '', buffSummary: '', element: 'spectro' };
           return `
-            <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md group flex items-center p-0 sm:p-2.5 aspect-square sm:aspect-auto sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
-              <div class="absolute top-1.5 right-1.5 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="p-1 rounded bg-black/70 hover:bg-rose-900 text-slate-400 hover:text-white transition shadow"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
+            <div class="party-slot relative rounded-xl border border-solid border-[#28344c] bg-[#121724] cursor-grab active:cursor-grabbing hover:border-amber-400 shadow-md flex items-center p-0 sm:p-2.5 aspect-square sm:aspect-auto sm:h-[105px] overflow-hidden" data-pidx="${pIdx}" data-sidx="${sIdx}" draggable="true">
+              <div class="absolute top-1 right-1 z-20 hide-on-export"><button onclick="removeSlotCharacter(${pIdx}, ${sIdx}, event)" class="x-btn slot-x" aria-label="공명자 빼기"><i data-lucide="x" class="w-4 h-4"></i></button></div>
               <div class="flex items-center gap-0 sm:gap-2.5 w-full h-full min-w-0">
-                <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')"class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] flex-shrink-0 shadow-md cursor-pointer">
-                  <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition-transform" crossorigin="anonymous">
+                <div onclick="if (!isDraggingCharacter) openDetailModal('${resId}')"class="slot-ava relative h-full w-full rounded-xl sm:rounded-lg overflow-hidden bg-[#0a0d14] sm:border border-[#2b364d] hover:border-amber-400 transition flex-shrink-0 shadow-md cursor-pointer group">
+                  <img loading="lazy" decoding="async" src="${r.avatar}" alt="${esc(r.name)}" class="w-full h-full object-cover object-top pointer-events-none group-hover:scale-105 transition duration-300" crossorigin="anonymous">
                   <div class="absolute top-1 left-1 w-5 h-5 flex items-center justify-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none z-10">${getElementIconHtml(r.element)}</div>
                 </div>
                 <div class="slot-info hidden sm:flex min-w-0 flex-1 flex-col justify-center gap-1">
@@ -3518,7 +3532,7 @@
 
         const circuitBoxHtml = activeCircuit ? `
           <div class="relative group aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border-2 circuit-slot is-on shadow-md flex items-center justify-center p-2 cursor-pointer" onclick="openCircuitModal(${pIdx})">
-            <div class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition z-10 hide-on-export"><button onclick="event.stopPropagation(); unsetCircuitDirect(${pIdx})" class="p-1 rounded bg-black/80 hover:bg-rose-900 text-slate-300 hover:text-white transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
+            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition z-10 hide-on-export"><button onclick="event.stopPropagation(); unsetCircuitDirect(${pIdx})" class="x-btn slot-x" aria-label="회로 빼기"><i data-lucide="x" class="w-4 h-4"></i></button></div>
             <div class="flex items-center justify-center w-full h-full circuit-slot-ic">${getCircuitIconHtml(activeCircuit)}</div>
           </div>` : `
           <div class="aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-dashed border-[#232c3f] bg-[#090c13] circuit-slot flex flex-col gap-1 items-center justify-center p-2 cursor-pointer text-slate-500" onclick="openCircuitModal(${pIdx})">
@@ -3528,7 +3542,7 @@
         return `
           <div class="party-row bg-[#0d1017] border border-[#1a2130] rounded-2xl p-2 sm:p-3.5 flex flex-nowrap items-center gap-1.5 sm:gap-3.5 shadow-lg transition-all relative" data-pidx="${pIdx}">
             <div class="flex items-center gap-3 sm:gap-3.5 flex-shrink-0 select-none">
-              <div class="party-handle hidden md:flex w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#141b27] hover:bg-[#1c2538] border border-[#232f45] hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition cursor-grab active:cursor-grabbing" draggable="true">
+              <div class="party-handle hidden md:flex w-8 h-12 items-center justify-center text-slate-400 hover:text-amber-400 transition cursor-grab active:cursor-grabbing" draggable="true" aria-label="파티 순서 이동">
                 <svg viewBox="0 0 24 24" class="w-5 h-5 stroke-current fill-none stroke-[2.2] stroke-linecap-round stroke-linejoin-round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
               </div>
               <span class="text-base sm:text-3xl font-black text-slate-200 tracking-tight w-6 sm:w-auto text-center">${String(pIdx + 1).padStart(2, '0')}</span>
@@ -4676,7 +4690,10 @@
       populateGrowthPartyFilter();
       initDragToScroll();
       if (IS_ADMIN) { document.getElementById('admin-bar').classList.remove('hidden'); updateAdminBar(); }
-      lucide.createIcons();  playEnter('roster-grid');
+      lucide.createIcons();
+      const startView = location.hash.slice(1);
+      if (MAIN_VIEWS.includes(startView) && startView !== 'party') switchMainView(startView); else playEnter('roster-grid');
+      window.addEventListener('hashchange', () => { const v = location.hash.slice(1) || 'party'; if (MAIN_VIEWS.includes(v) && v !== currentMainView) switchMainView(v); });
     }
   </script>
 </body>
