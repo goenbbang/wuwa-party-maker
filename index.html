@@ -2410,7 +2410,7 @@
         st = computeBuildStats(res, { ...preset, build: botCardBuild(r) })?.total || {};
         g.level = old;
       }
-      const v = (k, d) => st[k] == null ? null : d ? roundPct(st[k]) : floorStat(st[k]);
+      const v = (k, d) => st[k] == null ? null : d ? floorPct(st[k]) : floorStat(st[k]);
       return [[baseKey, v(baseKey, 0), ''], ['공명 효율', v('공명 효율', 1), '%'], ['크리티컬', v('크리티컬', 1), '%'], ['크리티컬 피해', v('크리티컬 피해', 1), '%']];
     }
 
@@ -2891,6 +2891,13 @@
       afterGrowthChange();
     }
 
+    // 에코 부옵 HP · 공격력은 화면 표시값과 실제값이 조금 다름 (숨은 소수점).
+    // 봇 카드 11명 ↔ 인게임 스탯창 대조로 맞춘 보정: % 는 표시값 × 0.9985, 깡HP +0.3, 깡공격력 −0.16
+    const subTrue = s => {
+      const v = +s.value;
+      if (s.stat !== 'HP' && s.stat !== '공격력') return v;
+      return s.percent ? v * 0.9985 : v + (s.stat === 'HP' ? 0.3 : -0.16);
+    };
     function computeBuildStats(res, preset) {
       const cd = BUILD_DATA?.characters?.[res.id];
       if (!cd) return null;
@@ -2916,11 +2923,11 @@
         if (!e) return;
         if (e.main?.stat) put(e.main.stat, true, e.main.value);
         if (e.mainFlat?.stat) put(e.mainFlat.stat, false, e.mainFlat.value);
-        (e.subs || []).forEach(s => put(s.stat, s.percent, s.value));
+        (e.subs || []).forEach(s => put(s.stat, s.percent, subTrue(s)));
       });
       // 에코 세트 상시 효과 (2세트 속성 피해 10% 등). 같은 이름의 에코는 한 번만 셈
       const setNames = {};
-      (build.echoes || []).forEach(e => { const s = e && echoSetOf(res, e); if (s) (setNames[s] ||= new Set()).add(e.name); });
+      (build.echoes || []).forEach(e => { const s = e && echoSetOf(res, e, build.echoes); if (s) (setNames[s] ||= new Set()).add(e.name); });
       Object.entries(setNames).forEach(([s, names]) => Object.entries(BUILD_DATA?.setBonus?.[s] || {}).forEach(([n, props]) => {
         if (names.size >= +n) props.forEach(([stat, v]) => put(stat, true, v));
       }));
@@ -2953,9 +2960,11 @@
 
     // 게임 표시 방식: 고정 수치는 버림(587.5 → 587), % 는 소수 첫째 자리 반올림(정확히 반이면 짝수 쪽, 20.25 → 20.2)
     const floorStat = v => Math.floor(v + 1e-6);
+    // 공명자 스탯창의 % 는 소수 첫째 자리 아래를 버림 (페비 크리티컬 32.15 → 32.1, 방랑자 공명 효율 138.88 → 138.8)
+    const floorPct = v => Math.floor(v * 10 + 1e-6) / 10;
     const roundPct = v => { const x = v * 10, f = Math.floor(x), r = x - f; return (Math.abs(r - 0.5) < 1e-9 ? (f % 2 ? f + 1 : f) : Math.round(x)) / 10; };
-    const statVal = (stat, v) => FLAT_STATS.includes(stat) ? floorStat(v) : roundPct(v);
-    const fmtStat = (stat, v) => FLAT_STATS.includes(stat) ? floorStat(v).toLocaleString() : `${roundPct(v).toFixed(1)}%`;
+    const statVal = (stat, v) => FLAT_STATS.includes(stat) ? floorStat(v) : floorPct(v);
+    const fmtStat = (stat, v) => FLAT_STATS.includes(stat) ? floorStat(v).toLocaleString() : `${floorPct(v).toFixed(1)}%`;
 
     function setBuildChain(n) {
       const { preset } = activeGrowthPreset(buildModalFor);
@@ -3105,11 +3114,18 @@
       return url ? `<img class="${cls}" src="${url}" alt="">` : '';
     }
 
-    // 저장된 세트가 없으면 (봇 카드로 읽은 에코) 캐릭터 추천 세트 → 세트가 하나뿐인 에코 순으로 추정
-    function echoSetOf(res, e) {
+    // 저장된 세트가 없으면 (봇 카드로 읽은 에코) 같은 빌드의 다른 에코와 겹치는 세트 → 캐릭터 추천 세트 → 세트가 하나뿐인 에코 순으로 추정
+    // list: 같은 빌드의 에코 5칸. 여러 에코가 함께 가질 수 있는 세트일수록 실제 장착 세트일 가능성이 높음
+    function echoSetOf(res, e, list = null) {
       if (e.set) return e.set;
-      const sets = BUILD_DATA?.echoes.find(x => x.name === e.name)?.sets || [];
-      return sets.find(s => (res.echoSet?.sets || []).some(r => r.name === s)) || (sets.length === 1 ? sets[0] : null);
+      const setsOf = x => BUILD_DATA?.echoes.find(d => d.name === x?.name)?.sets || [];
+      const sets = setsOf(e), rec = s => (res.echoSet?.sets || []).some(r => r.name === s);
+      if (list && sets.length > 1) {
+        const names = s => new Set(list.filter(x => x && (x.set ? x.set === s : setsOf(x).includes(s))).map(x => x.name)).size;
+        const best = sets.map(s => [s, names(s) + (rec(s) ? 0.5 : 0)]).sort((a, b) => b[1] - a[1])[0];
+        if (best[1] >= 2) return best[0];
+      }
+      return sets.find(rec) || (sets.length === 1 ? sets[0] : null);
     }
 
     // gridOnly: 검색어 입력 중에는 목록만 다시 그림 (입력칸을 새로 만들면 한글 조합이 끊김)
@@ -3184,7 +3200,7 @@
       const anim = buildAnim; buildAnim = null;
       // 왼쪽: 캐릭터 + 공명 체인
       const chainNodes = (st?.chain || Array.from({ length: 6 }, () => ({ name: '', desc: '' }))).map((c, i) => `
-        <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" data-tip="${esc(`<b>${i + 1}. ${gameText(c.name)}</b><p>${gameText(c.desc)}</p>`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}">` : i + 1}</button>`).join('');
+        <button class="bd-chain ${i < chain ? 'on' : ''} ${anim?.prevChain != null && i < chain && i >= anim.prevChain ? 'is-new' : ''}" onclick="setBuildChain(${i + 1})" data-tip="${esc(`<b>${i + 1}. ${gameText(c.name)}</b><p>${gameText(c.desc)}</p>`)}">${c.icon ? `<img src="${GITHUB_IMG_BASE}icons/IconDevice/${c.icon}.webp" alt="${i + 1}" onerror="this.remove()">` : i + 1}</button>`).join('');
 
       // 가운데: 스탯 표 (목표가 있는 스탯은 현재 수치 왼쪽에 (목표) 를 작게, 달성하면 초록)
       const tg = getTargetStats(res, preset), tgBase = tg.type === 'hp' ? 'HP' : (tg.type === 'def' ? '방어력' : '공격력');
@@ -3217,7 +3233,7 @@
       const off = GROWTH_DATA[res.id].treeOff || [], cl = charLevel(res.id);
       const treeNode = n => { const locked = n.br != null && cl.br < n.br; return `<div class="t2-node ${treeNodeOn(n, off, cl) ? '' : 'off'}" tabindex="0" role="button" onclick="toggleTreeNode('${n.col}-${n.tier}')" onkeydown="if(event.key==='Enter')this.click()">${statIcon(n.stat, 't2-node-ico')}
           <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b>${locked ? `<small>${n.br}단계 돌파 후 해금</small>` : ''}</div></div>`; };
-      const treeInh = (x, j) => `<div class="t2-inh ${off.includes(`inh-${j}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('inh-${j}')" onkeydown="if(event.key==='Enter')this.click()"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt=""></span>
+      const treeInh = (x, j) => `<div class="t2-inh ${off.includes(`inh-${j}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('inh-${j}')" onkeydown="if(event.key==='Enter')this.click()"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt="" onerror="this.remove()"></span>
           <div class="t2-tip"><b>${gameText(x.name)}</b><small>고유 스킬</small><p>${gameText(x.desc)}</p></div></div>`;
       // 아이콘 그림의 무게중심을 원 가운데로 (data/build-data.json iconCenter: 벗어난 정도 %)
       const skIconShift = name => { const c = BUILD_DATA?.iconCenter?.[name]; return c ? ` style="transform:translate(${-c[0]}%,${-c[1]}%)"` : ''; };
@@ -3225,7 +3241,7 @@
         const lv = +preset.skills[`s${i + 1}`] || 1, icon = stt?.skillIcons?.[i];
         const top = i === 2 ? (stt?.inherent || []).map(treeInh).reverse().join('') : (stt?.nodes || []).filter(x => x.col === i).sort((a, b) => b.tier - a.tier).map(treeNode).join('');
         return `<div class="t2-col"><i class="t2-line"></i>${top}
-          <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)}>` : `<b>${lv}</b>`}</div>
+          <div class="t2-sk ${lv >= 10 ? 'max' : ''} ${i === 2 ? 'forte' : ''}">${icon ? `<img src="${GITHUB_IMG_BASE}icons/SkillIcon/${icon}.webp" alt=""${skIconShift(icon)} onerror="this.parentNode&&(this.outerHTML='<b>${lv}</b>')">` : `<b>${lv}</b>`}</div>
           <div class="t2-name">${n}</div>
           <div class="t2-lv ${lv >= 10 ? 'max' : ''}"><small>Lv.</small>${lv}<small>/10</small></div>
           <div class="t2-step"><button onclick="stepBuildSkill(${i}, -1)" aria-label="레벨 내리기">−</button><button onclick="stepBuildSkill(${i}, 1)" aria-label="레벨 올리기">+</button></div></div>`;
@@ -3239,7 +3255,7 @@
           <span class="bd-echo-del" role="button" aria-label="에코 삭제" onclick="event.stopPropagation(); deleteEchoAt(${i})"><i data-lucide="x"></i></span>
           <div class="bd-echo-head">
             ${e.img ? `<img class="bd-echo-img" src="${echoImgUrl(e.img)}" alt="">` : '<div class="bd-echo-img"></div>'}
-            <div class="bd-echo-meta"><div class="bd-echo-name" title="${esc(echoSetOf(res, e) || '')}">${setIconHtml(echoSetOf(res, e))}<span>${esc(e.name || '에코')}</span></div>
+            <div class="bd-echo-meta"><div class="bd-echo-name" title="${esc(echoSetOf(res, e, echoes) || '')}">${setIconHtml(echoSetOf(res, e, echoes))}<span>${esc(e.name || '에코')}</span></div>
               <span class="bd-cost">COST ${e.cost ?? '?'}</span></div>
           </div>
           <div class="bd-echo-main">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>
