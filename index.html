@@ -21,7 +21,7 @@
     }
     html { font-size: calc(16px * var(--ui-scale)); }
     *, *::before, *::after { font-family: var(--font-family-base) !important; }
-    body { background-color: var(--color-bg-base); color: #e8e8ea; user-select: none; font-feature-settings: "tnum"; letter-spacing: -0.02em; }
+    body { background-color: var(--color-bg-base); color: #e8e8ea; user-select: none; word-break: keep-all; overflow-wrap: break-word; font-feature-settings: "tnum"; letter-spacing: -0.02em; }
     .theme-attack-text { color: var(--color-attack) !important; } .theme-buff-text { color: var(--color-buff) !important; }
     ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: #0e0e10; } ::-webkit-scrollbar-thumb { background: #262628; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--color-point); }
     .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -1544,7 +1544,8 @@
             <div>
               <b>wuwa bot 프로필 카드</b>
               <p>레벨, 공명 체인, 스킬, 무기, 에코 정보가 입력됩니다.</p>
-              <p><b>명조 계정과 디스코드 계정 연동 → 명조 공식 디스코드 서버 → wuwa-bot-command 채널 → <code>/생성</code> 명령어</b>로 프로필 이미지를 만들 수 있습니다.</p>
+              <p><b>명조 계정과 디스코드 계정 연동 → 명조 공식 디스코드 서버 → <span style="white-space:nowrap">wuwa-bot-command</span> 채널 → <code>/생성</code> 명령어</b>로 프로필 이미지를 만들 수 있습니다.</p>
+              <p>무기 · 에코 정보를 통해 계산된 스테이터스 값은 오차가 있을 수 있습니다. 정확한 수치가 필요하면 속성 상세정보 이미지도 함께 올려 주세요. 육성 현황표에는 속성 상세정보 수치가 우선 표시됩니다.</p>
               <div class="hp-links">
                 <a href="https://discord.gg/wutheringwaves" target="_blank" rel="noopener"><i data-lucide="external-link"></i>명조 공식 디스코드</a>
                 <a href="https://wutheringwaves-dc.kurogames-global.com/?lang=ko" target="_blank" rel="noopener"><i data-lucide="external-link"></i>디스코드 계정 연동</a>
@@ -1590,6 +1591,7 @@
           <li>이름과 수치가 잘리거나 가려지지 않게 캡처해 주세요. 흐리거나 너무 작은 이미지는 잘못 읽힐 수 있습니다.</li>
           <li>이미 입력된 정보가 있는 프리셋에 이미지를 등록하면 기존 정보가 사라지게 됩니다.</li>
           <li>잘못 읽힌 값은 저장한 뒤 세부 육성 창에서 직접 고칠 수 있습니다.</li>
+          <li>wuwa bot 프로필 카드의 무기 · 에코 정보를 통해 계산된 스테이터스 값은 오차가 있을 수 있습니다. 정확한 수치가 필요하면 속성 상세정보 이미지도 함께 올려 주세요. 육성 현황표에는 속성 상세정보 수치가 우선 표시됩니다.</li>
         </ul>
       </section>
     </div>
@@ -5169,9 +5171,8 @@
 
           panesHtml += `
             <div class="flex flex-col ${gData.activePresetId === preset.id ? '' : 'hidden'}">
-              <div class="grid grid-cols-5 gap-1 mb-2">${SKILL_NAMES.map((label, i) => makeSkill(`s${i + 1}`, label)).join('')}</div>
-              <!-- 스킬은 프리셋과 상관없이 공통, 프리셋 · 이미지 업로드 · 목표 설정은 아래 수치에 관한 것이라 수치 바로 위에 -->
-              <div class="flex items-center gap-1 pt-2.5 mb-2 border-t border-[#1e2638]">
+              <!-- 프리셋 · 이미지 업로드 · 목표 설정은 바로 아래 수치에 관한 것이라 수치 위에, 스킬 레벨은 그 아래 -->
+              <div class="flex items-center gap-1 pt-2.5 mb-2.5">
                 ${renderPresetDropdown(r.id, gData)}
                 <button onclick="openUploadModal('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i></button>
                 <button onclick="openTargetEditor('${r.id}')" class="p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="목표 수치 수정"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
@@ -5182,6 +5183,7 @@
                 ${makeStat('cr', '크리티컬', targetStats.cr, true)}
                 ${makeStat('cd', '크리티컬 피해', targetStats.cd, true)}
               </div>
+              <div class="grid grid-cols-5 gap-1 pt-2.5 border-t border-[#1e2638]" style="margin-top:10px">${SKILL_NAMES.map((label, i) => makeSkill(`s${i + 1}`, label)).join('')}</div>
             </div>`;
         });
 
