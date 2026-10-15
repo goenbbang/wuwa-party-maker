@@ -356,7 +356,7 @@
     .bd-note { font-size: 11px; color: #555557; padding: 10px 18px 16px; line-height: 1.5; }
 
     /* 유효 옵션 강조 · 편집 */
-    :root { --eff: #d9a27a; --eff-strong: #e8bc98; }
+    :root { --eff: #e3b96a; --eff-strong: #e3b96a; } /* 앰버 골드 (이전 주황빛: #d9a27a / #e8bc98) */
     .dm-star { color: #fbbf24; fill: #fbbf24; }
     .bd-stat.is-eff .bd-stat-name { color: var(--eff); font-weight: 700; }
     .bd-stat:not(.is-eff) b { color: #a3a3a5; }
@@ -657,6 +657,9 @@
     html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> svg.lucide-x), html.theme-wuwa #detail-modal button[onclick*="lose"]:has(> i[data-lucide="x"]) { color: #fff !important; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .9)); }
     #fatigue-modal > div, #owned-modal > div { padding-top: 14px !important; }
     @media (min-width: 768px) { html.theme-wuwa [class~="md:rounded-3xl"] { border-radius: 8px !important; } }
+  
+    /* 직각 박스: 원형 요소(체인·스킬 노드·점·스피너·체크)만 둥글게 유지 */
+    html.theme-wuwa *:not(.rounded-full):not(.bd-chain):not(.t2-node-ico):not(.t2-inh-ico):not(.t2-sk):not(.t2-step button):not(.mode-dot):not(.mode-pair):not(.up-spin):not(.ed-check):not(.ep-cost) { border-radius: 0 !important; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start pb-6 selection:bg-[#f5a623] selection:text-black">
@@ -2256,7 +2259,7 @@
       const crit = sup ? (SUPPORT_CRIT.includes(res.id) ? 0.2 : 0) : 1;
       const w = {
         '크리티컬%': crit, '크리티컬 피해%': crit,
-        [scale + '%']: sup ? 1 : 0.8, [scale]: sup ? 0.4 : 0.3,
+        [scale + '%']: sup ? 1 : 0.8, [scale]: 0.4,
         '공명 효율%': sup ? 1 : regenWeight(ts.regen == null ? 120 : +ts.regen),
       };
       const bonus = MAIN_DMG_BONUS[res.mainDmg];
