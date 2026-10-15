@@ -714,10 +714,12 @@
     .rc-tags span { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; padding: 2px 7px; border: 1px solid #414143; color: #bdbcb8; }
     .wt-ico { display: inline-block; flex-shrink: 0; width: 14px; height: 14px; background: currentColor; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
     .rc-tags .wt-ico { width: 12px; height: 12px; }
-    .wt-tag .wt-ico { width: 11px; height: 11px; }
+    .wt-tag .wt-ico { width: 14px; height: 14px; }
     .wt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
     .wt-btn .wt-ico { width: 12px; height: 12px; }
     @media (max-width: 639px) { .wt-btn .wt-ico { display: none; } }
+    #weapon-type-filter-bar .wt-btn .wt-ico { width: 16px; height: 16px; }
+    @media (min-width: 640px) { #weapon-type-filter-bar > button { width: 84px; flex: none; } }
     @media (min-width: 640px) { #codex-weapon-bar .wt-btn { padding-left: 8px; padding-right: 8px; } }
     .wt-tag { display: inline-flex; align-items: center; gap: 3px; }
     .help-btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; width: 34px; height: 34px; }
