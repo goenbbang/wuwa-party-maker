@@ -78,15 +78,20 @@ export async function createWorkers(Tesseract, langPath) {
 // 캡처 범위가 사람마다 달라서 좌표 대신 위치 관계로 읽는다.
 // 1) 전체를 한글로 읽어 스탯 6줄의 위치를 찾고, 각 줄 오른쪽 숫자는 숫자 전용으로 다시 읽는다.
 // 2) 스탯 첫 줄 위쪽을 이름 영역과 레벨 영역으로 나눠 따로 크게 읽는다.
-export async function parseStatScreen(backend, workers, { names = [], aliases = {} } = {}) {
-  const W = backend.width, H = backend.height;
-  const scale = Math.max(1, 1200 / W);
+// 이미지 전체를 한글로 읽어 줄 목록으로 (좌표는 원본 기준)
+export async function readPageLines(backend, workers) {
+  const W = backend.width, H = backend.height, scale = Math.max(1, 1200 / W);
   await workers.kor.setParameters({ tessedit_pageseg_mode: '3' });
   const page = await workers.kor.recognize(await backend.crop({ x: 0, y: 0, w: W, h: H }, scale));
-  const lines = (page.data.lines || []).map((l) => ({
+  return (page.data.lines || []).map((l) => ({
     text: l.text.trim(),
     bbox: { x0: l.bbox.x0 / scale, y0: l.bbox.y0 / scale, x1: l.bbox.x1 / scale, y1: l.bbox.y1 / scale },
   })).filter((l) => l.text);
+}
+
+export async function parseStatScreen(backend, workers, { names = [], aliases = {}, lines = null } = {}) {
+  const W = backend.width, H = backend.height;
+  if (!lines) lines = await readPageLines(backend, workers);
 
   const result = { kind: 'stat-screen', name: null, level: null, stats: {}, warnings: [] };
   const clip = (box) => {
@@ -301,6 +306,73 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
   return result;
 }
 
+// ---------- 에코 한 개 (게임 에코 상세 창 캡처) ----------
+
+// 에코 이름(+강화 단계) · COST · 옵션 줄(메인, 고정 메인, 부옵 5개) 순서. 캡처 범위가 제각각이라 줄 위치로 읽는다
+const COST_RE = /C\s*[O0o]\s*S\s*T/i;
+const echoNameOf = (text) => text.replace(/\+\s*\d+/g, '').replace(/[^가-힣·\s]/g, '').trim();
+// 맨 위 두 줄 중 하나가 에코 이름이면 에코 창 (COST 글자는 금색이라 잘 안 읽힘)
+function findEchoHead(lines, echoDb) {
+  if (!echoDb) return null;
+  const names = echoDb.map((e) => e.name);
+  for (const [i, l] of lines.slice(0, 2).entries()) {
+    const hit = bestMatch(echoNameOf(l.text), names, 0.7);
+    if (hit) return { index: i, name: hit.value };
+  }
+  return null;
+}
+export const isEchoPanel = (lines, echoDb) => lines.some((l) => COST_RE.test(l.text)) || !!findEchoHead(lines, echoDb);
+
+export async function parseEchoPanel(backend, workers, { echoDb = null, lines }) {
+  const W = backend.width, H = backend.height;
+  const result = { kind: 'echo', echo: null, warnings: [] };
+  const clip = (box) => {
+    const x = Math.max(0, Math.floor(box.x)), y = Math.max(0, Math.floor(box.y));
+    return { x, y, w: Math.max(1, Math.min(W - x, Math.ceil(box.w))), h: Math.max(1, Math.min(H - y, Math.ceil(box.h))) };
+  };
+  const headHit = findEchoHead(lines, echoDb);
+  // COST 줄: 글자로 찾고, 못 찾으면 이름 바로 다음 줄
+  const costLine = lines.find((l) => COST_RE.test(l.text)) || lines[(headHit?.index ?? 0) + 1] || lines[0];
+  const echo = { name: null, img: null, cost: null, level: null, main: null, mainFlat: null, subs: [] };
+
+  // 이름: COST 줄 위쪽 글자 (강화 단계 "+25" 는 따로)
+  const head = lines.filter((l) => l.bbox.y1 <= costLine.bbox.y0 + 2).map((l) => l.text).join(' ');
+  const lv = head.match(/\+\s*(\d{1,2})/);
+  if (lv && +lv[1] <= 25) echo.level = +lv[1];
+  const rawName = echoNameOf(head);
+  const name = headHit?.name || (echoDb && bestMatch(rawName, echoDb.map((e) => e.name), 0.5)?.value);
+  const db = name && echoDb.find((e) => e.name === name);
+  if (db) { echo.name = db.name; echo.img = db.img; }
+  else result.warnings.push(`에코 이름을 찾지 못함${rawName ? ` (${rawName})` : ''}`);
+  const c = costLine.text.replace(COST_RE, ' ').match(/(?:^|\s)([134])(?=\s|$)/);
+  echo.cost = db?.cost ?? (c ? +c[1] : null);
+
+  // 옵션 줄: COST 줄 아래에서 숫자로 끝나는 줄
+  const rows = lines.filter((l) => l.bbox.y0 >= costLine.bbox.y1 - 2 && /\d[\d.,]*\s*%?\s*\S{0,2}$/.test(l.text)).slice(0, 7);
+  for (const [i, l] of rows.entries()) {
+    const h = l.bbox.y1 - l.bbox.y0;
+    const box = clip({ x: W * 0.6, y: l.bbox.y0 - h * 0.25, w: W * 0.4, h: h * 1.5 });
+    const rawNum = (await workers.num.recognize(await backend.crop(box, Math.max(2, 60 / h)))).data.text.trim();
+    let num = parseNumber(rawNum) || parseNumber(l.text);
+    const labelText = l.text.replace(/[\d.,]+\s*%?\s*\S{0,2}$/, '').replace(/[^가-힣A-Za-z\s]/g, '').trim();
+    const label = bestMatch(labelText, i === 0 ? MAIN_STAT_NAMES : SUBSTAT_NAMES, 0.5);
+    const stat = label ? label.value : 'HP'; // 한글 모델이 "HP"를 잘 못 읽음
+    if (num && i > 1) {
+      num = fixSubValue(stat, num, rawNum);
+      if (num.suspicious) result.warnings.push(`${stat} 값(${num.value}) 확인 필요`);
+    }
+    const row = { stat, value: num ? num.value : null, percent: num ? num.percent : false };
+    if (i === 0) echo.main = { ...row, percent: true };
+    else if (i === 1) echo.mainFlat = row;
+    else echo.subs.push(row);
+  }
+  if (!echo.main) result.warnings.push('옵션을 읽지 못함');
+  if (echo.cost == null && echo.mainFlat) echo.cost = COST_BY_FLAT.find((x) => x.label === echo.mainFlat.stat && x.value === echo.mainFlat.value)?.cost ?? null;
+  if (echo.cost == null) result.warnings.push('코스트를 판단하지 못함');
+  result.echo = echo;
+  return result;
+}
+
 // ---------- 이미지 종류 판별 ----------
 
 export function detectKind(backend) {
@@ -364,7 +436,9 @@ export async function createCanvasBackend(file) {
 
 export async function parseImage(file, workers, opts) {
   const backend = await createCanvasBackend(file);
-  return detectKind(backend) === 'bot-card' ? parseBotCard(backend, workers, opts) : parseStatScreen(backend, workers, opts);
+  if (detectKind(backend) === 'bot-card') return parseBotCard(backend, workers, opts);
+  const lines = await readPageLines(backend, workers);
+  return isEchoPanel(lines, opts.echoDb) ? parseEchoPanel(backend, workers, { ...opts, lines }) : parseStatScreen(backend, workers, { ...opts, lines });
 }
 
 // ---------- 사이트에서 쓰는 진입점 ----------

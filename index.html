@@ -265,6 +265,7 @@
     .bd-tree span { color: #d4d4d6; font-weight: 700; }
     /* 세부 창 애니메이션: 에코 카드 차례로 등장 · 누를 수 있는 카드 테두리 빛 · 체인 변경 시 반짝임 */
     @keyframes bdUp { from { opacity: 0; transform: translateY(12px); } } /* to 생략: 요소 자신의 투명도(편성된 공명자 흐림 등)까지 자연스럽게 */
+    .fx-wait { opacity: 0; }
     .fx-in > * { animation: bdUp .35s cubic-bezier(.2, .8, .2, 1) both; animation-delay: var(--fx-d, 0ms); } .fx-in > :nth-child(n+21) { animation: none; }
     /* 창이 열릴 때 안쪽 요소가 차례로 살짝 올라오며 등장 (모두 0.3초 안에 시작) */
     @keyframes bdPop { from { opacity: 0; transform: scale(.82); } }
@@ -487,6 +488,7 @@
     .ua-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; padding-top: 10px; border-top: 1px solid #262628; }
     .ua-stats div { display: flex; justify-content: space-between; font-size: 12px; color: #a3a3a5; }
     .ua-stats b { color: #fff; font-weight: 800; }
+    .ua-stats .ua-main span { color: #e8d7a6; }
     .ua-echoes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
     .ua-echo { position: relative; aspect-ratio: 1; border: 1px solid #323234; background: #0d0d0f; overflow: hidden; }
     .ua-echo img { width: 100%; height: 100%; object-fit: cover; }
@@ -705,7 +707,14 @@
     .rc-name b { font-size: 13px; font-weight: 900; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .rc-star { font-size: 11px; letter-spacing: -1px; color: #fbbf24; flex-shrink: 0; }
     .rc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .rc-tags span { font-size: 10px; font-weight: 800; padding: 1px 6px; border: 1px solid #414143; color: #a3a3a5; }
+    .rc-tags span { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 800; padding: 1px 6px; border: 1px solid #414143; color: #a3a3a5; }
+    .wt-ico { display: inline-block; flex-shrink: 0; width: 14px; height: 14px; background: currentColor; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+    .rc-tags .wt-ico, .wt-tag .wt-ico { width: 11px; height: 11px; }
+    .wt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
+    .wt-btn .wt-ico { width: 12px; height: 12px; }
+    @media (max-width: 639px) { .wt-btn .wt-ico { display: none; } }
+    @media (min-width: 640px) { #codex-weapon-bar .wt-btn { padding-left: 8px; padding-right: 8px; } }
+    .wt-tag { display: inline-flex; align-items: center; gap: 3px; }
     .rc-tags .role-main { border-color: rgba(244, 63, 94, .4); background: rgba(76, 5, 25, .7); color: #fda4af; }
     .rc-tags .role-sub { border-color: rgba(139, 92, 246, .4); background: rgba(46, 16, 101, .7); color: #c4b5fd; }
     .rc-tags .role-support { border-color: rgba(16, 185, 129, .4); background: rgba(2, 44, 34, .7); color: #6ee7b7; }
@@ -838,6 +847,8 @@
     </div>
     
     <div class="flex items-center gap-1.5 sm:gap-2.5 justify-end flex-shrink-0">
+      <button aria-label="데이터 내보내기" onclick="openExportModal()" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">내보내기</span></button>
+      <button aria-label="데이터 불러오기" onclick="openImportModal()" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">불러오기</span></button>
       <button aria-label="공명자 편집" onclick="openModal('visual-editor-modal'); initVisualEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i><span class="hidden lg:inline">공명자 편집</span></button>
       <button aria-label="무기 편집" onclick="openModal('weapon-editor-modal'); renderWeaponEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="sword" class="w-4 h-4 text-rose-400"></i><span class="hidden lg:inline">무기 편집</span></button>
       <button aria-label="에코 세트 편집" onclick="openModal('echo-set-editor-modal'); renderEchoSetEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-purple-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="layers" class="w-4 h-4 text-purple-400"></i><span class="hidden lg:inline">에코 세트 편집</span></button>
@@ -888,10 +899,6 @@
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="promptResetParties()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1 whitespace-nowrap">초기화</button>
           <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지로 저장</span></button>
-          <div class="flex items-center gap-2">
-          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
-          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
-          </div>
         </div>
       </div>
       <div id="parties-capture-area" class="space-y-3.5 p-1 -mx-1 rounded-2xl bg-[#06080d]"><div id="parties-container" class="space-y-3.5"></div></div>
@@ -919,8 +926,6 @@
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="resetGrowthData()" class="whitespace-nowrap text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
           <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
-          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
-          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
         </div>
       </div>
       
@@ -1463,6 +1468,7 @@
         <h3 id="import-modal-title" class="text-base font-extrabold text-white"></h3>
         <button onclick="closeModal('import-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
+      <p class="text-[11px] text-slate-400">내보내기로 복사한 코드를 붙여넣어 주세요. 현재 데이터는 덮어씌워집니다.</p>
       <textarea id="import-base64-textarea" rows="4" placeholder="코드 붙여넣기" class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none"></textarea>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
@@ -1519,6 +1525,9 @@
     const ICON_DIRS = [[/^T_ChipIcon/i, 'IconChip'], [/^T_Iconproperty/i, 'IconProperty'], [/^T_RogueSkill/i, 'IconRogueSkill'], [/^T_IconComBuff/i, 'IconFightBuff'], [/^T_IconDevice|^T_IconJiaBeiLiNaM/i, 'IconDevice'], [/^T_IconLevelBuff/i, 'IconLevelBuff'], [/^T_IconRogueFettersBuff/i, 'IconRogueFettersBuff'], [/^T_IconElement/i, 'IconElementRound']];
     const SKILL_NAMES = ['기본 공격', '공명 스킬', '공명 회로', '공명 해방', '변주 스킬']; // 육성 탭 s1~s5 순서 & 기본 스킬 우선순위
     const WEAPON_TYPES = ['직검', '대검', '권총', '권갑', '증폭기'];
+    // 무기 종류 아이콘 (흰색 아이콘을 마스크로 써서 글자색을 그대로 따라감)
+    const WEAPON_TYPE_ICON = { '직검': 'Sword', '대검': 'Broadblade', '권총': 'Pistols', '권갑': 'Gauntlets', '증폭기': 'Rectifier' };
+    const wtIco = t => WEAPON_TYPE_ICON[t] ? `<i class="wt-ico" style="--m:url('${GITHUB_IMG_BASE}icons/IconWeapon/T_IconWeapon_${WEAPON_TYPE_ICON[t]}_UI.webp')"></i>` : '';
     const STAT_META = {
       atk: { label: '기초 공격력', icon: 'swords', img: 'T_Iconpropertyredattack_UI' },
       '공격력': { label: '공격력', icon: 'sword', img: 'T_Iconpropertyredattack_UI' },
@@ -1808,13 +1817,26 @@
     }
 
     // 탭을 열 때만 카드가 아래에서 차례로 떠오름 (검색 · 필터로 다시 그릴 때는 안 함)
+    // 화면 밖 카드는 스크롤해서 처음 보일 때 떠오름 (한 번에 보이는 카드끼리만 차례로)
+    let enterObserver = null, enterEl = null;
     function playEnter(id) {
       const el = document.getElementById(id);
       if (!el) return;
-      [...el.children].slice(0, 20).forEach((c, i) => {
-        c.style.animation = 'none'; void c.offsetWidth;
-        c.style.animation = `bdUp .35s cubic-bezier(.2, .8, .2, 1) ${i * 30}ms backwards`;
+      enterObserver?.disconnect();
+      enterEl?.querySelectorAll(':scope > .fx-wait').forEach(c => c.classList.remove('fx-wait'));
+      enterEl = el;
+      const kids = [...el.children];
+      kids.forEach(c => { c.style.animation = 'none'; c.classList.add('fx-wait'); });
+      enterObserver = new IntersectionObserver(entries => {
+        entries.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left)
+          .forEach((e, i) => {
+            const c = e.target;
+            enterObserver.unobserve(c);
+            c.classList.remove('fx-wait'); void c.offsetWidth;
+            c.style.animation = `bdUp .35s cubic-bezier(.2, .8, .2, 1) ${Math.min(i, 12) * 30}ms backwards`;
+          });
       });
+      kids.forEach(c => enterObserver.observe(c));
     }
 
     // 기본 속성 아이콘 = 각 속성 에코 세트 아이콘 (관리자 설정에서 따로 지정하면 그게 우선)
@@ -2173,10 +2195,39 @@
       const a = uploadAsk; uploadAsk = null;
       if (!a) return;
       const res = a.cands.find(x => x.id === a.resId);
-      a.resolve(ok ? { res, preset: GROWTH_DATA[res.id].presets.find(p => p.id === a.presetId) } : null);
+      a.resolve(ok ? { res, preset: GROWTH_DATA[res.id].presets.find(p => p.id === a.presetId), slot: a.slotUse } : null);
     }
-    function pickUploadRes(id) { uploadAsk.resId = id; uploadAsk.presetId = activeGrowthPreset(id).preset.id; renderUploadAsk(); }
-    function pickUploadPreset(id) { uploadAsk.presetId = id; renderUploadAsk(); }
+    function pickUploadRes(id) { uploadAsk.resId = id; uploadAsk.presetId = activeGrowthPreset(id).preset.id; uploadAsk.slot = null; renderUploadAsk(); }
+    function pickUploadPreset(id) { uploadAsk.presetId = id; uploadAsk.slot = null; renderUploadAsk(); }
+    function pickUploadSlot(i) { uploadAsk.slot = +i; renderUploadAsk(); }
+
+    // 에코 한 개: 빈칸이 있으면 첫 빈칸, 꽉 찼으면 고른 칸 (처음엔 같은 코스트의 첫 칸)
+    function uploadEchoSlot(a, preset) {
+      const es = preset.build?.echoes || [], empty = [0, 1, 2, 3, 4].find(i => !es[i]);
+      if (empty != null) return { slot: empty, full: false };
+      if (a.slot == null) a.slot = Math.max(0, es.findIndex(e => e && String(e.cost) === String(a.r.echo.cost)));
+      return { slot: a.slot, full: true };
+    }
+    const fmtEchoVal = x => x?.value == null ? '-' : x.value + (x.percent ? '%' : '');
+
+    // 에코 상세 창 캡처: 공명자 이름이 없으므로 업로드 창을 연 공명자, 없으면 확인 창에서 고름
+    async function applyEchoShot(r, targetId) {
+      const e = r.echo;
+      if (!e?.main) { showToast('에코 옵션을 읽지 못했습니다.'); return; }
+      const target = targetId && RAW_RESONATORS.find(x => x.id === targetId);
+      const owned = RAW_RESONATORS.filter(x => isOwned(x.id)).sort(byName);
+      const cands = target ? [target] : (owned.length ? owned : [...RAW_RESONATORS].sort(byName));
+      const pick = await askUploadSave(r, cands);
+      if (!pick) return;
+      const { res, preset, slot } = pick, build = ensureBuild(preset), prev = build.echoes[slot];
+      const set = prev?.name === e.name && prev.set ? prev.set : (echoSetOf(res, { name: e.name }) || BUILD_DATA?.echoes.find(x => x.name === e.name)?.sets[0] || null);
+      build.echoes[slot] = { name: e.name, img: e.img, cost: e.cost, set, main: e.main, mainFlat: e.mainFlat, subs: e.subs };
+      for (let i = 0; i < 5; i++) if (build.echoes[i] === undefined) build.echoes[i] = null;
+      markManual(build);
+      GROWTH_DATA[res.id].activePresetId = preset.id;
+      afterGrowthChange();
+      showToast(`${esc(res.name)} ${slot + 1}번 칸에 에코를 저장했습니다.`);
+    }
 
     // 저장될 4가지 스탯 (스탯 창: 읽은 값, 봇 카드: 카드 레벨 · 무기 · 에코로 계산한 값)
     function uploadStatValues(res, r, preset) {
@@ -2195,6 +2246,30 @@
     function renderUploadAsk() {
       const a = uploadAsk, r = a.r, res = a.cands.find(x => x.id === a.resId), g = GROWTH_DATA[res.id];
       const preset = g.presets.find(p => p.id === a.presetId), bot = r.kind === 'bot-card';
+      const ddPreset = pickBtn('uaPreset', a.presetId, g.presets.map((p, i) => [p.id, presetLabel(p, i)]), 'preset-dd-btn ua-dd', 'aria-label="저장할 프리셋"');
+      const ddRes = a.cands.length > 1 ? pickBtn('uaRes', a.resId, a.cands.map(x => [x.id, x.name]), 'preset-dd-btn ua-dd', 'aria-label="저장할 공명자"') : '';
+      const notes = (alerts, info, overwrite) => alerts.length || overwrite.length || info ? `<div class="ua-notes">${alerts.map(t => `<div class="ua-alert"><i data-lucide="alert-triangle"></i><span>${esc(t)}</span></div>`).join('')}${info ? `<div class="up-stage-note">${esc(info)}</div>` : ''}${overwrite.map(t => `<div class="ua-over">${esc(t)}</div>`).join('')}</div>` : '';
+      const foot = `<div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`;
+      if (r.kind === 'echo') {
+        const e = r.echo, { slot, full } = uploadEchoSlot(a, preset), es = preset.build?.echoes || [];
+        a.slotUse = slot;
+        const ddSlot = full ? pickBtn('uaSlot', slot, es.map((x, i) => [i, `${i + 1}번 칸 (COST ${x?.cost ?? '-'})`]), 'preset-dd-btn ua-dd', 'aria-label="저장할 에코 칸"') : '';
+        const rows = [[e.main?.stat, e.main], [e.mainFlat?.stat, e.mainFlat], ...e.subs.map(x => [x.stat, x])].filter(([k]) => k);
+        const sub = [e.cost ? `COST ${e.cost}` : '', e.level != null ? `+${e.level}` : ''].filter(Boolean).join(' · ');
+        const info = [full ? '' : `${slot + 1}번 칸에 추가됩니다.`, isOwned(res.id) ? '' : '보유 공명자가 아니어서 목록에는 보이지 않습니다.'].filter(Boolean).join(' ');
+        showUploadStage(`
+          <div class="ua-top">${ddPreset}${ddRes}${ddSlot}</div>
+          <div class="ua-card">
+            <div class="ua-head">
+              <div class="ua-who"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b><span>${esc(presetLabel(preset, g.presets.indexOf(preset)))}</span></div></div>
+              <div class="ua-wp">${e.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : '<i></i>'}<div><b>${esc(e.name || '에코를 찾지 못함')}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
+            </div>
+            <div class="ua-stats">${rows.map(([k, x], i) => `<div${i < 2 ? ' class="ua-main"' : ''}><span>${esc(k)}</span><b>${fmtEchoVal(x)}</b></div>`).join('')}</div>
+          </div>
+          ${notes(r.warnings.length ? [`오류 사항 : ${r.warnings.join(' · ')}`] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 덮어씌워집니다.`] : [])}
+          ${foot}`);
+        return;
+      }
       const lv = bot ? r.level : r.level?.current;
       const sub = [lv ? `Lv.${lv}` : '', bot && r.chain != null ? `공명 체인 ${r.chain}` : ''].filter(Boolean).join(' · ');
       const stats = uploadStatValues(res, r, preset);
@@ -2207,7 +2282,7 @@
       if (bot && Object.values(preset.stats.current).some(v => v)) overwrite.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
       const info = isOwned(res.id) ? '' : '보유 공명자가 아니어서 목록에는 보이지 않습니다.';
       showUploadStage(`
-        <div class="ua-top">${pickBtn('uaPreset', a.presetId, g.presets.map((p, i) => [p.id, presetLabel(p, i)]), 'preset-dd-btn ua-dd', 'aria-label="저장할 프리셋"')}${a.cands.length > 1 ? pickBtn('uaRes', a.resId, a.cands.map(x => [x.id, x.name]), 'preset-dd-btn ua-dd', 'aria-label="저장할 공명자"') : ''}</div>
+        <div class="ua-top">${ddPreset}${ddRes}</div>
         <div class="ua-card">
           <div class="ua-head">
             <div class="ua-who"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
@@ -2216,8 +2291,8 @@
           <div class="ua-stats">${stats.map(([k, v, u]) => `<div><span>${k}</span><b>${v == null ? '-' : v + u}</b></div>`).join('')}</div>
           ${bot ? `<div class="ua-echoes">${[0, 1, 2, 3, 4].map(i => { const e = r.echoes[i]; return `<div class="ua-echo">${e?.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : ''}${e ? `<span class="bd-cost">COST ${e.cost ?? '?'}</span>` : ''}</div>`; }).join('')}</div>` : ''}
         </div>
-        ${alerts.length || overwrite.length || info ? `<div class="ua-notes">${alerts.map(t => `<div class="ua-alert"><i data-lucide="alert-triangle"></i><span>${esc(t)}</span></div>`).join('')}${info ? `<div class="up-stage-note">${esc(info)}</div>` : ''}${overwrite.map(t => `<div class="ua-over">${esc(t)}</div>`).join('')}</div>` : ''}
-        <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`);
+        ${notes(alerts, info, overwrite)}
+        ${foot}`);
     }
 
     let screenshotBusy = false;
@@ -2228,7 +2303,7 @@
       screenshotBusy = true; uploadAborted = false;
       showUploadBusy(1, files.length);
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=7');
+        const ocr = await import('./assets/wuwa-ocr.js?v=8');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
@@ -2237,6 +2312,7 @@
           showUploadBusy(fi + 1, files.length);
           const r = await ocr.parseImage(file, workers, { names, weapons, echoDb });
           if (uploadAborted) break;
+          if (r.kind === 'echo') { await applyEchoShot(r, fallbackResId); continue; }
           const res = RAW_RESONATORS.find(x => x.name === r.name) || RAW_RESONATORS.find(x => x.id === fallbackResId);
           if (!res) { showToast(`캐릭터 이름을 읽지 못했습니다${r.name ? ` (${esc(r.name)})` : ''}.`); continue; }
           if (res.name !== r.name) r.warnings.push(`이름(${r.name || '읽지 못함'})을 찾지 못해 ${res.name}에 입력합니다`);
@@ -2339,8 +2415,8 @@
       if (!screenshotBusy) { resetUploadStage(); clearUploadFiles(); } // 다시 열면 이전에 넣은 이미지는 비움
       const res = resId && RAW_RESONATORS.find(r => r.id === resId);
       document.getElementById('upload-target-desc').textContent = res
-        ? `${res.name}의 WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.`
-        : 'WuWa Bot 프로필 카드나 스테이터스 창 캡처 이미지를 업로드해 주세요.';
+        ? `${res.name}의 WuWa Bot 프로필 카드, 스테이터스 창, 에코 상세 창 캡처 이미지를 업로드해 주세요.`
+        : 'WuWa Bot 프로필 카드, 스테이터스 창, 에코 상세 창 캡처 이미지를 업로드해 주세요.';
       renderUploadList();
       openModal('upload-modal');
     }
@@ -3354,8 +3430,8 @@
     function setCodexFilter(key, val) { codexFilters[key] = val; renderCodexFilterBars(); renderResonatorCodex(); }
     function renderCodexFilterBars() {
       const btn = (key, id, label, gold) => {
-        const on = codexFilters[key] === id;
-        return `<button onclick="setCodexFilter('${key}', '${id}')" class="flex-1 sm:flex-none py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${on ? (gold ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-slate-700 text-white border-slate-500 shadow-md') : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}">${label}</button>`;
+        const on = codexFilters[key] === id, ico = key === 'weapon' ? wtIco(id) : '';
+        return `<button onclick="setCodexFilter('${key}', '${id}')" class="${ico ? 'wt-btn ' : ''}flex-1 sm:flex-none py-1.5 px-1 sm:px-2.5 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${on ? (gold ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-slate-700 text-white border-slate-500 shadow-md') : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}">${ico}${label}</button>`;
       };
       document.getElementById('codex-rank-bar').innerHTML = [['all', '전체'], ['5', '5★'], ['4', '4★']].map(([id, l]) => btn('rank', id, l, false)).join('');
       document.getElementById('codex-element-bar').innerHTML = FILTER_TABS_DEF.elements.map(t => elementFilterBtn(t, codexFilters.element === t.id, 'setCodexElement')).join('');
@@ -3380,10 +3456,10 @@
         const rk = r.rarity || 5;
         const sum = keywordsWithoutMainDmg(r).join(' · ');
         return `<button class="rc-card ${rk === 4 ? 'r4' : ''}" onclick="openDetailModal('${r.id}')">
-          <div class="rc-art"><div class="rc-art-in">${r.card || r.sprite ? `<img loading="lazy" decoding="async" src="${r.card || r.sprite}" alt="" crossorigin="anonymous">` : ''}</div></div>
+          <div class="rc-art"><div class="rc-art-in">${r.card || r.sprite ? `<img loading="lazy" decoding="async" src="${r.card || r.sprite}" alt="" crossorigin="anonymous"${r.card && r.sprite ? ` onerror="this.onerror=null;this.src='${r.sprite}'"` : ''}>` : ''}</div></div>
           <div class="rc-body">
             <div class="rc-name"><span>${getElementIconHtml(r.element)}</span><b>${esc(r.name)}</b><span class="rc-star">${'★'.repeat(rk)}</span></div>
-            <div class="rc-tags">${RC_ROLE[r.role] ? `<span class="role-${r.role}">${RC_ROLE[r.role]}</span>` : ''}${r.weaponType ? `<span>${esc(r.weaponType)}</span>` : ''}${r.mainDmg ? `<span>${esc(r.mainDmg)}</span>` : ''}</div>
+            <div class="rc-tags">${RC_ROLE[r.role] ? `<span class="role-${r.role}">${RC_ROLE[r.role]}</span>` : ''}${r.weaponType ? `<span>${wtIco(r.weaponType)}${esc(r.weaponType)}</span>` : ''}${r.mainDmg ? `<span>${esc(r.mainDmg)}</span>` : ''}</div>
             ${sum ? `<div class="rc-sum">${esc(sum)}</div>` : ''}
           </div>
         </button>`;
@@ -3395,7 +3471,7 @@
       const rankBar = document.getElementById('weapon-rank-filter-bar');
       if (typeBar) {
         typeBar.innerHTML = WEAPON_TYPES_DEF.map(wt => `
-          <button onclick="setWeaponTypeFilter('${wt.id}')" class="flex-1 sm:flex-none py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${currentWeaponTypeFilter === wt.id ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border-[#232b3b]'}">${wt.label}</button>
+          <button onclick="setWeaponTypeFilter('${wt.id}')" class="${wt.id !== 'all' ? 'wt-btn ' : ''}flex-1 sm:flex-none py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${currentWeaponTypeFilter === wt.id ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-[#121622] text-slate-300 hover:bg-[#1a202d] border-[#232b3b]'}">${wtIco(wt.id)}${wt.label}</button>
         `).join('');
       }
       if (rankBar) {
@@ -3451,7 +3527,7 @@
                   <div class="w-full text-[10px] sm:text-sm font-black text-white text-center sm:text-left line-clamp-2 sm:truncate leading-tight break-keep">${esc(wp.name)}</div>
                   <div class="hidden sm:flex items-center gap-1 flex-shrink-0">
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${rankTagClass}">${rank}★</span>
-                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${typeTagClass}">${wp.weaponType || '직검'}</span>
+                    <span class="wt-tag px-1.5 py-0.5 rounded text-[10px] font-bold border ${typeTagClass}">${wtIco(wp.weaponType || '직검')}${wp.weaponType || '직검'}</span>
                   </div>
                 </div>
               </div>
@@ -3973,7 +4049,7 @@
       const dmgWrap = document.getElementById('detail-modal-maindmg-wrap');
       dmgWrap.classList.toggle('hidden', !char.mainDmg);
       if (char.mainDmg) document.getElementById('detail-modal-maindmg').textContent = char.mainDmg;
-      document.getElementById('detail-modal-buffs-icon').src = resolveImageUrl('T_Iconpropertyredphysics_UI', 'icon');
+      document.getElementById('detail-modal-buffs-icon').src = resolveImageUrl('T_Iconpropertyattacktag_UI', 'icon');
       toggleDetailBuffs(false);
       detailCharId = char.id;
       renderDetailMode(char);
@@ -4644,14 +4720,12 @@
     function utf8ToBase64(str) { return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode(parseInt(p1, 16)))); }
     function base64ToUtf8(str) { return decodeURIComponent(Array.prototype.map.call(window.atob(str), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
     
-    function openExportModal() { 
-      const isParty = currentMainView === 'party';
-      const payload = isParty 
-        ? { version: 'v_party_1', parties: state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId })) }
-        : { version: 'v_growth_1', growth: GROWTH_DATA };
-      document.getElementById('export-modal-title').innerHTML = `${isParty ? '파티' : '육성'} 데이터 내보내기`;
-      document.getElementById('export-modal-desc').innerText = `현재 ${isParty ? '편성된 파티' : '공명자 육성 현황'} 데이터를 복사합니다.`;
-      document.getElementById('export-base64-textarea').value = utf8ToBase64(JSON.stringify(payload)); 
+    // 내보내기 · 불러오기: 파티 편성 · 육성 현황 · 보유 공명자 · 버프 표시 설정을 한 번에
+    function openExportModal() {
+      const payload = { version: 'v_all_1', parties: state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId })), growth: GROWTH_DATA, owned: state.ownedResonators, modes: storage.get(MODE_KEY, null) };
+      document.getElementById('export-modal-title').innerHTML = '데이터 내보내기';
+      document.getElementById('export-modal-desc').innerText = '파티 편성, 육성 현황, 보유 공명자 정보를 모두 코드로 복사합니다.';
+      document.getElementById('export-base64-textarea').value = utf8ToBase64(JSON.stringify(payload));
       openModal('export-modal');
     }
 
@@ -4662,28 +4736,34 @@
       else { t.select(); document.execCommand('copy'); done(); }
     }
     
-    function openImportModal() { 
-      document.getElementById('import-base64-textarea').value = ''; 
-      document.getElementById('import-modal-title').innerHTML = `${currentMainView === 'party' ? '파티' : '육성'} 데이터 불러오기`;
+    function openImportModal() {
+      document.getElementById('import-base64-textarea').value = '';
+      document.getElementById('import-modal-title').innerHTML = '데이터 불러오기';
       openModal('import-modal');
     }
-    
-    function applyBase64Import() { 
+
+    // 예전 코드(파티만 · 육성만)도 그대로 받음. 코드에 들어 있는 항목만 덮어씀
+    function applyBase64Import() {
       const raw = document.getElementById('import-base64-textarea').value.trim();
-      if (!raw) return; 
-      try { 
-        const payload = JSON.parse(base64ToUtf8(raw)); 
-        if (currentMainView === 'party' && payload.version?.startsWith('v_party') && Array.isArray(payload.parties)) {
-          state.parties = payload.parties.map((p, idx) => ({ id: 'p_' + Date.now() + '_' + idx, slots: [p.slots[0] || null, p.slots[1] || null, p.slots[2] || null], circuitId: p.circuitId || null }));
-          renderParties(); renderRoster(); closeModal('import-modal'); showToast('파티 데이터를 불러왔습니다.');
-        } else if (currentMainView !== 'party' && payload.version?.startsWith('v_growth') && payload.growth) {
-          GROWTH_DATA = payload.growth;
-          storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
-          renderGrowthTracker(); closeModal('import-modal'); showToast('육성 데이터를 불러왔습니다.');
-        } else {
-          showToast('올바른 데이터 형식이 아닙니다.');
-        }
-      } catch { showToast('코드가 올바르지 않습니다.'); } 
+      if (!raw) return;
+      let p;
+      try { p = JSON.parse(base64ToUtf8(raw)); } catch { showToast('코드가 올바르지 않습니다.'); return; }
+      const v = p?.version || '', all = v.startsWith('v_all');
+      const parties = (all || v.startsWith('v_party')) && Array.isArray(p.parties) ? p.parties : null;
+      const growth = (all || v.startsWith('v_growth')) && p.growth && typeof p.growth === 'object' ? p.growth : null;
+      if (!parties && !growth) { showToast('올바른 데이터 형식이 아닙니다.'); return; }
+      if (parties) {
+        state.parties = parties.map((x, idx) => ({ id: 'p_' + Date.now() + '_' + idx, slots: [x.slots?.[0] || null, x.slots?.[1] || null, x.slots?.[2] || null], circuitId: x.circuitId || null }));
+        saveParties();
+      }
+      if (growth) { GROWTH_DATA = growth; storage.set('wuwa_matrix_growth_data', GROWTH_DATA); }
+      if (all && p.owned && typeof p.owned === 'object') { state.ownedResonators = p.owned; storage.set('wuwa_matrix_owned_chars', p.owned); }
+      if (all && p.modes) storage.set(MODE_KEY, p.modes);
+      closeModal('import-modal');
+      if (all) { showToast('데이터를 불러왔습니다.'); setTimeout(() => location.reload(), 600); return; }
+      renderParties(); renderRoster();
+      if (currentMainView === 'growth') renderGrowthTracker();
+      showToast(parties ? '파티 데이터를 불러왔습니다.' : '육성 데이터를 불러왔습니다.');
     }
 
     function populateGrowthPartyFilter() {
@@ -4704,6 +4784,7 @@
       eval: (b, v) => editorSet('subVal', v, +b.dataset.i),
       uaPreset: (b, v) => pickUploadPreset(v),
       uaRes: (b, v) => pickUploadRes(v),
+      uaSlot: (b, v) => pickUploadSlot(v),
     };
     function pickBtn(kind, value, opts, cls = '', attrs = '') {
       const cur = opts.find(o => String(o[0]) === String(value)) || opts[0] || ['', ''];
