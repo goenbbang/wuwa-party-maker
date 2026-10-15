@@ -1368,7 +1368,7 @@
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_pair_UI",
       "card": "Rover/T_Luckdraw_pair_UI",
-      "focus": [0.49, 0.24],
+      "focus": [0.44, 0.24],
       "echoSet": {
         "sets": [{"name": "거울 그림자에 번개가 스치는 찰나", "count": 5}],
         "mainEcho": "절식백",
@@ -1675,7 +1675,7 @@
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_pair_UI",
       "card": "Rover/T_Luckdraw_pair_UI",
-      "focus": [0.49, 0.24],
+      "focus": [0.44, 0.24],
       "echoSet": {
         "label": "서포트",
         "sets": [{"name": "찬란한 광휘", "count": 5}],
@@ -2000,7 +2000,7 @@
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_pair_UI",
       "card": "Rover/T_Luckdraw_pair_UI",
-      "focus": [0.49, 0.24],
+      "focus": [0.44, 0.24],
       "echoSet": {
         "label": "서포트",
         "sets": [{"name": "떠오르는 구름", "count": 5}],
@@ -2607,7 +2607,7 @@
       "avatar": "Rover/T_IconRoleHead256_5_UI",
       "sprite": "Rover/T_IconRole_Pile_pair_UI",
       "card": "Rover/T_Luckdraw_pair_UI",
-      "focus": [0.49, 0.24],
+      "focus": [0.44, 0.24],
       "echoSet": {
         "sets": [{"name": "빛을 삼키는 해", "count": 5}],
         "mainEcho": "무망자",
