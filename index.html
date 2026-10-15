@@ -60,8 +60,6 @@
     html.theme-wuwa .text-yellow-400 { color: var(--wg) !important; }
     html.modal-open, html.modal-open body { overflow: hidden; }
     input:not([type="checkbox"]):not([type="radio"]), select { vertical-align: middle; }
-    .card-graduated { border-color: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
-    .card-graduated:hover { border-color: #34d399 !important; box-shadow: 0 0 16px rgba(52, 211, 153, 0.4); }
 
     /* 모달: 배경은 페이드, 내용은 살짝 아래에서 커지며 등장 */
     .fixed.inset-0[id$="-modal"] > div { transition: transform .2s cubic-bezier(.2,.8,.2,1); }
@@ -660,12 +658,40 @@
     #fatigue-modal > div, #owned-modal > div { padding-top: 14px !important; }
     @media (min-width: 768px) { html.theme-wuwa [class~="md:rounded-3xl"] { border-radius: 8px !important; } }
   
+    /* 공명자 도감 */
+    .rc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    @media (min-width: 640px) { .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (min-width: 1024px) { .rc-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+    @media (min-width: 1280px) { .rc-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+    .rc-card { position: relative; display: flex; flex-direction: column; text-align: left; overflow: hidden; background: #121214; border: 1px solid rgba(217, 191, 134, .35); cursor: pointer; transition: border-color .15s; }
+    .rc-card.r4 { border-color: rgba(168, 85, 247, .35); }
+    .rc-card:hover, .rc-card:focus-visible { border-color: var(--wg); outline: none; } .rc-card.r4:hover, .rc-card.r4:focus-visible { border-color: rgba(168, 85, 247, .85); }
+    .rc-art { position: relative; aspect-ratio: 3 / 3.3; overflow: hidden; background: linear-gradient(180deg, rgba(217, 191, 134, .16), transparent 70%); }
+    .rc-card.r4 .rc-art { background: linear-gradient(180deg, rgba(168, 85, 247, .16), transparent 70%); }
+    .rc-art img { position: absolute; left: 50%; top: 0; width: 190%; max-width: none; pointer-events: none; transition: scale .3s; }
+    .rc-card:hover .rc-art img { scale: 1.04; }
+    .rc-art::after { content: ''; position: absolute; inset: auto 0 0 0; height: 40%; background: linear-gradient(0deg, #121214, transparent); }
+    .rc-body { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 10px; }
+    .rc-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .rc-name > span:first-child { width: 18px; height: 18px; flex-shrink: 0; }
+    .rc-name b { font-size: 14px; font-weight: 900; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rc-star { font-size: 11px; letter-spacing: -1px; color: #fbbf24; flex-shrink: 0; }
+    .rc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .rc-tags span { font-size: 10px; font-weight: 800; padding: 1px 6px; border: 1px solid #414143; color: #a3a3a5; }
+    .rc-tags .main { border-color: rgba(217, 191, 134, .45); color: var(--wg); }
+    .rc-sum { font-size: 11px; line-height: 1.45; color: #a3a3a5; min-height: 32px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .rc-empty { grid-column: 1 / -1; padding: 48px 0; text-align: center; color: #747476; font-size: 13px; }
+
     /* 파티 편성: 드래그 대상·회로 선택 호버를 마우스 호버와 같은 금빛 테두리로 */
     html.theme-wuwa .drag-slot-active, html.theme-wuwa .drag-party-active { border: 1px solid var(--wg) !important; background-color: rgba(217, 191, 134, .08) !important; }
     html.theme-wuwa .circuit-slot:not(.is-on):hover { border-color: var(--wg) !important; }
     /* 직각 박스: 원형 요소(체인·스킬 노드·점·스피너·체크)만 둥글게 유지 */
     html.theme-wuwa *:not(.rounded-full):not(.bd-chain):not(.t2-node-ico):not(.t2-inh-ico):not(.t2-sk):not(.t2-step button):not(.mode-dot):not(.mode-pair):not(.up-spin):not(.ed-check):not(.ep-cost) { border-radius: 0 !important; }
-  </style>
+      html.theme-wuwa .stat-met { border-color: rgba(217, 191, 134, .45) !important; }
+    html.theme-wuwa .preset-dd.is-modal .preset-dd-btn:hover, html.theme-wuwa .preset-dd.is-modal .preset-dd-btn.is-open { border-color: rgba(255, 255, 255, .3); }
+    html.theme-wuwa button.tb-btn:hover { border-color: rgba(255, 255, 255, .28) !important; color: var(--wtext); }
+    html.theme-wuwa button.tb-btn:hover i { color: var(--wtext); }
+</style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start pb-6 selection:bg-[#f5a623] selection:text-black">
 
@@ -775,6 +801,7 @@
       <div class="flex items-center gap-8 hidden md:flex">
         <a href="#party" onclick="return tabClick(event, 'party')" id="tab-btn-party" class="text-sm font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</a>
         <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 육성 현황표</a>
+        <a href="#codex" onclick="return tabClick(event, 'codex')" id="tab-btn-codex" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">공명자 도감</a>
         <a href="#weapon" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200">무기 도감</a>
       </div>
     </div>
@@ -787,9 +814,11 @@
       <button onclick="openModal('admin-settings-modal'); initAdminSettingsModal();" class="admin-only p-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-slate-300 hover:text-amber-400 transition shadow-sm active:scale-95" aria-label="사이트 설정"><i data-lucide="sliders" class="w-4 h-4"></i></button>
     </div>
   <div class="basis-full -mx-4 sm:-mx-6 -mb-3 sm:-mb-3.5 mt-0.5 flex items-center justify-start gap-4 px-4 py-2 border-t border-slate-800 md:hidden overflow-x-auto no-scrollbar whitespace-nowrap">
-    <a href="#party" onclick="return tabClick(event, 'party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">매트릭스 파티 편성표</a>
+    <a href="#party" onclick="return tabClick(event, 'party')" id="tab-btn-party-mobile" class="text-xs font-bold text-white transition-colors duration-200">파티 편성표</a>
     <div class="w-px h-3 bg-slate-700"></div>
-    <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 육성 현황표</a>
+    <a href="#growth" onclick="return tabClick(event, 'growth')" id="tab-btn-growth-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">육성 현황표</a>
+    <div class="w-px h-3 bg-slate-700"></div>
+    <a href="#codex" onclick="return tabClick(event, 'codex')" id="tab-btn-codex-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">공명자 도감</a>
     <div class="w-px h-3 bg-slate-700"></div>
     <a href="#weapon" onclick="return tabClick(event, 'weapon')" id="tab-btn-weapon-mobile" class="text-xs font-medium text-slate-500 transition-colors duration-200">무기 도감</a>
   </div>
@@ -801,8 +830,8 @@
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <h2 class="font-black text-lg text-white">공명자 목록</h2>
         <div class="flex items-center gap-2">
-          <button onclick="openFatigueModal();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-xs text-amber-300 font-bold transition active:scale-95 shadow-sm"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i><span>추가 피로도 : <span id="fatigue-char-label">미지정</span></span></button>
-          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition active:scale-95 shadow-sm"><span class="text-amber-400 text-xs">◇</span><span>보유 공명자 설정</span></button>
+          <button onclick="openFatigueModal();" class="tb-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-xs text-amber-300 font-bold transition active:scale-95 shadow-sm"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i><span>추가 피로도 : <span id="fatigue-char-label">미지정</span></span></button>
+          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="tb-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition active:scale-95 shadow-sm"><span class="text-amber-400 text-xs">◇</span><span>보유 공명자 설정</span></button>
         </div>
       </div>
       <div class="flex items-center gap-1.5 text-xs pb-0.5" id="element-tabs-bar"></div>
@@ -827,10 +856,10 @@
         <h3 class="font-black text-lg text-white tracking-tight">파티 편성 현황</h3>
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="promptResetParties()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1 whitespace-nowrap">초기화</button>
-          <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지로 저장</span></button>
+          <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지로 저장</span></button>
           <div class="flex items-center gap-2">
-          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
-          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
+          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
+          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
           </div>
         </div>
       </div>
@@ -852,14 +881,14 @@
             <span class="text-xs font-bold text-slate-400">소속 파티:</span>
             <span id="growth-filter-party-box"></span>
           </div>
-          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
+          <button onclick="openModal('owned-modal'); renderOwnershipList();" class="tb-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
         </div>
         
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="resetGrowthData()" class="whitespace-nowrap text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
-          <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
-          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
-          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
+          <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
+          <button onclick="openExportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
+          <button onclick="openImportModal()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
         </div>
       </div>
       
@@ -874,6 +903,27 @@
   </main>
 
   <!-- 무기 도감 뷰 -->
+  <!-- 공명자 도감 뷰 -->
+  <main id="view-codex" class="w-full max-w-[1720px] px-6 py-5 flex-1 flex flex-col gap-4 hidden">
+    <div class="bg-[#0c1018] border border-[#1a2233] rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
+      <div class="flex flex-wrap items-center gap-3 w-full">
+        <div class="relative w-full sm:w-64 xl:w-[280px]">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
+          <input type="text" id="codex-search-input" oninput="renderResonatorCodexDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
+        </div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="codex-rank-bar"></div>
+        <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto sm:min-w-[540px]" id="codex-element-bar"></div>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 w-full">
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="codex-role-bar"></div>
+        <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
+        <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="codex-weapon-bar"></div>
+      </div>
+    </div>
+    <div id="resonator-codex-grid" class="rc-grid"></div>
+  </main>
+
   <main id="view-weapon" class="w-full max-w-[1720px] px-6 py-5 flex-1 flex flex-col gap-4 hidden">
     <div class="bg-[#0c1018] border border-[#1a2233] rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
       <div class="flex flex-wrap items-center justify-between gap-3 w-full">
@@ -1571,6 +1621,7 @@
     function refreshActiveView() {
       if (currentMainView === 'growth') renderGrowthTracker();
       if (currentMainView === 'weapon') renderWeaponCodex();
+      if (currentMainView === 'codex') renderResonatorCodex();
     }
 
     function resolveImageUrl(rawInput, type = 'general') {
@@ -1648,6 +1699,7 @@
     const renderRosterDebounced = debounce(() => renderRoster());
     const renderGrowthTrackerDebounced = debounce(() => renderGrowthTracker());
     const renderWeaponCodexDebounced = debounce(() => renderWeaponCodex());
+    const renderResonatorCodexDebounced = debounce(() => renderResonatorCodex());
     const renderEditorCharListDebounced = debounce(() => renderEditorCharList());
 
     // ── 창(모달)과 뒤로가기 ──
@@ -1696,7 +1748,7 @@
     }
 
     // 상단 탭은 링크(#party 등)라 휠클릭·우클릭으로 새 탭에서 열 수 있음. 일반 클릭만 화면 안에서 전환
-    const MAIN_VIEWS = ['party', 'growth', 'weapon'];
+    const MAIN_VIEWS = ['party', 'growth', 'codex', 'weapon'];
     function tabClick(e, view) {
       if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return true;
       switchMainView(view);
@@ -1706,30 +1758,17 @@
 
     function switchMainView(view) {
       currentMainView = view;
-      const vParty = document.getElementById('view-party'), vGrowth = document.getElementById('view-growth'), vWeapon = document.getElementById('view-weapon');
-      const tParty = document.getElementById('tab-btn-party'), tGrowth = document.getElementById('tab-btn-growth'), tWeapon = document.getElementById('tab-btn-weapon');
-      const tPartyM = document.getElementById('tab-btn-party-mobile'), tGrowthM = document.getElementById('tab-btn-growth-mobile'), tWeaponM = document.getElementById('tab-btn-weapon-mobile');
-      
-      const isParty = view === 'party', isGrowth = view === 'growth', isWeapon = view === 'weapon';
-      vParty.classList.toggle('hidden', !isParty);
-      vGrowth.classList.toggle('hidden', !isGrowth);
-      vWeapon.classList.toggle('hidden', !isWeapon);
-      
-      const activeCls = 'text-sm font-bold text-white transition-colors duration-200';
-      const inactiveCls = 'text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200';
-      tParty.className = isParty ? activeCls : inactiveCls;
-      tGrowth.className = isGrowth ? activeCls : inactiveCls;
-      tWeapon.className = isWeapon ? activeCls : inactiveCls;
-      
-      if (tPartyM) {
-        tPartyM.className = isParty ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
-        tGrowthM.className = isGrowth ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
-        tWeaponM.className = isWeapon ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
-      }
-      
-      if (isGrowth) { populateGrowthPartyFilter(); renderGrowthTracker(); renderGrowthFilterBars(); }
-      if (isWeapon) { renderWeaponFiltersBars(); renderWeaponCodex(); }
-      playEnter(isParty ? 'roster-grid' : isGrowth ? 'growth-cards-container' : 'weapon-codex-grid');
+      MAIN_VIEWS.forEach(v => {
+        const on = v === view;
+        document.getElementById(`view-${v}`).classList.toggle('hidden', !on);
+        const t = document.getElementById(`tab-btn-${v}`), tm = document.getElementById(`tab-btn-${v}-mobile`);
+        if (t) t.className = on ? 'text-sm font-bold text-white transition-colors duration-200' : 'text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200';
+        if (tm) tm.className = on ? 'text-xs font-bold text-white' : 'text-xs font-medium text-slate-500';
+      });
+      if (view === 'growth') { populateGrowthPartyFilter(); renderGrowthTracker(); renderGrowthFilterBars(); }
+      if (view === 'codex') { renderCodexFilterBars(); renderResonatorCodex(); }
+      if (view === 'weapon') { renderWeaponFiltersBars(); renderWeaponCodex(); }
+      playEnter({ party: 'roster-grid', growth: 'growth-cards-container', codex: 'resonator-codex-grid', weapon: 'weapon-codex-grid' }[view]);
     }
 
     // 탭을 열 때만 카드가 아래에서 차례로 떠오름 (검색 · 필터로 다시 그릴 때는 안 함)
@@ -2038,7 +2077,7 @@
       const preset = GROWTH_DATA[resId].presets.find(p => p.id === presetId);
       if (!preset) return;
       if (category === 'skills') GROWTH_DATA[resId].presets.forEach(p => { p.skills = { ...p.skills, [field]: parseInt(value) || 1 }; }); // 스킬 레벨은 모든 프리셋 공통
-      else if (category === 'stats_current') preset.stats.current[field] = parseFloat(value) || 0;
+      else if (category === 'stats_current') preset.stats.current[field] = parseFloat(value) || 0; // 0 이면 세부 육성창 계산값 사용
       else if (category === 'remarks') preset.remarks = value;
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
       // 다시 그린 뒤에도 옮겨 간 입력칸에 포커스 유지
@@ -2066,11 +2105,12 @@
       showUploadStage(`<div class="up-spin"></div><div class="up-stage-msg">이미지를 읽는 중입니다${n > 1 ? ` (${i}/${n})` : ''}</div>`);
     }
     // msg: 한 줄 안내, notes: [[문구, 강조 여부]] → 저장하면 true
-    function askUpload(msg, notes = []) {
+    // alt: 업로드 창에서 지정한 공명자와 이미지 속 공명자가 다를 때, 지정한 공명자에 저장하는 선택지 (답 'alt')
+    function askUpload(msg, notes = [], alt = null, name = '') {
       return new Promise(resolve => {
         uploadAsk = resolve;
         showUploadStage(`<div class="up-stage-msg">${esc(msg)}</div>${notes.map(([t, warn]) => `<div class="up-stage-note ${warn ? 'warn' : ''}">${esc(t)}</div>`).join('')}
-          <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`);
+          <div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button>${alt ? `<button class="bm-btn" onclick="answerUpload('alt')">${esc(alt.name)}에 저장</button>` : ''}<button class="up-run" onclick="answerUpload(true)">${alt ? `${esc(name)}에 저장` : '저장'}</button></div>`);
       });
     }
     function answerUpload(ok) { const a = uploadAsk; uploadAsk = null; a?.(ok); }
@@ -2095,8 +2135,9 @@
           const res = RAW_RESONATORS.find(x => x.name === r.name) || RAW_RESONATORS.find(x => x.id === fallbackResId);
           if (!res) { showToast(`캐릭터 이름을 읽지 못했습니다${r.name ? ` (${esc(r.name)})` : ''}.`); continue; }
           if (res.name !== r.name) r.warnings.push(`이름(${r.name || '읽지 못함'})을 찾지 못해 ${res.name}에 입력합니다`);
-          if (r.kind === 'bot-card') await applyBotCard(res, r);
-          else await applyStatScreen(res, r);
+          const alt = fallbackResId && res.id !== fallbackResId ? RAW_RESONATORS.find(x => x.id === fallbackResId) : null;
+          if (r.kind === 'bot-card') await applyBotCard(res, r, alt);
+          else await applyStatScreen(res, r, alt);
         }
       } catch (e) {
         console.error('스크린샷 인식 실패', e);
@@ -2127,13 +2168,24 @@
       return { preset: g.presets[pi], pi };
     }
 
+    // 육성 현황표 스탯: 직접 입력한 값이 있으면 그 값, 없으면 세부 육성창 계산값
+    const STAT_TOTAL_KEY = { regen: '공명 효율', cr: '크리티컬', cd: '크리티컬 피해' };
+    function growthStatValue(res, preset, key, type, computed) {
+      const manual = preset.stats.current[key];
+      if (manual) return manual;
+      const t = computed?.total;
+      if (!t) return 0;
+      if (key === 'base') return Math.round(t[type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력')] || 0);
+      return Math.round((t[STAT_TOTAL_KEY[key]] || 0) * 10) / 10;
+    }
+
     function afterGrowthChange() {
       storage.set('wuwa_matrix_growth_data', GROWTH_DATA);
       renderGrowthTracker();
       if (buildModalFor) renderBuildModal();
     }
 
-    async function applyStatScreen(res, r) {
+    async function applyStatScreen(res, r, alt = null, confirmed = false) {
       const st = r.stats, type = getTargetStats(res, activeGrowthPreset(res.id).preset).type;
       const baseKey = type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력');
       const values = { base: st[baseKey], regen: st['공명 효율'], cr: st['크리티컬'], cd: st['크리티컬 피해'] };
@@ -2142,7 +2194,10 @@
       const notes = [];
       if (!isOwned(res.id)) notes.push(['보유 공명자가 아니어서 목록에는 보이지 않습니다.']);
       r.warnings.forEach(w => notes.push([w, true]));
-      if (!await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 스탯을 저장합니다.`, notes)) return;
+      if (alt) notes.unshift([`선택한 공명자(${alt.name})와 이미지 속 이름(${res.name})이 다릅니다.`, true]);
+      const ans = confirmed || await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 스탯을 저장합니다.`, notes, alt, res.name);
+      if (ans === 'alt') return applyStatScreen(alt, r, null, true); // 확인 창에서 이미 고른 공명자라 다시 묻지 않음
+      if (!ans) return;
       Object.entries(values).forEach(([k, v]) => { if (v != null) preset.stats.current[k] = v; });
       preset.stats.source = { type: 'screenshot', at: new Date().toISOString() };
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level.current, r.level.max);
@@ -2151,7 +2206,7 @@
     }
 
     // 봇 카드: 레벨 · 공명 체인 · 무기 · 에코를 프리셋의 build 에 저장 (스탯 칸은 건드리지 않음)
-    async function applyBotCard(res, r) {
+    async function applyBotCard(res, r, alt = null, confirmed = false) {
       const { preset, pi } = activeGrowthPreset(res.id);
       const build = {
         level: r.level, chain: r.chain,
@@ -2164,9 +2219,14 @@
       const sk = r.skills || [], skills = [sk[0], sk[1], sk[4], sk[2], sk[3]].map(v => v >= 1 && v <= 10 ? v : null);
       const notes = [];
       if (preset.build) notes.push(['이 프리셋의 기존 에코 정보는 새 카드로 바뀝니다.']);
+      if (Object.values(preset.stats.current).some(v => v)) notes.push(['직접 입력한 스탯 수치는 세부 육성창 계산값으로 바뀝니다.']);
       r.warnings.forEach(w => notes.push([w, true]));
-      if (!await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`, notes)) return;
+      if (alt) notes.unshift([`선택한 공명자(${alt.name})와 이미지 속 이름(${res.name})이 다릅니다.`, true]);
+      const ans = confirmed || await askUpload(`${res.name} · ${presetLabel(preset, pi)}에 봇 카드 정보를 저장합니다.`, notes, alt, res.name);
+      if (ans === 'alt') return applyBotCard(alt, r, null, true); // 확인 창에서 이미 고른 공명자라 다시 묻지 않음
+      if (!ans) return;
       preset.build = build;
+      preset.stats.current = { base: 0, regen: 0, cr: 0, cd: 0 };
       if (r.level) GROWTH_DATA[res.id].level = levelOf(r.level);
       if (r.chain != null) GROWTH_DATA[res.id].chain = r.chain;
       // 스킬 레벨은 모든 프리셋 공통
@@ -2314,7 +2374,7 @@
       return rec.some(r => r.split('/').some(opt => norm(opt) === got));
     }
 
-    // ---- 육성 현황표: 목표 수치 수정 (연필 아이콘) ----
+    // ---- 육성 현황표: 목표 수치 수정 (톱니바퀴 아이콘) ----
     let targetEdit = null;
     const TARGET_TYPES = [['atk', '공격력'], ['hp', 'HP'], ['def', '방어력']];
     function openTargetEditor(resId) {
@@ -2329,7 +2389,7 @@
       const { preset, pi } = activeGrowthPreset(t.resId);
       const num = (k, unit) => `<div class="tg-row"><input type="number" step="${unit ? 0.1 : 10}" value="${v[k]}" oninput="targetEdit.vals.${k}=parseFloat(this.value)||0"><span>${unit}</span></div>`;
       document.getElementById('edit-modal-panel').innerHTML = `
-        <div class="ed-head"><div><div class="up-title">목표 스테이터스<small class="tg-preset">${esc(presetLabel(preset, pi))}</small></div></div><button class="x-btn" onclick="closeModal('edit-modal')" aria-label="닫기"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+        <div class="ed-head"><div><div class="up-title">목표 스테이터스<small class="tg-preset">${esc(res.name)} · ${esc(presetLabel(preset, pi))}</small></div></div><button class="x-btn" onclick="closeModal('edit-modal')" aria-label="닫기"><i data-lucide="x" class="w-5 h-5"></i></button></div>
         <div class="ed-form">
           <label>${TARGET_TYPES.find(x => x[0] === v.type)[1]}</label>${num('base', '')}
           <label>공명 효율</label>${num('regen', '%')}
@@ -3160,6 +3220,7 @@
       }
       if (field === 'image' || field === 'rank' || field === 'weaponType') renderWeaponEditor();
       if (currentMainView === 'weapon') renderWeaponCodex();
+      if (currentMainView === 'codex') renderResonatorCodex();
     }
 
     function handleWeaponEditorIconUpload(e, wpId) {
@@ -3171,6 +3232,7 @@
       saveGameData();
       renderWeaponEditor();
       if (currentMainView === 'weapon') renderWeaponCodex();
+      if (currentMainView === 'codex') renderResonatorCodex();
     }
 
     function deleteWeapon(id) {
@@ -3179,6 +3241,7 @@
         saveGameData();
         renderWeaponEditor();
         if (currentMainView === 'weapon') renderWeaponCodex();
+        if (currentMainView === 'codex') renderResonatorCodex();
       });
     }
 
@@ -3192,6 +3255,48 @@
       { id: '2', label: '2★' },
       { id: '1', label: '1★' }
     ];
+
+    // ---- 공명자 도감: 필터 순서 = 성급 · 속성 · 역할 · 무기 종류 ----
+    const codexFilters = { rank: 'all', element: 'all', role: 'all', weapon: 'all' };
+    const RC_ROLE = { main: '메인', sub: '서브', support: '서포터' };
+    function setCodexFilter(key, val) { codexFilters[key] = val; renderCodexFilterBars(); renderResonatorCodex(); }
+    function renderCodexFilterBars() {
+      const btn = (key, id, label, gold) => {
+        const on = codexFilters[key] === id;
+        return `<button onclick="setCodexFilter('${key}', '${id}')" class="flex-1 sm:flex-none py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${on ? (gold ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-slate-700 text-white border-slate-500 shadow-md') : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}">${label}</button>`;
+      };
+      document.getElementById('codex-rank-bar').innerHTML = [['all', '전체'], ['5', '5★'], ['4', '4★']].map(([id, l]) => btn('rank', id, l, false)).join('');
+      document.getElementById('codex-element-bar').innerHTML = FILTER_TABS_DEF.elements.map(t => elementFilterBtn(t, codexFilters.element === t.id, 'setCodexElement')).join('');
+      document.getElementById('codex-role-bar').innerHTML = FILTER_TABS_DEF.roles.map(r => btn('role', r.id, r.label, false)).join('');
+      document.getElementById('codex-weapon-bar').innerHTML = WEAPON_TYPES_DEF.map(w => btn('weapon', w.id, w.label, false)).join('');
+    }
+    function setCodexElement(id) { setCodexFilter('element', id); }
+    function renderResonatorCodex() {
+      const grid = document.getElementById('resonator-codex-grid');
+      if (!grid) return;
+      const q = (document.getElementById('codex-search-input')?.value || '').trim().toLowerCase();
+      const list = RAW_RESONATORS.filter(r => {
+        if (codexFilters.rank !== 'all' && String(r.rarity || 5) !== codexFilters.rank) return false;
+        if (codexFilters.element !== 'all' && r.element !== codexFilters.element) return false;
+        if (codexFilters.role !== 'all' && r.role !== codexFilters.role) return false;
+        if (codexFilters.weapon !== 'all' && r.weaponType !== codexFilters.weapon) return false;
+        if (q && ![(r.name || ''), (r.mainDmg || ''), resonatorKeywords(r, true).join(' ')].some(s => s.toLowerCase().includes(q))) return false;
+        return true;
+      }).sort((a, b) => (b.rarity || 5) - (a.rarity || 5) || byName(a, b));
+      if (!list.length) { grid.innerHTML = '<div class="rc-empty">조건에 맞는 공명자가 없습니다.</div>'; return; }
+      grid.innerHTML = list.map(r => {
+        const f = r.focus || [0.5, 0.25], rk = r.rarity || 5;
+        const sum = keywordsWithoutMainDmg(r).join(' · ');
+        return `<button class="rc-card ${rk === 4 ? 'r4' : ''}" onclick="openDetailModal('${r.id}')">
+          <div class="rc-art">${r.sprite ? `<img loading="lazy" decoding="async" src="${r.sprite}" alt="" style="transform:translate(-${f[0] * 100}%, -${Math.max(0, f[1] * 100 - 14)}%)" crossorigin="anonymous">` : ''}</div>
+          <div class="rc-body">
+            <div class="rc-name"><span>${getElementIconHtml(r.element)}</span><b>${esc(r.name)}</b><span class="rc-star">${'★'.repeat(rk)}</span></div>
+            <div class="rc-tags"><span>${RC_ROLE[r.role] || ''}</span>${r.weaponType ? `<span>${esc(r.weaponType)}</span>` : ''}${r.mainDmg ? `<span class="main">${esc(r.mainDmg)}</span>` : ''}</div>
+            <div class="rc-sum">${esc(sum)}</div>
+          </div>
+        </button>`;
+      }).join('');
+    }
 
     function renderWeaponFiltersBars() {
       const typeBar = document.getElementById('weapon-type-filter-bar');
@@ -3531,11 +3636,11 @@
         }).join('');
 
         const circuitBoxHtml = activeCircuit ? `
-          <div class="relative group aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border-2 circuit-slot is-on shadow-md flex items-center justify-center p-2 cursor-pointer" onclick="openCircuitModal(${pIdx})">
+          <div class="relative group aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border circuit-slot is-on shadow-md flex items-center justify-center p-2 cursor-pointer" onclick="openCircuitModal(${pIdx})">
             <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition z-10 hide-on-export"><button onclick="event.stopPropagation(); unsetCircuitDirect(${pIdx})" class="x-btn slot-x" aria-label="회로 빼기"><i data-lucide="x" class="w-4 h-4"></i></button></div>
             <div class="flex items-center justify-center w-full h-full circuit-slot-ic">${getCircuitIconHtml(activeCircuit)}</div>
           </div>` : `
-          <div class="aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border-2 border-dashed border-[#232c3f] bg-[#090c13] circuit-slot flex flex-col gap-1 items-center justify-center p-2 cursor-pointer text-slate-500" onclick="openCircuitModal(${pIdx})">
+          <div class="aspect-square w-[calc((100%-5rem)/4)] md:h-[105px] md:w-[105px] flex-shrink-0 rounded-xl border border-dashed border-[#232c3f] bg-[#090c13] circuit-slot flex flex-col gap-1 items-center justify-center p-2 cursor-pointer text-slate-500" onclick="openCircuitModal(${pIdx})">
             <i data-lucide="cpu" class="w-5 h-5 sm:w-6 sm:h-6 text-slate-600"></i><span class="text-[9px] sm:text-[10px] font-bold text-slate-400 whitespace-nowrap">회로<span class="hidden sm:inline"> 선택</span></span>
           </div>`;
 
@@ -4570,6 +4675,7 @@
     }
 
     function renderGrowthTracker() {
+      if (!BUILD_DATA) loadBuildData().then(d => { if (d && currentMainView === 'growth') renderGrowthTracker(); }); // 계산 스탯용
       const container = document.getElementById('growth-cards-container');
       const fElem = currentGrowthFilters.element, fRole = currentGrowthFilters.role;
       const fParty = document.getElementById('growth-filter-party')?.dataset.value || 'all';
@@ -4590,23 +4696,21 @@
         const elemIcon = getElementIconHtml(r.element);
         const gData = GROWTH_DATA[r.id];
         
-        let panesHtml = '', isGraduated = false;
+        let panesHtml = '';
         gData.presets.forEach(preset => {
           if (gData.activePresetId !== preset.id) return; // 비활성 프리셋은 렌더링하지 않음
-          const targetStats = getTargetStats(r, preset);
+          const targetStats = getTargetStats(r, preset), computed = computeBuildStats(r, preset);
 
           const makeSkill = (key, label) => {
             const val = preset.skills[key] || 1;
             return `<div class="flex flex-col gap-1"><span class="text-[10px] text-slate-400 text-center whitespace-nowrap">${label}</span>${pickBtn('skill', val, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => [n, n]), `bg-[#1a2130] border border-slate-700 ${val === 10 ? 'text-yellow-400 font-black' : 'text-white font-bold'} text-xs rounded hover:border-amber-400 transition sk-pick`, `data-fk="${r.id}-sk-${key}" data-res="${r.id}" data-preset="${preset.id}" data-key="${key}" aria-label="${label} 레벨"`)}</div>`;
           };
 
-          let allStatsMet = true;
           const makeStat = (key, label, tgt, isPct) => {
-            const cur = preset.stats.current[key] || 0, ratio = tgt > 0 ? cur / tgt : 0;
-            const isMet = ratio >= 0.9;
-            if (!isMet) allStatsMet = false;
-            const border = ratio >= 0.9 ? 'border-emerald-500' : (ratio >= 0.6 ? 'border-amber-500/80' : (ratio > 0 ? 'border-rose-500/80' : 'border-slate-700'));
-            const text = ratio >= 0.9 ? 'text-emerald-400' : (ratio >= 0.6 ? 'text-amber-300' : (ratio > 0 ? 'text-rose-400' : 'text-white'));
+            const cur = growthStatValue(r, preset, key, targetStats.type, computed), ratio = tgt > 0 ? cur / tgt : 0;
+            const isMet = ratio >= 1;
+            const border = isMet ? 'border-slate-700 stat-met' : 'border-slate-700';
+            const text = 'text-white';
             return `
               <div class="flex flex-col gap-1.5">
                 <div class="flex items-center gap-1 px-0.5"><span class="text-[11px] font-bold text-slate-300 leading-none">${label}</span><span class="text-[10px] text-slate-500 leading-none">(${tgt}${isPct?'%':''})</span></div>
@@ -4617,8 +4721,6 @@
               </div>`;
           };
 
-          const allSkillsMax = [1,2,3,4,5].every(i => preset.skills[`s${i}`] === 10);
-          if (gData.activePresetId === preset.id && allStatsMet && allSkillsMax) isGraduated = true;
 
           panesHtml += `
             <div class="flex flex-col ${gData.activePresetId === preset.id ? '' : 'hidden'}">
@@ -4633,7 +4735,7 @@
         });
 
         return `
-          <div class="bg-[#121622] border border-[#21293b] rounded-2xl p-4 flex flex-col transition-colors ${isGraduated ? 'card-graduated' : 'hover:border-amber-500/40'}">
+          <div class="bg-[#121622] border border-[#21293b] rounded-2xl p-4 flex flex-col transition-colors hover:border-amber-500/40">
             <div class="flex gap-3 border-b border-[#1e2638] pb-2.5 relative">
               <div class="w-16 h-16 rounded-xl bg-[#0a0d14] border border-slate-700 overflow-hidden flex-shrink-0 cursor-pointer hover:border-amber-400 transition relative group" onclick="openBuildModal('${r.id}')" aria-label="육성 상세 보기">
                 <button onclick="event.stopPropagation(); toggleFavorite('${r.id}')" class="absolute top-1 left-1 z-10 p-0.5 transition drop-shadow-md">
@@ -4646,7 +4748,8 @@
                   <div class="text-sm font-black text-white truncate mr-1">${esc(r.name)}</div>
                   <div class="w-5 h-5 drop-shadow-md flex-shrink-0 mr-1.5">${elemIcon}</div>
                   ${renderPresetDropdown(r.id, gData)}
-                  <button onclick="openTargetEditor('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="목표 수치 수정"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                  <button onclick="openUploadModal('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i></button>
+                  <button onclick="openTargetEditor('${r.id}')" class="p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="목표 수치 수정"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <button onclick="openBuildModal('${r.id}')" class="growth-more mt-1.5 self-start flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-amber-300 transition">자세히 보기<i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
               </div>
