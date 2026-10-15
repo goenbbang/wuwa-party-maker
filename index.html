@@ -737,6 +737,7 @@
     .hp-zoom { height: min(80vh, 900px); max-width: 100%; object-fit: contain; box-shadow: 0 10px 40px rgba(0, 0, 0, .6); }
     .hp-kind b { display: block; font-size: 14px; color: #fff; margin-bottom: 4px; }
     .hp-kind p b { display: inline; font-size: inherit; margin: 0; color: #fff; font-weight: 700; }
+    .hp-kind p.hp-warn { margin-top: 6px; color: #e8b45a; }
     .hp-kind p, .hp-steps li, .hp-notes li { font-size: 14px; line-height: 1.65; color: #cfcdc8; }
     .hp-kind code { white-space: nowrap; padding: 0 4px; background: #232325; color: #e8d7a6; font-size: 14px; }
     .hp-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -1544,7 +1545,7 @@
               <b>wuwa bot 프로필 카드</b>
               <p>레벨, 공명 체인, 스킬, 무기, 에코 정보가 입력됩니다.</p>
               <p><b>명조 계정과 디스코드 계정 연동&nbsp;→ 명조 공식 디스코드 서버&nbsp;→ <span style="white-space:nowrap">wuwa-bot-command</span> 채널&nbsp;→ <code>/생성</code> 명령어</b>로 프로필 이미지를 만들 수 있습니다.</p>
-              <p>※ 무기 · 에코 정보를 통해 계산된 스테이터스 값은 오차가 있을 수 있습니다. 정확한 수치가 필요하면 속성 상세정보 이미지도 함께 올려 주세요. 육성 현황표에는 속성 상세정보 수치가 우선적으로 표시됩니다.</p>
+              <p class="hp-warn">※ 무기 · 에코 정보를 통해 계산된 스테이터스 값은 오차가 있을 수 있습니다.</p>
               <div class="hp-links">
                 <a href="https://discord.gg/wutheringwaves" target="_blank" rel="noopener"><i data-lucide="external-link"></i>명조 공식 디스코드</a>
                 <a href="https://wutheringwaves-dc.kurogames-global.com/?lang=ko" target="_blank" rel="noopener"><i data-lucide="external-link"></i>디스코드 계정 연동</a>
