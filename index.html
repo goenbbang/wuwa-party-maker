@@ -2411,7 +2411,7 @@
         st = computeBuildStats(res, { ...preset, build: botCardBuild(r) })?.total || {};
         g.level = old;
       }
-      const v = (k, d) => st[k] == null ? null : Math.round(st[k] * 10 ** d) / 10 ** d;
+      const v = (k, d) => st[k] == null ? null : d ? roundPct(st[k]) : floorStat(st[k]);
       return [[baseKey, v(baseKey, 0), ''], ['공명 효율', v('공명 효율', 1), '%'], ['크리티컬', v('크리티컬', 1), '%'], ['크리티컬 피해', v('크리티컬 피해', 1), '%']];
     }
 
@@ -2854,6 +2854,15 @@
     const charLevel = resId => GROWTH_DATA[resId]?.level || { lv: 90, br: 6 };
     const weaponLevel = w => w?.br != null ? { lv: w.level ?? 90, br: w.br } : levelOf(w?.level ?? 90);
     const lvLabel = l => `Lv.${l.lv}`;
+    // 성장 곡선 배율 그대로 (1레벨 = 1)
+    function growthCurve(table, l) {
+      const rows = BUILD_DATA?.growth?.[table];
+      if (!rows) return null;
+      const r = rows.find(x => x[0] === l.lv && x[1] === l.br) || rows.find(x => x[0] === l.lv) || rows[rows.length - 1];
+      return r.slice(2).map(v => v / 10000);
+    }
+    // 스탯 노드는 꺼 두지 않았고, 캐릭터 돌파 단계가 해금 조건(br) 이상일 때만 적용
+    const treeNodeOn = (n, off, cl) => !off.includes(`${n.col}-${n.tier}`) && (n.br == null || cl.br >= n.br);
     function growthRatio(table, l) {
       const rows = BUILD_DATA?.growth?.[table];
       if (!rows) return null;
@@ -2888,24 +2897,34 @@
       if (!cd) return null;
       const build = preset.build || {}, add = {};
       const put = (stat, percent, v) => { if (stat && v != null && !isNaN(v)) { const k = statKey(stat, percent); add[k] = (add[k] || 0) + +v; } };
-      const off = GROWTH_DATA[res.id]?.treeOff || [];
-      if (cd.skillTree?.nodes) cd.skillTree.nodes.forEach(n => { if (!off.includes(`${n.col}-${n.tier}`)) put(n.stat, n.pct, n.v); });
+      const off = GROWTH_DATA[res.id]?.treeOff || [], cl = charLevel(res.id);
+      if (cd.skillTree?.nodes) cd.skillTree.nodes.forEach(n => { if (treeNodeOn(n, off, cl)) put(n.stat, n.pct, n.v); });
       else Object.entries(cd.tree || {}).forEach(([k, v]) => put(k.replace(/%$/, ''), k.endsWith('%'), v));
       const weapon = WEAPONS.find(w => w.name === build.weapon?.name);
-      const wr = growthRatio('weapon', weaponLevel(build.weapon)) || [1, 1];
+      // 무기: 원본 1레벨 값 × 성장 곡선 (원본이 없는 무기는 90레벨 값 × 비율). 상시 패시브(공격력 12% 증가 등)도 재련 단계대로 합산
+      const wd = weapon && BUILD_DATA?.weapons?.[weapon.name], wl = weaponLevel(build.weapon);
+      const wr = growthRatio('weapon', wl) || [1, 1], wc = growthCurve('weapon', wl);
       const wMain90 = weapon && parseWeaponMain(weapon.mainStat);
-      const wMain = wMain90 && { ...wMain90, value: Math.round(wMain90.value * wr[1] * 10) / 10 };
+      const wMain = wd && wc ? { stat: wd.sub[0], value: wd.sub[1] * wc[1] } : wMain90 && { ...wMain90, value: wMain90.value * wr[1] };
       if (wMain) put(wMain.stat, true, wMain.value);
+      const refine = Math.min(5, Math.max(1, +build.weapon?.refine || 1));
+      (wd?.passive || []).forEach(([stat, vals]) => {
+        const v = vals[refine - 1];
+        if (stat === '전체 속성 피해 보너스') Object.values(ELEMENT_DMG).forEach(k => put(k, true, v));
+        else put(stat, true, v);
+      });
       (build.echoes || []).forEach(e => {
         if (!e) return;
         if (e.main?.stat) put(e.main.stat, true, e.main.value);
         if (e.mainFlat?.stat) put(e.mainFlat.stat, false, e.mainFlat.value);
         (e.subs || []).forEach(s => put(s.stat, s.percent, s.value));
       });
-      const wAtk = weapon ? Math.round((parseFloat(weapon.atk) || 0) * wr[0]) : 0;
+      const wAtk = !weapon ? 0 : wd && wc ? wd.atk1 * wc[0] : (parseFloat(weapon.atk) || 0) * wr[0];
       const g = k => add[k] || 0;
-      const rr = growthRatio('role', charLevel(res.id)) || [1, 1, 1];
-      const cb = { ...cd.base, atk: Math.round(cd.base.atk * rr[0]), hp: Math.round(cd.base.hp * rr[1]), def: Math.round(cd.base.def * rr[2]) };
+      // 캐릭터: 원본 1레벨 값 × 성장 곡선 (소수 그대로 계산하고 표시할 때 게임처럼 버림)
+      const rc = growthCurve('role', cl), rr = growthRatio('role', cl) || [1, 1, 1];
+      const cb = cd.base1 && rc ? { ...cd.base, atk: cd.base1.atk * rc[0], hp: cd.base1.hp * rc[1], def: cd.base1.def * rc[2] }
+        : { ...cd.base, atk: cd.base.atk * rr[0], hp: cd.base.hp * rr[1], def: cd.base.def * rr[2] };
       const total = {
         'HP': cb.hp * (1 + g('HP%') / 100) + g('HP'),
         '공격력': (cb.atk + wAtk) * (1 + g('공격력%') / 100) + g('공격력'),
@@ -2926,7 +2945,11 @@
       return keys.some(k => (w[k] || 0) >= EFF_MIN);
     }
 
-    const fmtStat = (stat, v) => FLAT_STATS.includes(stat) ? Math.round(v).toLocaleString() : `${(Math.round(v * 10) / 10).toFixed(1)}%`;
+    // 게임 표시 방식: 고정 수치는 버림(587.5 → 587), % 는 소수 첫째 자리 반올림(정확히 반이면 짝수 쪽, 20.25 → 20.2)
+    const floorStat = v => Math.floor(v + 1e-6);
+    const roundPct = v => { const x = v * 10, f = Math.floor(x), r = x - f; return (Math.abs(r - 0.5) < 1e-9 ? (f % 2 ? f + 1 : f) : Math.round(x)) / 10; };
+    const statVal = (stat, v) => FLAT_STATS.includes(stat) ? floorStat(v) : roundPct(v);
+    const fmtStat = (stat, v) => FLAT_STATS.includes(stat) ? floorStat(v).toLocaleString() : `${roundPct(v).toFixed(1)}%`;
 
     function setBuildChain(n) {
       const { preset } = activeGrowthPreset(buildModalFor);
@@ -2983,7 +3006,7 @@
       const { preset } = activeGrowthPreset(res.id);
       const wl = weaponLevel(preset.build?.weapon);
       editState = { kind: 'weapon', q: '', refine: preset.build?.weapon?.refine || 1, pick: preset.build?.weapon?.name || null, wlv: `${wl.lv}-${wl.br}` };
-      renderEditor(); openModal('edit-modal');
+      document.getElementById('edit-modal-panel').dataset.view = ''; renderEditor(); openModal('edit-modal');
       document.querySelector('#edit-modal .ed-pick.on')?.scrollIntoView({ block: 'center' });
     }
 
@@ -3000,7 +3023,7 @@
       while (editState.echo.subs.length < 5) editState.echo.subs.push(null);
       const db = e && BUILD_DATA?.echoes.find(x => x.name === e.name);
       if (db && !editState.echo.set) editState.echo.set = echoSetOf(RAW_RESONATORS.find(r => r.id === buildModalFor), editState.echo) || db.sets[0] || null;
-      renderEditor(); openModal('edit-modal');
+      document.getElementById('edit-modal-panel').dataset.view = ''; renderEditor(); openModal('edit-modal');
     }
 
     function editorPickEcho(i) {
@@ -3088,7 +3111,14 @@
       const panel = document.getElementById('edit-modal-panel'), s = editState;
       if (!s) return;
       const box = { set innerHTML(html) {
-        if (!gridOnly) { panel.innerHTML = html; return; }
+        if (!gridOnly) {
+          // 같은 화면을 다시 그릴 때(무기 고르기 · 재련 등)는 스크롤 위치 유지
+          const view = `${s.kind}-${s.step || ''}`, same = panel.dataset.view === view;
+          const keep = same ? [panel.scrollTop, panel.querySelector('.ed-grid')?.scrollTop || 0] : null;
+          panel.innerHTML = html; panel.dataset.view = view;
+          if (keep) { panel.scrollTop = keep[0]; const g = panel.querySelector('.ed-grid'); if (g) g.scrollTop = keep[1]; }
+          return;
+        }
         const t = document.createElement('div'); t.innerHTML = html;
         panel.querySelector('.ed-grid')?.replaceWith(t.querySelector('.ed-grid'));
       }, classList: panel.classList };
@@ -3170,17 +3200,17 @@
         <div class="bd-weapon"><button class="bd-weapon-pick r${w.rank || 5}" onclick="openWeaponEditor()" aria-label="무기 변경"><img src="${w.image}" alt="" class="bd-weapon-img"></button>
           <div class="bd-weapon-info">
             <div class="bd-weapon-head"><span class="bd-weapon-name">${esc(w.name)}</span><span class="bd-weapon-lv">${lvLabel(weaponLevel(build?.weapon))} · R${build?.weapon?.refine || 1}</span></div>
-            <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}공격력 <b>${st?.wAtk ?? w.atk}</b></div>
-            ${st?.wMain ? `<div class="bd-weapon-sub">${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} <b>${st.wMain.value}%</b></div>` : ''}</div></div>`
+            <div class="bd-weapon-sub">${statIcon('공격력', 'bd-ico-s')}공격력 <b>${st ? floorStat(st.wAtk) : w.atk}</b></div>
+            ${st?.wMain ? `<div class="bd-weapon-sub">${statIcon(st.wMain.stat, 'bd-ico-s')}${esc(st.wMain.stat)} <b>${roundPct(st.wMain.value)}%</b></div>` : ''}</div></div>`
         : `<div class="bd-weapon is-empty"><i data-lucide="plus" class="w-4 h-4"></i><span>무기 추가하기</span></div>`;
 
       // 오른쪽: 스킬
       // 오른쪽: 인게임식 스킬 트리 (스탯 노드 2단 + 스킬 아이콘, 공명 회로 위는 고유 스킬)
       const stt = BUILD_DATA?.characters?.[res.id]?.skillTree;
       const nodeVal = n => `+${n.v}${n.pct ? '%' : ''}`;
-      const off = GROWTH_DATA[res.id].treeOff || [];
-      const treeNode = n => `<div class="t2-node ${off.includes(`${n.col}-${n.tier}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('${n.col}-${n.tier}')" onkeydown="if(event.key==='Enter')this.click()">${statIcon(n.stat, 't2-node-ico')}
-          <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b></div></div>`;
+      const off = GROWTH_DATA[res.id].treeOff || [], cl = charLevel(res.id);
+      const treeNode = n => { const locked = n.br != null && cl.br < n.br; return `<div class="t2-node ${treeNodeOn(n, off, cl) ? '' : 'off'}" tabindex="0" role="button" onclick="toggleTreeNode('${n.col}-${n.tier}')" onkeydown="if(event.key==='Enter')this.click()">${statIcon(n.stat, 't2-node-ico')}
+          <div class="t2-tip"><b>${esc(n.stat.replace(' 보너스', ''))} ${nodeVal(n)}</b>${locked ? `<small>${n.br}단계 돌파 후 해금</small>` : ''}</div></div>`; };
       const treeInh = (x, j) => `<div class="t2-inh ${off.includes(`inh-${j}`) ? 'off' : ''}" tabindex="0" role="button" onclick="toggleTreeNode('inh-${j}')" onkeydown="if(event.key==='Enter')this.click()"><span class="t2-inh-ico"><img src="${GITHUB_IMG_BASE}icons/SkillIcon/${x.icon}.webp" alt=""></span>
           <div class="t2-tip"><b>${gameText(x.name)}</b><small>고유 스킬</small><p>${gameText(x.desc)}</p></div></div>`;
       // 아이콘 그림의 무게중심을 원 가운데로 (data/build-data.json iconCenter: 벗어난 정도 %)
