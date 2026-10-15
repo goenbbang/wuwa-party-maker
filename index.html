@@ -693,11 +693,12 @@
     .rc-card { position: relative; display: flex; flex-direction: column; text-align: left; overflow: hidden; background: #121214; border: 1px solid rgba(217, 191, 134, .35); cursor: pointer; transition: border-color .15s; }
     .rc-card.r4 { border-color: rgba(168, 85, 247, .35); }
     .rc-card:hover, .rc-card:focus-visible { border-color: var(--wg); outline: none; } .rc-card.r4:hover, .rc-card.r4:focus-visible { border-color: rgba(168, 85, 247, .85); }
-    .rc-art { position: relative; aspect-ratio: 1 / 1.05; overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, .08); background: linear-gradient(180deg, rgba(217, 191, 134, .14), transparent 75%); }
+    .rc-art { position: relative; aspect-ratio: 404 / 560; overflow: hidden; background: linear-gradient(180deg, rgba(217, 191, 134, .14), transparent 75%); }
     .rc-card.r4 .rc-art { background: linear-gradient(180deg, rgba(168, 85, 247, .14), transparent 75%); }
     .rc-art-in { position: absolute; inset: 0; transition: scale .3s; } /* 박스 가운데를 기준으로 확대 */
     .rc-card:hover .rc-art-in { scale: 1.05; }
-    .rc-art img { position: absolute; left: 50%; top: 4%; width: 150%; max-width: none; pointer-events: none; }
+    .rc-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; pointer-events: none; } /* Luckdraw 일러스트는 그대로 맞춤 */
+    .rc-art::after { content: ''; position: absolute; inset: auto 0 0 0; height: 38%; pointer-events: none; background: linear-gradient(0deg, #121214 0%, rgba(18, 18, 20, .82) 18%, rgba(18, 18, 20, .5) 42%, rgba(18, 18, 20, .18) 70%, transparent 100%); } /* 아래로 갈수록 천천히 어두워짐 */
     .rc-body { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 10px; }
     .rc-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .rc-name > span:first-child { width: 18px; height: 18px; flex-shrink: 0; }
@@ -705,7 +706,6 @@
     .rc-star { font-size: 11px; letter-spacing: -1px; color: #fbbf24; flex-shrink: 0; }
     .rc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
     .rc-tags span { font-size: 10px; font-weight: 800; padding: 1px 6px; border: 1px solid #414143; color: #a3a3a5; }
-    .rc-tags .dmg { border-color: rgba(217, 191, 134, .45); color: var(--wg); }
     .rc-tags .role-main { border-color: rgba(244, 63, 94, .4); background: rgba(76, 5, 25, .7); color: #fda4af; }
     .rc-tags .role-sub { border-color: rgba(139, 92, 246, .4); background: rgba(46, 16, 101, .7); color: #c4b5fd; }
     .rc-tags .role-support { border-color: rgba(16, 185, 129, .4); background: rgba(2, 44, 34, .7); color: #6ee7b7; }
@@ -1894,7 +1894,7 @@
           customElementIcons: Object.fromEntries(Object.entries(adminConfig.customElementIcons || {}).map(([k, v]) => [k, g(v)])),
           customWeaponStatIcons: Object.fromEntries(Object.entries(adminConfig.customWeaponStatIcons || {}).map(([k, v]) => [k, g(v)]))
         },
-        resonators: RAW_RESONATORS.map(r => ({ ...r, buffs: (r.buffs || []).map(({ duration, ...b }) => b), avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
+        resonators: RAW_RESONATORS.map(r => ({ ...r, buffs: (r.buffs || []).map(({ duration, ...b }) => b), avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), card: s(r.card, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
         weapons: WEAPONS.map(w => ({ ...w, image: s(w.image, 'weapon') })),
         echoSets: ECHO_SETS.map(e => ({ ...e, iconUrl: s(e.iconUrl, 'set') })),
         circuits: CIRCUITS.map(c => ({ ...c, iconImage: s(c.iconImage, 'icon') }))
@@ -1907,7 +1907,7 @@
       WEAPONS = (src.weapons || []).map(w => ({ ...w, weaponType: w.weaponType || '직검', buffSummary: w.buffSummary || '', image: R(w.image, 'weapon') || DEFAULT_WEAPON_IMG }));
       const raw = src.resonators || [];
       const nameToId = new Map(raw.map(r => [r.name, r.id]));
-      RAW_RESONATORS = raw.map(r => normalizeResonator({ ...r, avatar: R(r.avatar, 'character'), sprite: R(r.sprite, 'character'),
+      RAW_RESONATORS = raw.map(r => normalizeResonator({ ...r, avatar: R(r.avatar, 'character'), sprite: R(r.sprite, 'character'), card: R(r.card, 'character'),
         echoSet: r.echoSet ? { ...r.echoSet, image: R(r.echoSet.image, 'echo') } : r.echoSet,
         echoAlts: (r.echoAlts || []).map(a => ({ ...a, image: R(a.image, 'echo') })) }, nameToId));
       CIRCUITS = (src.circuits || []).map(c => ({ ...c, iconImage: R(c.iconImage, 'icon') }));
@@ -3354,13 +3354,13 @@
       }).sort((a, b) => (b.rarity || 5) - (a.rarity || 5) || byName(a, b));
       if (!list.length) { grid.innerHTML = '<div class="rc-empty">조건에 맞는 공명자가 없습니다.</div>'; return; }
       grid.innerHTML = list.map(r => {
-        const f = r.focus || [0.5, 0.25], rk = r.rarity || 5;
+        const rk = r.rarity || 5;
         const sum = keywordsWithoutMainDmg(r).join(' · ');
         return `<button class="rc-card ${rk === 4 ? 'r4' : ''}" onclick="openDetailModal('${r.id}')">
-          <div class="rc-art"><div class="rc-art-in">${r.sprite ? `<img loading="lazy" decoding="async" src="${r.sprite}" alt="" style="transform:translate(-${f[0] * 100}%, -${Math.max(0, f[1] * 100 - 12)}%)" crossorigin="anonymous">` : ''}</div></div>
+          <div class="rc-art"><div class="rc-art-in">${r.card || r.sprite ? `<img loading="lazy" decoding="async" src="${r.card || r.sprite}" alt="" crossorigin="anonymous">` : ''}</div></div>
           <div class="rc-body">
             <div class="rc-name"><span>${getElementIconHtml(r.element)}</span><b>${esc(r.name)}</b><span class="rc-star">${'★'.repeat(rk)}</span></div>
-            <div class="rc-tags">${RC_ROLE[r.role] ? `<span class="role-${r.role}">${RC_ROLE[r.role]}</span>` : ''}${r.weaponType ? `<span>${esc(r.weaponType)}</span>` : ''}${r.mainDmg ? `<span class="dmg">${esc(r.mainDmg)}</span>` : ''}</div>
+            <div class="rc-tags">${RC_ROLE[r.role] ? `<span class="role-${r.role}">${RC_ROLE[r.role]}</span>` : ''}${r.weaponType ? `<span>${esc(r.weaponType)}</span>` : ''}${r.mainDmg ? `<span>${esc(r.mainDmg)}</span>` : ''}</div>
             ${sum ? `<div class="rc-sum">${esc(sum)}</div>` : ''}
           </div>
         </button>`;
