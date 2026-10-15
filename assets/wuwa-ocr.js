@@ -118,26 +118,58 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
     return { x, y, w: Math.max(1, Math.min(W - x, Math.ceil(box.w))), h: Math.max(1, Math.min(H - y, Math.ceil(box.h))) };
   };
 
-  // 스탯 줄: 오른쪽 끝이 숫자로 끝나는 줄 중 아래쪽 6개 (스탯 목록이 창 맨 아래에 있음)
-  const statLines = lines.filter((l) => /\d[\d.,]*\s*%?\s*\S{0,2}$/.test(l.text) && l.bbox.x1 > W * 0.6 && l.bbox.y0 > H * 0.3).slice(-6);
-  const rows = [];
-  for (const l of statLines) {
-    const h = l.bbox.y1 - l.bbox.y0;
-    const box = clip({ x: W * 0.55, y: l.bbox.y0 - h * 0.2, w: W * 0.45, h: h * 1.4 });
+  // 스탯 줄 후보: 오른쪽 끝이 숫자로 끝나는 줄
+  const cands = lines.filter((l) => /\d[\d.,]*\s*%?\s*\S{0,2}$/.test(l.text) && l.bbox.x1 > W * 0.6 && l.bbox.y0 > H * 0.3)
+    .map((l) => ({ l, lab: bestMatch(l.text.replace(/[\d.,%]+\S*$/, ''), STAT_LABELS, 0.7) }));
+  const readNum = async (y0, h, fallbackText) => {
+    const box = clip({ x: W * 0.55, y: y0 - h * 0.2, w: W * 0.45, h: h * 1.4 });
     const n = await workers.num.recognize(await backend.crop(box, Math.max(2, 60 / h)));
-    const num = parseNumber(n.data.text) || parseNumber(l.text);
-    if (num) rows.push({ label: l.text, num });
+    return parseNumber(n.data.text) || parseNumber(fallbackText);
+  };
+  // 라벨로 4줄 이상 확인되면 라벨 기준으로 배치 (아래 장식 줄 같은 잡음, 못 읽은 줄이 있어도 밀리지 않음)
+  // 못 찾은 줄은 확인된 줄 간격으로 위치를 추정해 숫자만 읽음
+  const byIdx = new Map();
+  for (const c of cands) { const i = c.lab ? STAT_LABELS.indexOf(c.lab.value) : -1; if (i >= 0 && !byIdx.has(i)) byIdx.set(i, c.l); }
+  const rows = [];
+  let statLines;
+  if (byIdx.size >= 4) {
+    const known = [...byIdx.entries()].sort((a, b) => a[0] - b[0]);
+    const cy = (l) => (l.bbox.y0 + l.bbox.y1) / 2;
+    const pitches = known.slice(1).map(([i, l], k) => (cy(l) - cy(known[k][1])) / (i - known[k][0])).sort((a, b) => a - b);
+    const pitch = pitches[Math.floor(pitches.length / 2)];
+    const hAvg = known.reduce((s, [, l]) => s + l.bbox.y1 - l.bbox.y0, 0) / known.length;
+    for (let i = 0; i < STAT_LABELS.length; i++) {
+      let l = byIdx.get(i);
+      if (!l) {
+        const [ai, al] = known.reduce((best, k) => Math.abs(k[0] - i) < Math.abs(best[0] - i) ? k : best);
+        const y = cy(al) + (i - ai) * pitch;
+        l = cands.find((c) => !c.lab && Math.abs(cy(c.l) - y) < pitch * 0.35)?.l || { text: '', bbox: { y0: y - hAvg / 2, y1: y + hAvg / 2 } };
+      }
+      if (i === 0) statLines = [l];   // 머리 영역 경계 (첫 줄 위치, 추정값 포함)
+      const num = await readNum(l.bbox.y0, l.bbox.y1 - l.bbox.y0, l.text);
+      rows.push(num ? { label: STAT_LABELS[i], num } : null);
+      if (num) result.stats[STAT_LABELS[i]] = num.value;
+    }
+    const miss = rows.filter((r) => !r).length;
+    if (miss) result.warnings.push(`스탯 ${miss}줄을 읽지 못함`);
+  } else {
+    // 라벨을 거의 못 읽었으면 아래쪽 6줄을 순서대로
+    statLines = cands.map((c) => c.l).slice(-6);
+    for (const l of statLines) {
+      const num = await readNum(l.bbox.y0, l.bbox.y1 - l.bbox.y0, l.text);
+      if (num) rows.push({ label: l.text, num });
+    }
+    if (rows.length < 6) result.warnings.push(`스탯 줄을 ${rows.length}개만 찾음`);
+    rows.slice(0, 6).forEach((r, i) => {
+      const byLabel = bestMatch(r.label.replace(/[\d.,%]+\S*$/, ''), STAT_LABELS, 0.7);
+      const label = byLabel ? byLabel.value : STAT_LABELS[i];
+      if (byLabel && byLabel.value !== STAT_LABELS[i]) result.warnings.push(`${i + 1}번째 줄 라벨이 순서와 다름: ${byLabel.value}`);
+      result.stats[label] = r.num.value;
+    });
   }
-  if (rows.length < 6) result.warnings.push(`스탯 줄을 ${rows.length}개만 찾음`);
-  rows.slice(0, 6).forEach((r, i) => {
-    const byLabel = bestMatch(r.label.replace(/[\d.,%]+\S*$/, ''), STAT_LABELS, 0.7);
-    const label = byLabel ? byLabel.value : STAT_LABELS[i];
-    if (byLabel && byLabel.value !== STAT_LABELS[i]) result.warnings.push(`${i + 1}번째 줄 라벨이 순서와 다름: ${byLabel.value}`);
-    result.stats[label] = r.num.value;
-  });
   for (const k of ['공명 효율', '크리티컬', '크리티컬 피해']) {
     const r = rows[STAT_LABELS.indexOf(k)];
-    if (r && !r.num.percent) result.warnings.push(`${k} 값에 %가 없음, 확인 필요`);
+    if (r && r.num && !r.num.percent) result.warnings.push(`${k} 값에 %가 없음, 확인 필요`);
   }
 
   // 머리 영역: 스탯 첫 줄 위. 대략 위 45% 에 속성과 이름, 그 아래에 레벨과 돌파 별
@@ -158,15 +190,22 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
   }
   result.name = named.name;
 
-  // 레벨: "Lv.90/90"
-  const lvText = (await workers.num.recognize(await backend.crop(clip({ x: 0, y: top * 0.42, w: W * 0.45, h: top * 0.3 }), Math.max(2, 900 / W)))).data.text;
-  const m = lvText.match(/(\d{1,2})\s*\/\s*(\d{2})/), m1 = lvText.match(/(\d{2})/);
-  if (m) result.level = { current: +m[1], max: +m[2] };
-  else if (m1 && +m1[1] <= 90) result.level = { current: +m1[1], max: null };
-  else {
+  // 레벨: "Lv.90/90". 글씨가 가늘어 위치를 조금씩 바꿔 가며 읽고, 말이 되는 값이 나오면 멈춤
+  // ("Lv." 의 점만 읽히고 숫자가 붙어 ".90" 처럼 나오는 경우가 많음)
+  const lvOf = (t) => {
+    const a = t.match(/(\d{1,2})\s*\/\s*(\d{2})/), b = t.match(/\.(\d{1,2})(?!\d)/);
+    const cur = a ? +a[1] : b ? +b[1] : 0, max = a ? +a[2] : null;
+    if (cur < 1 || cur > 90) return null;
+    return { current: cur, max: max && max >= cur && max <= 90 && max % 10 === 0 ? max : null };
+  };
+  for (const [ys, hs] of [[0.42, 0.3], [0.5, 0.15], [0.55, 0.15], [0.45, 0.15], [0.6, 0.15]]) {
+    const t = (await workers.num.recognize(await backend.crop(clip({ x: 0, y: top * ys, w: W * 0.5, h: top * hs }), Math.max(2, 900 / W)))).data.text;
+    if ((result.level = lvOf(t))) break;
+  }
+  if (!result.level) {
     const lvLine = lines.find((l) => l.bbox.y0 < top && /\d{1,2}\s*\//.test(l.text));
     const m2 = lvLine && lvLine.text.match(/(\d{2})\s*\//);
-    if (m2) result.level = { current: +m2[1], max: null };
+    if (m2 && +m2[1] >= 1 && +m2[1] <= 90) result.level = { current: +m2[1], max: null };
   }
   if (!result.level) result.warnings.push('레벨을 찾지 못함');
   return result;

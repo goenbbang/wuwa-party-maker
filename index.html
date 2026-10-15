@@ -2468,7 +2468,7 @@
       screenshotBusy = true; uploadAborted = false;
       showUploadBusy(1, files.length);
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=9');
+        const ocr = await import('./assets/wuwa-ocr.js?v=10');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
