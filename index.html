@@ -770,6 +770,7 @@
     html.theme-wuwa button.tb-btn:hover i { color: var(--wtext); }
 
     .hp-panel { max-width: 860px !important; }
+    .wtag-badge { font-size: 10px; letter-spacing: -.01em; }
     .wtag-sig { background: var(--eff); border-color: var(--eff); color: #111; }
     /* even font scale */
     @media (min-width: 1280px) { #growth-cards-container { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -4244,8 +4245,8 @@
           <div data-name="${esc(w.name)}" onclick="openWeaponDetailModal(this.dataset.name)" class="w-[96px] sm:w-[104px] md:w-[96px] aspect-[3/3.7] flex-shrink-0 rounded-xl bg-[#151a26] border ${borderClass} flex flex-col overflow-hidden shadow-sm group relative cursor-pointer hover:border-amber-400 transition-all active:scale-95">
             <div class="flex-1 w-full bg-gradient-to-b ${gradClass} to-transparent relative overflow-hidden flex items-center justify-center">
               <img loading="lazy" decoding="async" src="${matched.image || DEFAULT_WEAPON_IMG}" draggable="false" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-110 transition-transform duration-200 pointer-events-none" crossorigin="anonymous">
-              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="wtag-r absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
-              ${w.pct != null ? `<span class="wtag-r absolute top-1 right-1 z-10 px-1.5 py-0.5 rounded-md bg-black/60 text-[9px] sm:text-[10px] font-bold text-slate-200 leading-none tabular-nums">${Number(w.pct).toFixed(1)}%</span>` : ''}
+              ${(() => { const t = WEAPON_TAGS[weaponTag(w, char.id)]; return t && !t.hidden ? `<span class="wtag-r wtag-badge absolute top-1 left-1 z-10 px-1 py-0.5 rounded-md border font-black leading-none ${t.cls}">${t.label}</span>` : ''; })()}
+              ${w.pct != null ? `<span class="wtag-r wtag-badge absolute top-1 right-1 z-10 px-1 py-0.5 rounded-md bg-black/60 font-bold text-slate-200 leading-none tabular-nums">${Number(w.pct).toFixed(1)}%</span>` : ''}
             </div>
             <div class="border-t ${borderClass} py-1 px-1 bg-[#0e121a] flex items-center justify-center flex-shrink-0 z-10 relative overflow-hidden">
               <span class="weapon-name-text font-extrabold text-[11px] sm:text-xs text-slate-200 block whitespace-nowrap text-center leading-tight">${esc(w.name)}</span>
