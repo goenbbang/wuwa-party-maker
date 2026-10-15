@@ -1139,7 +1139,7 @@
         {"name": "멸망의 주파수", "pct": 72.2}
       ],
       "teammates": [{"id": "hsin"}, {"id": "zhezhi"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 110, "cr": 72, "cd": 245}
+      "targetStats": {"type": "atk", "base": 2200, "regen": 110, "cr": 70, "cd": 260}
     },
     {
       "id": "xiangli_yao",
@@ -1388,7 +1388,7 @@
       "skillPriority": ["공명 회로", "공명 해방", "기본 공격", "공명 스킬", "변주 스킬"],
       "weapons": [{"name": "옥궐에 피는 꽃", "pct": 100.0}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 79.7}, {"name": "꼭두각시의 손", "pct": 76.2}, {"name": "청음", "pct": 64.6}],
       "teammates": [{"id": "rover_electro"}, {"id": "suisui"}, {"id": "jinhsi"}],
-      "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 65, "cd": 250}
+      "targetStats": {"type": "atk", "base": 2400, "regen": 120, "cr": 72.5, "cd": 260}
     },
     {
       "id": "suoming",
@@ -1974,7 +1974,7 @@
       "skillPriority": ["공명 해방", "공명 회로", "기본 공격", "공명 스킬", "변주 스킬"],
       "weapons": [{"name": "솟아오르는 화염", "pct": 107.85}, {"name": "천년의 회류", "pct": 100.0}, {"name": "상승의 서녘", "pct": 86.05}, {"name": "영원의 붕괴", "pct": 85.72}],
       "teammates": [{"id": "phoebe"}, {"id": "zani"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 120, "cr": 60, "cd": 210},
+      "targetStats": {"type": "atk", "base": 1850, "regen": 120, "cr": 70, "cd": 250},
       "echoAlts": [
         {
           "label": "힐러",
@@ -2035,7 +2035,7 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "기본 공격", "변주 스킬"],
       "weapons": [{"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}],
       "teammates": [{"id": "jinhsi"}, {"id": "jiyan"}, {"id": "encore"}],
-      "targetStats": {"type": "atk", "base": 1500, "regen": 225, "cr": 60, "cd": 210}
+      "targetStats": {"type": "atk", "base": 1500, "regen": 220, "cr": 60, "cd": 210}
     },
     {
       "id": "lumi",
@@ -2116,7 +2116,7 @@
       "skillPriority": ["변주 스킬", "공명 스킬", "기본 공격", "공명 회로", "공명 해방"],
       "weapons": [{"name": "뭇별의 교향곡"}, {"name": "판타지 변주"}, {"name": "25형 증폭기 · 울림의 멜로디"}],
       "teammates": [{"id": "augusta"}, {"id": "carlotta"}, {"id": "zani"}],
-      "targetStats": {"type": "hp", "base": 20000, "regen": 230, "cr": 60, "cd": 220},
+      "targetStats": {"type": "hp", "base": 45000, "regen": 240, "cr": 60, "cd": 220},
       "echoAlts": [
         {
           "label": "경연 파티",
@@ -2165,7 +2165,7 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "광휘의 찬송가", "pct": 100.0}, {"name": "잊혀진 피안의 슬픈 악장", "pct": 98.2}, {"name": "꼭두각시의 손", "pct": 97.6}, {"name": "청음", "pct": 86.4}],
       "teammates": [{"id": "lynae"}, {"id": "rover_spectro"}, {"id": "zani"}],
-      "targetStats": {"type": "atk", "base": 1900, "regen": 115, "cr": 60, "cd": 215},
+      "targetStats": {"type": "atk", "base": 2200, "regen": 120, "cr": 70, "cd": 280},
       "echoAlts": [
         {
           "label": "서포트",
@@ -2210,7 +2210,7 @@
       "skillPriority": ["공명 회로", "공명 해방", "공명 스킬", "변주 스킬", "기본 공격"],
       "weapons": [{"name": "불빛의 심판", "pct": 100.0}, {"name": "희비극", "pct": 93.7}, {"name": "팔방의 천추", "pct": 85.0}, {"name": "거침없는 비상", "pct": 72.6}],
       "teammates": [{"id": "phoebe"}, {"id": "rover_spectro"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 1800, "regen": 125, "cr": 65, "cd": 210}
+      "targetStats": {"type": "atk", "base": 2400, "regen": 125, "cr": 70, "cd": 280}
     },
     {
       "id": "chisa",
@@ -2250,7 +2250,7 @@
         {"name": "용서의 명상록", "pct": 69.0}
       ],
       "teammates": [{"id": "yangyang_xuanling"}, {"id": "aemeath"}, {"id": "hiyuki"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 125, "cr": 65, "cd": 210},
+      "targetStats": {"type": "atk", "base": 2300, "regen": 130, "cr": 80, "cd": 260},
       "echoAlts": [
         {
           "label": "상황별",
@@ -2308,7 +2308,7 @@
         {"name": "26형 권총 · 맹렬한 돌격", "pct": 80.3}
       ],
       "teammates": [{"id": "aemeath"}, {"id": "mornye"}, {"id": "qingxiao"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 120, "cr": 65, "cd": 265}
+      "targetStats": {"type": "atk", "base": 2350, "regen": 130, "cr": 70, "cd": 260}
     },
     {
       "id": "luuk_herssen",
@@ -2345,7 +2345,7 @@
         {"name": "거침없는 비상", "pct": 66.9}
       ],
       "teammates": [{"id": "denia"}, {"id": "lynae"}, {"id": "mornye"}],
-      "targetStats": {"type": "atk", "base": 2100, "regen": 120, "cr": 70, "cd": 235}
+      "targetStats": {"type": "atk", "base": 2650, "regen": 120, "cr": 75, "cd": 260}
     },
     {
       "id": "lucy",
@@ -2386,7 +2386,7 @@
         {"name": "태양 불꽃", "pct": 74.2}
       ],
       "teammates": [{"id": "rebecca"}, {"id": "mornye"}, {"id": "shorekeeper"}],
-      "targetStats": {"type": "atk", "base": 2100, "regen": 125, "cr": 65, "cd": 210}
+      "targetStats": {"type": "atk", "base": 2500, "regen": 125, "cr": 70, "cd": 265}
     },
     {
       "id": "taoqi",
@@ -2718,7 +2718,7 @@
         {"name": "청음", "pct": 64.9}
       ],
       "teammates": [{"id": "cantarella"}, {"id": "qiuyuan"}, {"id": "roccia"}],
-      "targetStats": {"type": "atk", "base": 2000, "regen": 100, "cr": 70, "cd": 265}
+      "targetStats": {"type": "atk", "base": 2500, "regen": 100, "cr": 70, "cd": 265}
     },
     {
       "id": "yangyang_xuanling",
@@ -2754,7 +2754,7 @@
         {"name": "천공의 광경", "pct": 73.7}
       ],
       "teammates": [{"id": "chisa"}, {"id": "suisui"}, {"id": "rebecca"}],
-      "targetStats": {"type": "atk", "base": 2100, "regen": 107, "cr": 65, "cd": 255}
+      "targetStats": {"type": "atk", "base": 2300, "regen": 125, "cr": 70, "cd": 260}
     }
   ],
   "weapons": [
