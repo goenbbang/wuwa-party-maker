@@ -164,7 +164,7 @@
     .preset-dd-sep { height: 1px; margin: 4px 2px; background: #2c2c2e; }
 
     /* 육성 상세 창 (캐릭터 · 무기 · 에코 점수) */
-    .bm-panel { width: 100%; max-width: 1180px; max-height: 92vh; overflow-y: auto; background: #121214; border: 1px solid #2c2c2e; border-radius: 8px; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+    .bm-panel { width: 100%; max-width: 1180px; max-height: 92vh; overflow-y: auto; background: #121214; border: 1px solid #2c2c2e; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
     .bm-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; padding: 16px 18px; border-bottom: 1px solid #252527; }
     .bm-title { flex: 1; min-width: 150px; }
     .bm-actions { display: flex; gap: 8px; margin-left: auto; }
@@ -212,7 +212,7 @@
     .bd-tag { font-size: 12px; font-weight: 700; color: #a3a3a5; border: 1px solid #323234; border-radius: 4px; padding: 2px 7px; }
     .bd-top { display: grid; grid-template-columns: 270px minmax(0, 1fr) 360px; gap: 12px; padding: 14px 18px 0; }
     @media (max-width: 1100px) { .bd-top { grid-template-columns: 240px minmax(0, 1fr); } .bd-top > .bd-card:last-child { grid-column: 1 / -1; } }
-    @media (max-width: 720px) { .bd-top { grid-template-columns: 1fr; } .bd-char { min-height: 300px; } }
+    @media (max-width: 720px) { .bd-top { grid-template-columns: 1fr; } .bd-char { min-height: 340px; } }
     .bd-card { background: #151517; border: 1px solid #29292b; border-radius: 5px; padding: 12px 14px; min-width: 0; }
     .bd-mid { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     .bd-label { font-size: 12px; font-weight: 800; color: #a3a3a5; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
@@ -456,7 +456,7 @@
     .bd-weapon-card.is-empty:hover .bd-weapon { color: #e8e8ea; }
 
     /* 이미지 업로드 창 */
-    .up-panel { width: 100%; max-width: 560px; background: #121214; border: 1px solid #2c2c2e; border-radius: 8px; box-shadow: 0 24px 60px rgba(0,0,0,.6); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .up-panel { width: 100%; max-width: 560px; background: #121214; border: 1px solid #2c2c2e; box-shadow: 0 24px 60px rgba(0,0,0,.6); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
     .up-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .up-title { font-size: 16px; font-weight: 800; color: #fff; }
     .up-desc { font-size: 12px; color: #a3a3a5; margin-top: 4px; line-height: 1.5; }
@@ -573,7 +573,7 @@
     html.theme-wuwa #build-modal-panel, html.theme-wuwa #edit-modal-panel, html.theme-wuwa .up-panel {
       background: #121214 !important;
       border: 1px solid var(--wg-dim) !important;
-      border-radius: 8px !important;
+      border-radius: 0 !important;
       box-shadow: 0 30px 80px rgba(0, 0, 0, .7) !important;
     }
     html.theme-wuwa .bd-head { border-bottom: 1px solid var(--wg-line) !important; background: inherit !important; }
@@ -771,6 +771,8 @@
 
     .hp-panel { max-width: 860px !important; }
     .wtag-badge { font-size: 10px; letter-spacing: -.01em; }
+    @media (max-width: 720px) { .bd-char { min-height: 340px; } }   /* 체인 6개와 레벨 버튼이 겹치지 않게 */
+    .ua-stats .is-warn b, .ua-stats .is-warn span { color: #fca5a5; }
     .wtag-sig { background: var(--eff); border-color: var(--eff); color: #111; }
     /* even font scale */
     @media (min-width: 1280px) { #growth-cards-container { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -2453,7 +2455,7 @@
             <div class="ua-who"><img src="${res.avatar}" alt=""><div><b>${esc(res.name)}</b>${sub ? `<span>${sub}</span>` : ''}</div></div>
             ${bot ? `<div class="ua-wp">${weapon ? `<img src="${weapon.image}" alt="">` : '<i></i>'}<div><b>${esc(r.weapon?.name || '무기 없음')}</b>${r.weapon?.level ? `<span>Lv.${r.weapon.level}</span>` : ''}</div></div>` : ''}
           </div>
-          <div class="ua-stats">${stats.map(([k, v, u]) => `<div><span>${k}</span><b>${v == null ? '-' : v + u}</b></div>`).join('')}</div>
+          <div class="ua-stats">${stats.map(([k, v, u]) => `<div${!bot && r.warnings.some(w => w.startsWith(k + ' 값')) ? ' class="is-warn"' : ''}><span>${k}</span><b>${v == null ? '-' : v + u}</b></div>`).join('')}</div>
           ${bot ? `<div class="ua-echoes">${[0, 1, 2, 3, 4].map(i => { const e = r.echoes[i]; return `<div class="ua-echo">${e?.img ? `<img src="${echoImgUrl(e.img)}" alt="">` : ''}${e ? `<span class="bd-cost">COST ${e.cost ?? '?'}</span>` : ''}</div>`; }).join('')}</div>` : ''}
         </div>
         ${notes(alerts, info, overwrite)}
@@ -2468,7 +2470,7 @@
       screenshotBusy = true; uploadAborted = false;
       showUploadBusy(1, files.length);
       try {
-        const ocr = await import('./assets/wuwa-ocr.js?v=10');
+        const ocr = await import('./assets/wuwa-ocr.js?v=12');
         const workers = await ocr.getWorkers();
         const names = RAW_RESONATORS.map(r => r.name), weapons = WEAPONS.map(w => w.name);
         const echoDb = await loadEchoDb(ocr);
@@ -2656,33 +2658,49 @@
     // 에코 가중치 (명조 채널 위키 "이정도면 잘키웠다표"와 대조해 정함). 에코 점수는 에코 자체에 좋은 옵션이 얼마나 붙었는지만 보고,
     // 현재 스탯 · 무기 · 돌파 · 목표 달성 여부와 상관없이 캐릭터마다 고정
     //  - 크리티컬 · 크리티컬 피해: 딜러 1, 서포터 0 (크리티컬 관련 효과가 있는 서포터만 0.2)
-    //  - 계수 스탯%(공격력 / HP / 방어력 중 하나): 딜러 0.8, 서포터 1 · 같은 스탯 고정값: 딜러 0.3, 서포터 0.4
-    //  - 주력 피해 보너스 0.6, 나머지 피해 보너스 0
-    //  - 공명 효율: 캐릭터 목표 공명 효율로 고정 (110% 이하 0.2 → 140% 이상 0.8, 사이는 비율대로)
+    //  - 계수 스탯%(공격력 / HP / 방어력 중 하나): 딜러 0.7, 서포터 1 · 같은 스탯 고정값: 딜러 0.36 (깡공 40 ≈ 공% 4%), 서포터 0.4
+    //  - 주력 피해 보너스 0.45, 나머지 피해 보너스 0
+    //  - 공명 효율: 캐릭터 목표 공명 효율로 고정 (아래 regenWeight 참고)
     const SUPPORT_CRIT = ['suisui', 'shorekeeper', 'mornye'];
-    // 공명 효율: 목표 100% 이하는 공효가 필요 없는 공명자라 0, 110% 이하 0.6 ~ 150% 이상 1.0 (서포터 1.0)
-    const regenWeight = target => target <= 100 ? 0 : Math.round(Math.min(1, Math.max(0.6, 0.6 + (target - 110) * 0.01)) * 100) / 100;
+    // 공명 효율: 목표 100% 이하는 공효가 필요 없는 공명자라 0, 110% 이하 0.5 · 120% 0.6 ~ 150% 이상 0.9 (서포터 1.0)
+    const regenWeight = target => target <= 100 ? 0 : Math.round(Math.min(0.9, Math.max(0.5, 0.5 + (target - 110) * 0.01)) * 100) / 100;
     function echoWeights(res) {
       const ts = res.targetStats || defaultTargetStats, sup = res.role === 'support';
       const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
       const crit = sup ? (SUPPORT_CRIT.includes(res.id) ? 0.2 : 0) : 1;
       const w = {
         '크리티컬%': crit, '크리티컬 피해%': crit,
-        [scale + '%']: sup ? 1 : 0.8, [scale]: 0.4,
+        [scale + '%']: sup ? 1 : 0.7, [scale]: sup ? 0.4 : 0.36,
         '공명 효율%': sup ? 1 : regenWeight(ts.regen == null ? 120 : +ts.regen),
       };
       const bonus = MAIN_DMG_BONUS[res.mainDmg];
-      if (bonus && !sup) w[bonus + '%'] = 0.6;
+      if (bonus && !sup) w[bonus + '%'] = 0.45;
       return w;
     }
 
     const GRADES = [[80, 'SSS'], [70, 'SS'], [60, 'S'], [50, 'A'], [40, 'B'], [0, 'C']];
-    const gradeOf = pct => GRADES.find(([min]) => pct >= min)[1];
+    // 등급은 공명자마다 '이 정도면 잘 키웠다' 기준 점수(ref)를 A 시작점(50)으로 맞춰 매김
+    // 0 → 0, ref → 50, 100 → 100 으로 펴서 위 표에 대입 (가중치 스탯 수가 달라도 공명자끼리 공정하게)
+    const gradeOf = (pct, ref = 50) => {
+      const n = pct <= ref ? pct / ref * 50 : 50 + (pct - ref) / Math.max(1, 100 - ref) * 50;
+      return GRADES.find(([min]) => n >= min)[1];
+    };
+    // 기준 에코: 가중치 높은 부옵 3개가 보통 수치(크확 7.5 · 크피 15 · 공효 7.6 · 그 외 % 7.1)로 붙은 에코
+    const ECHO_SUB_TYPICAL = {
+      '크리티컬%': 7.5, '크리티컬 피해%': 15, '공명 효율%': 7.6, '방어력%': 9,
+      '공격력%': 7.1, 'HP%': 7.1, '일반 공격 피해 보너스%': 7.1, '강공격 피해 보너스%': 7.1, '공명 스킬 피해 보너스%': 7.1, '공명 해방 피해 보너스%': 7.1,
+      '공격력': 40, 'HP': 430, '방어력': 50,
+    };
+    function refScore(w, ideal) {
+      const part = Object.entries(w).map(([k, x]) => x * (ECHO_SUB_TYPICAL[k] || 0) / (ECHO_SUB_MAX[k] || 1)).sort((a, b) => b - a).slice(0, 3);
+      return part.reduce((a, b) => a + b, 0) / ideal * 100 || 50;
+    }
 
     // 에코 점수: Σ(부옵 ÷ 최대치 × 가중치) 를 그 캐릭터가 받을 수 있는 최고점(가중치 상위 5개 × 1.0) 대비 % 로 (메인 옵션은 점수에 넣지 않음)
     function scoreBuild(res, preset) {
       const w = echoWeights(res, preset);
       const ideal = Object.values(w).sort((a, b) => b - a).slice(0, 5).reduce((a, b) => a + b, 0) || 1;
+      const ref = refScore(w, ideal);
       const echoes = (preset.build?.echoes || []).map(e => {
         if (!e) return null;
         let sum = 0;
@@ -2693,11 +2711,11 @@
           return { ...sub, weight, part };
         });
         const pct = sum / ideal * 100;
-        return { ...e, subs, pct, grade: gradeOf(pct) };
+        return { ...e, subs, pct, grade: gradeOf(pct, ref) };
       });
       const filled = echoes.filter(Boolean);
       const total = filled.length ? filled.reduce((a, e) => a + e.pct, 0) / filled.length : 0;
-      return { weights: w, echoes, total, grade: gradeOf(total) };
+      return { weights: w, echoes, total, ref, grade: gradeOf(total, ref) };
     }
 
     // 메인 옵션이 추천과 맞는지 (데이터의 echoSet.echoes 기준)
@@ -3182,7 +3200,7 @@
           </div>
           <div class="bd-echo-main">${statIcon(e.main?.stat, 'bd-ico-s')}<span>${esc((e.main?.stat || '메인 옵션').replace(' 보너스', ''))}</span><b>${e.main?.value != null ? e.main.value + '%' : '?'}</b></div>
           ${e.mainFlat ? `<div class="bd-echo-flat">${statIcon(e.mainFlat.stat, 'bd-ico-s')}<span>${esc(e.mainFlat.stat)}</span><b>${e.mainFlat.value ?? '?'}</b></div>` : ''}
-          <div class="bd-subs">${e.subs.map(s => `<div class="bd-sub ${s.weight >= EFF_MIN ? 'is-eff' : ''}"><span>${esc(s.stat.replace(' 보너스', ''))}${s.percent && FLAT_STATS.includes(s.stat) ? '%' : ''}</span><b>${s.value == null ? '?' : s.value + (s.percent ? '%' : '')}</b></div>`).join('')}</div>
+          <div class="bd-subs">${e.subs.map(s => `<div class="bd-sub ${s.weight >= EFF_MIN && !(FLAT_STATS.includes(s.stat) && !s.percent) ? 'is-eff' : ''}"><span>${esc(s.stat.replace(' 보너스', ''))}${s.percent && FLAT_STATS.includes(s.stat) ? '%' : ''}</span><b>${s.value == null ? '?' : s.value + (s.percent ? '%' : '')}</b></div>`).join('')}</div>
           <div class="bd-echo-foot"><span>점수</span><b>${e.pct.toFixed(1)}</b><i class="bd-grade g-${e.grade}">${e.grade}</i></div>
         </button>`;
       };

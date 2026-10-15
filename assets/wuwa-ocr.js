@@ -108,6 +108,30 @@ export async function readPageLines(backend, workers, psm = '3') {
   return score(alt) > score(lines) ? alt : lines;
 }
 
+// 배경 그림이 복잡해 전체 읽기가 줄을 못 나눌 때: 왼쪽(라벨 쪽) 흰 글자 분포로 줄 위치를 직접 찾아 한 줄씩 읽음
+export async function readBandLines(backend, workers, T = 170) {
+  const W = backend.width, H = backend.height;
+  const prof = await backend.rowProfile({ x: Math.floor(W * 0.08), y: 0, w: Math.floor(W * 0.45), h: H }, T);
+  const bands = [];
+  let start = -1, gap = 0;
+  for (let y = 0; y <= H; y++) {
+    const on = y < H && prof[y] >= 2;
+    if (on) { if (start < 0) start = y; gap = 0; }
+    else if (start >= 0 && ++gap > 3) { bands.push([start, y - gap]); start = -1; gap = 0; }
+  }
+  await workers.kor.setParameters({ tessedit_pageseg_mode: '7' });
+  const lines = [];
+  for (const [y0, y1] of bands) {
+    const h = y1 - y0 + 1;
+    if (h < H * 0.015 || h > H * 0.08) continue;
+    const box = { x: 0, y: Math.max(0, y0 - 3), w: W, h: Math.min(H - Math.max(0, y0 - 3), h + 6) };
+    const t = (await workers.kor.recognize(await backend.crop(box, Math.max(2, 48 / h)))).data.text.trim();
+    if (t) lines.push({ text: t, bbox: { x0: 0, y0, x1: W, y1 } });
+  }
+  await workers.kor.setParameters({ tessedit_pageseg_mode: '3' });
+  return lines;
+}
+
 export async function parseStatScreen(backend, workers, { names = [], aliases = {}, lines = null } = {}) {
   const W = backend.width, H = backend.height;
   if (!lines) lines = await readPageLines(backend, workers);
@@ -119,12 +143,52 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
   };
 
   // 스탯 줄 후보: 오른쪽 끝이 숫자로 끝나는 줄
-  const cands = lines.filter((l) => /\d[\d.,]*\s*%?\s*\S{0,2}$/.test(l.text) && l.bbox.x1 > W * 0.6 && l.bbox.y0 > H * 0.3)
-    .map((l) => ({ l, lab: bestMatch(l.text.replace(/[\d.,%]+\S*$/, ''), STAT_LABELS, 0.7) }));
-  const readNum = async (y0, h, fallbackText) => {
-    const box = clip({ x: W * 0.55, y: y0 - h * 0.2, w: W * 0.45, h: h * 1.4 });
-    const n = await workers.num.recognize(await backend.crop(box, Math.max(2, 60 / h)));
-    return parseNumber(n.data.text) || parseNumber(fallbackText);
+  // 라벨: 줄 앞쪽 글자만 비교 (뒤에 붙은 잡음 글자 무시). 긴 라벨 우선 ('크리티컬 피해' vs '크리티컬')
+  const labelOf = (t) => {
+    const c = clean(t.replace(/[^가-힣A-Za-z]/g, ' '));
+    let best = null;
+    for (const lab of STAT_LABELS) {
+      const k = clean(lab);
+      for (const n of [k.length - 1, k.length, k.length + 1]) {
+        const p = c.slice(0, n);
+        if (!p) continue;
+        const sc = 1 - levenshtein(p, k) / Math.max(p.length, k.length);
+        if (sc >= 0.7 && (!best || sc > best.score || (sc === best.score && k.length > clean(best.value).length))) best = { value: lab, score: sc };
+      }
+    }
+    return best;
+  };
+  const cands = lines.filter((l) => l.bbox.y0 > H * 0.3 && (/\d[\d.,]*\s*%?\s*\S{0,2}$/.test(l.text) && l.bbox.x1 > W * 0.6 || labelOf(l.text)))
+    .map((l) => ({ l, lab: labelOf(l.text) }));
+  // 스탯별 형식 (% 스탯은 소수 한 자리) 과 말이 되는 범위
+  const RANGE = [[300, 90000], [30, 9000], [30, 9000], [100, 500], [5, 100], [150, 600]];
+  const norm = (t, i) => {
+    t = (t || '').replace(/,/g, '');
+    const m = i >= 3 ? t.match(/(\d{1,3})\.(\d)/) : t.match(/\d{2,6}/);
+    const v = m ? (i >= 3 ? +`${m[1]}.${m[2]}` : +m[0]) : null;
+    return v != null && v >= RANGE[i][0] && v <= RANGE[i][1] ? v : null;
+  };
+  const readNum = async (y0, h, fallbackText, i = -1) => {
+    const box = clip({ x: W * 0.55, y: y0 - h * 0.2, w: W * 0.45, h: h * 1.4 }), sc = Math.max(2, 60 / h);
+    const n = (await workers.num.recognize(await backend.crop(box, sc))).data.text;
+    if (i < 0) return parseNumber(n) || parseNumber(fallbackText);
+    if (!backend.base) {
+      // 크기를 바꿔 한 번 더 읽어 같은 값이면 확정 (다르면 확인 필요 → 흰 글자만 남겨 다시 읽는 단계로)
+      const v = norm(n, i), v2 = norm((await workers.num.recognize(await backend.crop(box, sc * 1.5))).data.text, i), vt = norm(fallbackText, i);
+      const vw = norm((await workers.num.recognize(await backend.crop(box, sc, false, 170))).data.text, i);
+      const val = v ?? v2 ?? vt;
+      return val == null ? null : { value: val, percent: i >= 3, sure: v != null && v === v2 && v === vw && (vt == null || vt === v) };
+    }
+    // 배경이 겹친 사진: 밝기 기준 · 크기를 바꿔 여러 번 읽고 가장 많이 나온 값 (한 번만 나온 값이면 확인 필요로 표시)
+    const reads = [n, fallbackText];
+    for (const [T, s2] of [[0, sc], [150, sc], [0, sc * 1.5], [150, sc * 1.5], [200, sc]]) reads.push((await workers.num.recognize(await backend.base.crop(box, s2, false, T))).data.text);
+    await workers.kor.setParameters({ tessedit_pageseg_mode: '7' });
+    reads.push((await workers.kor.recognize(await backend.crop(box, sc))).data.text);
+    const votes = new Map();
+    for (const t of reads) { const v = norm(t, i); if (v != null) votes.set(v, (votes.get(v) || 0) + 1); }
+    const top = [...votes.entries()].sort((a, b) => b[1] - a[1])[0];
+    const second = [...votes.values()].sort((a, b) => b - a)[1] || 0;
+    return top ? { value: top[0], percent: i >= 3, sure: top[1] >= 3 && top[1] >= second * 2 } : null;
   };
   // 라벨로 4줄 이상 확인되면 라벨 기준으로 배치 (아래 장식 줄 같은 잡음, 못 읽은 줄이 있어도 밀리지 않음)
   // 못 찾은 줄은 확인된 줄 간격으로 위치를 추정해 숫자만 읽음
@@ -146,12 +210,13 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
         l = cands.find((c) => !c.lab && Math.abs(cy(c.l) - y) < pitch * 0.35)?.l || { text: '', bbox: { y0: y - hAvg / 2, y1: y + hAvg / 2 } };
       }
       if (i === 0) statLines = [l];   // 머리 영역 경계 (첫 줄 위치, 추정값 포함)
-      const num = await readNum(l.bbox.y0, l.bbox.y1 - l.bbox.y0, l.text);
+      const num = await readNum(l.bbox.y0, l.bbox.y1 - l.bbox.y0, l.text, i);
       rows.push(num ? { label: STAT_LABELS[i], num } : null);
       if (num) result.stats[STAT_LABELS[i]] = num.value;
+      if (num && !num.sure) result.warnings.push(`${STAT_LABELS[i]} 값 확인 필요`);
     }
-    const miss = rows.filter((r) => !r).length;
-    if (miss) result.warnings.push(`스탯 ${miss}줄을 읽지 못함`);
+    const miss = rows.map((r, i) => r ? '' : STAT_LABELS[i]).filter(Boolean);
+    if (miss.length) result.warnings.push(`${miss.join(' · ')} 값을 읽지 못함`);
   } else {
     // 라벨을 거의 못 읽었으면 아래쪽 6줄을 순서대로
     statLines = cands.map((c) => c.l).slice(-6);
@@ -198,10 +263,19 @@ export async function parseStatScreen(backend, workers, { names = [], aliases = 
     if (cur < 1 || cur > 90) return null;
     return { current: cur, max: max && max >= cur && max <= 90 && max % 10 === 0 ? max : null };
   };
+  // 여러 위치에서 읽어 "90/90" 처럼 최대 레벨까지 읽힌 값을 우선, 없으면 두 자리 값 중 가장 많이 나온 값
+  const lvs = [];
   for (const [ys, hs] of [[0.42, 0.3], [0.5, 0.15], [0.55, 0.15], [0.45, 0.15], [0.6, 0.15]]) {
-    const t = (await workers.num.recognize(await backend.crop(clip({ x: 0, y: top * ys, w: W * 0.5, h: top * hs }), Math.max(2, 900 / W)))).data.text;
-    if ((result.level = lvOf(t))) break;
+    const lv = lvOf((await workers.num.recognize(await backend.crop(clip({ x: 0, y: top * ys, w: W * 0.5, h: top * hs }), 900 / W))).data.text);
+    if (lv) lvs.push(lv);
   }
+  const pickLv = (list) => {
+    const cnt = new Map();
+    for (const l of list) cnt.set(l.current, (cnt.get(l.current) || 0) + 1);
+    const best = [...cnt.entries()].sort((a, b) => b[1] - a[1])[0];
+    return best && list.find((l) => l.current === best[0]);
+  };
+  result.level = pickLv(lvs.filter((l) => l.max)) || pickLv(lvs.filter((l) => l.current >= 10)) || pickLv(lvs) || null;
   if (!result.level) {
     const lvLine = lines.find((l) => l.bbox.y0 < top && /\d{1,2}\s*\//.test(l.text));
     const m2 = lvLine && lvLine.text.match(/(\d{2})\s*\//);
@@ -254,7 +328,7 @@ function fixSubValue(stat, num, raw) {
   }
   // % 가 빠졌거나 붙은 경우: 같은 이름의 다른 쪽 범위에 맞으면 그쪽으로
   const other = SUB_RANGE[stat + (num.percent ? '' : '%')];
-  if (other && num.value >= other[0] && num.value <= other[1]) return { ...num, percent: !num.percent, fixed: true };
+  if (other && num.value >= other[0] && num.value <= other[1]) return { ...num, percent: !num.percent, fixed: true, suspicious: true };
   return { ...num, suspicious: true };
 }
 
@@ -294,7 +368,7 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
     await workers.kor.setParameters({ tessedit_pageseg_mode: psm });
     return (await workers.kor.recognize(await backend.crop(R(r), 3 / sx, invert))).data.text.trim();
   };
-  const readNum = async (r) => (await workers.num.recognize(await backend.crop(R(r), 3 / sx))).data.text.trim();
+  const readNum = async (r, scale = 3, invert = false) => (await workers.num.recognize(await backend.crop(R(r), scale / sx, invert))).data.text.trim();
 
   const result = { kind: 'bot-card', warnings: [] };
   // 레벨 배지(금색)는 이름 길이에 따라 옆으로 밀리므로 위치를 찾아서 읽음
@@ -345,6 +419,14 @@ export async function parseBotCard(backend, workers, { names = [], aliases = {},
       const stat = label ? label.value : 'HP';
       if (!label) echo.uncertain = true;
       if (num && i > 0) {
+        // 범위를 벗어나면 (예: 방어력 "50"을 "10"으로 읽음) 크기 · 반전을 바꿔 다시 읽고, 같은 단위로 범위에 맞는 값이 나오면 그 값을 씀
+        const range = SUB_RANGE[stat + (num.percent ? '%' : '')];
+        if (range && (num.value < range[0] || num.value > range[1])) {
+          for (const [sc, inv] of [[4, false], [2, false], [3, true], [5, false]]) {
+            const alt = parseNumber(await readNum({ x: x0 + E.rowValue.dx, y, w: E.rowValue.w, h: E.rowValue.h }, sc, inv));
+            if (alt && alt.percent === num.percent && alt.value >= range[0] && alt.value <= range[1]) { num = alt; break; }
+          }
+        }
         num = fixSubValue(stat, num, rawNum);
         if (num.suspicious) result.warnings.push(`에코 ${result.echoes.length + 1}의 ${stat} 값(${num.value}) 확인 필요`);
       }
@@ -464,7 +546,8 @@ export async function createCanvasBackend(file) {
   sctx.drawImage(bmp, 0, 0);
   return {
     width: bmp.width, height: bmp.height,
-    async crop({ x, y, w, h }, scale = 2, invert = false) {
+    // white: 흰 글자만 남기기 (밝고 색이 거의 없는 픽셀만 검정, 나머지는 흰색). 배경 그림이 숫자와 겹칠 때 다시 읽는 용도
+    async crop({ x, y, w, h }, scale = 2, invert = false, white = 0) {
       const c = document.createElement('canvas');
       c.width = Math.round(w * scale); c.height = Math.round(h * scale);
       const ctx = c.getContext('2d');
@@ -472,6 +555,14 @@ export async function createCanvasBackend(file) {
       ctx.drawImage(src, x, y, w, h, 0, 0, c.width, c.height);
       // 흑백 + 대비 늘리기 (밝기 하위 1% ~ 상위 1% 를 0~255 로)
       const img = ctx.getImageData(0, 0, c.width, c.height), d = img.data, hist = new Array(256).fill(0);
+      if (white) {
+        for (let i = 0; i < d.length; i += 4) {
+          const mn = Math.min(d[i], d[i + 1], d[i + 2]), mx = Math.max(d[i], d[i + 1], d[i + 2]);
+          d[i] = d[i + 1] = d[i + 2] = mn > white && mx - mn < 40 ? 0 : 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        return c;
+      }
       for (let i = 0; i < d.length; i += 4) { const g = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]); d[i] = g; hist[g]++; }
       const n = d.length / 4;
       let lo = 0, hi = 255, acc = 0;
@@ -492,6 +583,15 @@ export async function createCanvasBackend(file) {
         const o = (gy * S + gx) * 3; v[o] = r / n; v[o + 1] = g / n; v[o + 2] = b / n;
       }
       return normalize(v);
+    },
+    // 줄마다 흰 글자 픽셀 수 (밝고 색이 거의 없는 픽셀)
+    async rowProfile({ x, y, w, h }, T = 170) {
+      const d = sctx.getImageData(x, y, w, h).data, out = new Array(h).fill(0);
+      for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+        const i = (yy * w + xx) * 4, mn = Math.min(d[i], d[i + 1], d[i + 2]), mx = Math.max(d[i], d[i + 1], d[i + 2]);
+        if (mn > T && mx - mn < 40) out[yy]++;
+      }
+      return out;
     },
     // 채도가 높은 픽셀만 평균 낸 색 (아이콘의 흰 테두리 · 어두운 배경 제외)
     async vividMean({ x, y, w, h }) {
@@ -519,7 +619,16 @@ export async function parseImage(file, workers, opts) {
   const backend = await createCanvasBackend(file);
   if (detectKind(backend) === 'bot-card') return parseBotCard(backend, workers, opts);
   const lines = await readPageLines(backend, workers);
-  return isEchoPanel(lines, opts.echoDb) ? parseEchoPanel(backend, workers, { ...opts, lines }) : parseStatScreen(backend, workers, { ...opts, lines });
+  if (isEchoPanel(lines, opts.echoDb)) return parseEchoPanel(backend, workers, { ...opts, lines });
+  const r = await parseStatScreen(backend, workers, { ...opts, lines });
+  // 캐릭터 머리카락 · 무기 같은 배경이 글자와 겹쳐 덜 읽혔으면 흰 글자만 남겨 한 번 더 읽고 나은 쪽을 씀
+  const score = (x) => Object.keys(x.stats).length * 10 - x.warnings.length;
+  if (Object.keys(r.stats).length === 6 && !r.warnings.length) return r;
+  const wb = { ...backend, base: backend, crop: (box, scale, invert) => backend.crop(box, scale, invert, 170) };
+  const r2 = await parseStatScreen(wb, workers, { ...opts, lines: await readBandLines(backend, workers) });
+  const best = score(r2) > score(r) ? r2 : r, other = best === r ? r2 : r;
+  if (!best.level && other.level) { best.level = other.level; best.warnings = best.warnings.filter((w) => w !== '레벨을 찾지 못함'); }
+  return best;
 }
 
 // ---------- 사이트에서 쓰는 진입점 ----------
