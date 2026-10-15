@@ -776,8 +776,7 @@
     @media (max-width: 720px) { .bd-char { min-height: 340px; } }   /* 체인 6개와 레벨 버튼이 겹치지 않게 */
     .ua-stats .is-warn b, .ua-stats .is-warn span { color: #fca5a5; }
     .wtag-sig { background: var(--eff); border-color: var(--eff); color: #111; }
-    .bd-stat-tgt { font-size: 12px; font-weight: 600; color: #747476; margin-right: 6px; font-variant-numeric: tabular-nums; }
-    .bd-stat-tgt.is-met { color: #6fbf8e; }
+    .bd-stat-tgt { font-size: 12px; font-weight: 600; color: #747476; margin-right: -3px; font-variant-numeric: tabular-nums; }
     /* even font scale */
     @media (min-width: 1280px) { #growth-cards-container { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (min-width: 1440px) { #growth-cards-container { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -2844,7 +2843,7 @@
       return m ? { stat: m[1].trim(), value: parseFloat(m[2]) } : null;
     }
 
-    // 캐릭터 90레벨 기본 + 무기 + 고유 스탯(스킬 트리) + 에코 메인·고정·부옵 합산. 세트 효과와 조건부 버프는 제외
+    // 캐릭터 기본 + 무기(상시 패시브 포함) + 고유 스탯(스킬 트리) + 에코 메인·고정·부옵 + 세트 상시 효과 합산. 조건부 버프는 제외
     // ---- 레벨 (캐릭터 레벨은 모든 프리셋 공통, 무기 레벨은 무기마다) ----
     const LV_CAPS = [20, 40, 50, 60, 70, 80, 90];
     // 돌파 단계를 모를 때는 그 레벨에서 돌파까지 마친 것으로 봄 (80 → 80/90)
@@ -2919,11 +2918,18 @@
         if (e.mainFlat?.stat) put(e.mainFlat.stat, false, e.mainFlat.value);
         (e.subs || []).forEach(s => put(s.stat, s.percent, s.value));
       });
-      const wAtk = !weapon ? 0 : wd && wc ? wd.atk1 * wc[0] : (parseFloat(weapon.atk) || 0) * wr[0];
+      // 에코 세트 상시 효과 (2세트 속성 피해 10% 등). 같은 이름의 에코는 한 번만 셈
+      const setNames = {};
+      (build.echoes || []).forEach(e => { const s = e && echoSetOf(res, e); if (s) (setNames[s] ||= new Set()).add(e.name); });
+      Object.entries(setNames).forEach(([s, names]) => Object.entries(BUILD_DATA?.setBonus?.[s] || {}).forEach(([n, props]) => {
+        if (names.size >= +n) props.forEach(([stat, v]) => put(stat, true, v));
+      }));
+      const wAtk = !weapon ? 0 : Math.floor((wd && wc ? wd.atk1 * wc[0] : (parseFloat(weapon.atk) || 0) * wr[0]) + 1e-6);
       const g = k => add[k] || 0;
       // 캐릭터: 원본 1레벨 값 × 성장 곡선 (소수 그대로 계산하고 표시할 때 게임처럼 버림)
       const rc = growthCurve('role', cl), rr = growthRatio('role', cl) || [1, 1, 1];
-      const cb = cd.base1 && rc ? { ...cd.base, atk: cd.base1.atk * rc[0], hp: cd.base1.hp * rc[1], def: cd.base1.def * rc[2] }
+      // 게임은 캐릭터 · 무기 기본값을 각각 정수로 버린 뒤 % 를 곱함 (금희 공격력 · 방어력으로 확인)
+      const cb = cd.base1 && rc ? { ...cd.base, atk: Math.floor(cd.base1.atk * rc[0] + 1e-6), hp: Math.floor(cd.base1.hp * rc[1] + 1e-6), def: Math.floor(cd.base1.def * rc[2] + 1e-6) }
         : { ...cd.base, atk: cd.base.atk * rr[0], hp: cd.base.hp * rr[1], def: cd.base.def * rr[2] };
       const total = {
         'HP': cb.hp * (1 + g('HP%') / 100) + g('HP'),
@@ -3186,7 +3192,7 @@
       const fmtTgt = (stat, t) => FLAT_STATS.includes(stat) ? Math.round(t).toLocaleString() : `${Math.round(t * 10) / 10}%`;
       const statRow = (stat) => {
         const v = st ? st.total[stat] : null, t = TGT[stat];
-        const tgt = t ? `<small class="bd-stat-tgt ${v != null && v >= t ? 'is-met' : ''}">(${fmtTgt(stat, t)})</small>` : '';
+        const tgt = t ? `<small class="bd-stat-tgt">(${fmtTgt(stat, t)})</small>` : '';
         const eff = statEffective(stat, sc.weights);
         const changed = anim?.prevTotals && v != null && Math.abs((anim.prevTotals[stat] ?? 0) - v) > 1e-6;
         return `<div class="bd-stat ${eff ? 'is-eff' : ''} ${changed ? 'is-changed' : ''}">${statIcon(stat)}<span class="bd-stat-name">${stat.replace(' 보너스', '')}</span><span class="bd-dots"></span>
@@ -5148,7 +5154,13 @@
           panesHtml += `
             <div class="flex flex-col ${gData.activePresetId === preset.id ? '' : 'hidden'}">
               <div class="grid grid-cols-5 gap-1 mb-2">${SKILL_NAMES.map((label, i) => makeSkill(`s${i + 1}`, label)).join('')}</div>
-              <div class="grid grid-cols-2 gap-x-2.5 gap-y-2 pt-2.5 border-t border-[#1e2638]">
+              <!-- 스킬은 프리셋과 상관없이 공통, 프리셋 · 이미지 업로드 · 목표 설정은 아래 수치에 관한 것이라 수치 바로 위에 -->
+              <div class="flex items-center gap-1 pt-2.5 mb-2 border-t border-[#1e2638]">
+                ${renderPresetDropdown(r.id, gData)}
+                <button onclick="openUploadModal('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i></button>
+                <button onclick="openTargetEditor('${r.id}')" class="p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="목표 수치 수정"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
+              </div>
+              <div class="grid grid-cols-2 gap-x-2.5 gap-y-2">
                 ${makeStat('base', targetStats.type === 'hp' ? 'HP' : (targetStats.type === 'def' ? '방어력' : '공격력'), targetStats.base, false)}
                 ${makeStat('regen', '공명 효율', targetStats.regen, true)}
                 ${makeStat('cr', '크리티컬', targetStats.cr, true)}
@@ -5170,9 +5182,6 @@
                 <div class="flex items-center w-full">
                   <div class="text-sm font-black text-white truncate mr-1">${esc(r.name)}</div>
                   <div class="w-5 h-5 drop-shadow-md flex-shrink-0 mr-1.5">${elemIcon}</div>
-                  ${renderPresetDropdown(r.id, gData)}
-                  <button onclick="openUploadModal('${r.id}')" class="ml-auto p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="이미지 업로드"><i data-lucide="image-up" class="w-3.5 h-3.5"></i></button>
-                  <button onclick="openTargetEditor('${r.id}')" class="p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-white/5 transition flex-shrink-0" aria-label="목표 수치 수정"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <button onclick="openBuildModal('${r.id}')" class="growth-more mt-1.5 self-start flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-amber-300 transition">자세히 보기<i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
               </div>
