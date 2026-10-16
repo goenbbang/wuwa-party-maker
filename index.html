@@ -1793,9 +1793,10 @@
     const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '조화도 파괴', '공명 체인'];
     const BUFF_TARGETS = ['다음 캐릭터', '파티 전체', '등장 캐릭터', '자신', '적'];
     const byName = (a, b) => KO.compare(a.name || '', b.name || '');
-    // 첫 픽업(출시) 날짜. 상시 공명자 · 출시 4성은 서비스 시작일, 4성은 처음 확률 UP 된 날 (game8 배너 기록 기준). 없는 공명자는 가장 최신으로 취급
+    // 첫 픽업(출시) 날짜 (game8 배너 기록 기준). 상시 5성 · 출시 4성 · 방랑자는 가장 오래된 것으로 취급('0000'), 나중에 나온 4성은 출시일. 없는 공명자는 가장 최신으로 취급
     const RES_PICKUP = Object.fromEntries(Object.entries({
-      '2024-05-23': 'jiyan lingyang calcharo encore jianxin verina rover_havoc rover_spectro sanhua baizhi chixia danjin mortefi aalto taoqi yuanwu yangyang',
+      '0000': 'lingyang calcharo encore jianxin verina rover_havoc rover_spectro rover_aero rover_electro sanhua baizhi chixia danjin mortefi aalto taoqi yuanwu yangyang',
+      '2024-05-23': 'jiyan',
       '2024-06-06': 'yinlin',
       '2024-06-28': 'jinhsi',
       '2024-07-22': 'changli',
@@ -1803,9 +1804,8 @@
       '2024-09-07': 'xiangli_yao',
       '2024-09-29': 'shorekeeper',
       '2024-10-24': 'youhu',
-      '2024-11-14': 'camellya',
-      '2024-12-12': 'lumi',
-      '2025-01-02': 'carlotta rover_aero',
+      '2024-11-14': 'camellya lumi',
+      '2025-01-02': 'carlotta',
       '2025-01-23': 'roccia',
       '2025-02-13': 'phoebe',
       '2025-03-06': 'brant',
@@ -1830,7 +1830,7 @@
       '2026-05-21': 'denia',
       '2026-06-08': 'lucy rebecca',
       '2026-06-13': 'lucilla',
-      '2026-07-10': 'yangyang_xuanling rover_electro',
+      '2026-07-10': 'yangyang_xuanling',
       '2026-07-30': 'suisui',
       '2026-08-20': 'qingxiao',
       '2026-09-10': 'jingran',
@@ -1840,7 +1840,7 @@
     const pickupOf = r => RES_PICKUP[r.id] || '9999';
     // 정렬: 공명자 도감 · 육성 현황표 공통 (등록 · 최근 수정은 육성 현황표만)
     const SORT_OPTS = [['name', '이름순'], ['new', '최신 픽업순'], ['old', '오래된 픽업순']];
-    const GROWTH_SORT_OPTS = [...SORT_OPTS, ['built', '등록된 공명자 먼저'], ['recent', '최근 수정순']];
+    const GROWTH_SORT_OPTS = [...SORT_OPTS, ['rate', '목표 달성률순'], ['recent', '최근 수정순']];
     let codexSort = 'name', growthSort = 'name';
     const byPickup = dir => (a, b) => dir * pickupOf(a).localeCompare(pickupOf(b)) || byName(a, b);
     const sortBtn = (kind, value, opts) => pickBtn(kind, value, opts, 'sort-sel tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex-shrink-0', 'aria-label="정렬"');
@@ -2216,7 +2216,11 @@
       growthSnap = snap;
       if (changed) { try { localStorage.setItem('wuwa_growth_touched', JSON.stringify(growthTouched)); } catch {} }
     }
-    const hasGrowthBuild = id => (GROWTH_DATA[id]?.presets || []).some(p => p.build?.weapon?.name || (p.build?.echoes || []).some(Boolean));
+    // 목표 달성률: 보고 있는 프리셋의 4개 수치(공격력 등 · 공효 · 크확 · 크피)가 목표에 얼마나 찼는지 평균 (항목당 최대 100%, 빈칸은 0)
+    function growthRate(r) {
+      const { preset } = activeGrowthPreset(r.id), ts = getTargetStats(r, preset), computed = computeBuildStats(r, preset);
+      return ['base', 'regen', 'cr', 'cd'].reduce((a, k) => { const v = growthStatValue(r, preset, k, ts.type, computed); return a + (ts[k] > 0 && v !== '' ? Math.min(v / ts[k], 1) : 0); }, 0) / 4;
+    }
     
     function initGrowthDataFor(resId) {
       if (!GROWTH_DATA[resId]) GROWTH_DATA[resId] = { isFavorite: false, activePresetId: '1', presets: [] };
@@ -5108,13 +5112,36 @@
     function utf8ToBase64(str) { return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode(parseInt(p1, 16)))); }
     function base64ToUtf8(str) { return decodeURIComponent(Array.prototype.map.call(window.atob(str), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
     
+    // 압축 코드: 'W2.' + deflate 압축한 JSON 의 base64url. 브라우저가 압축을 지원하지 않으면 예전 방식(JSON 의 base64)
+    const PACK_PREFIX = 'W2.';
+    const b64url = bytes => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+    const unb64url = str => Uint8Array.from(atob(str.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+    const streamBytes = (bytes, stream) => new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer().then(b => new Uint8Array(b));
+    async function packCode(obj) {
+      const json = JSON.stringify(obj);
+      if (typeof CompressionStream === 'undefined') return utf8ToBase64(json);
+      return PACK_PREFIX + b64url(await streamBytes(new TextEncoder().encode(json), new CompressionStream('deflate-raw')));
+    }
+    async function unpackCode(code) {
+      code = code.replace(/\s/g, '');
+      if (!code.startsWith(PACK_PREFIX)) return JSON.parse(base64ToUtf8(code)); // 예전 코드
+      return JSON.parse(new TextDecoder().decode(await streamBytes(unb64url(code.slice(PACK_PREFIX.length)), new DecompressionStream('deflate-raw'))));
+    }
+    // 손대지 않은 공명자(즐겨찾기 아님 · 기본 프리셋 1개)는 코드에서 뺌. 불러올 때 기본값으로 다시 채워짐
+    function packedGrowth() {
+      const def = JSON.stringify([newGrowthPreset('1')]);
+      return Object.fromEntries(Object.entries(GROWTH_DATA).filter(([, g]) => g && (g.isFavorite || JSON.stringify(g.presets) !== def)));
+    }
+
     // 내보내기 · 불러오기: 파티 편성 · 육성 현황 · 보유 공명자 · 버프 표시 설정을 한 번에
-    function openExportModal() {
-      const payload = { version: 'v_all_1', parties: state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId })), growth: GROWTH_DATA, owned: state.ownedResonators, modes: storage.get(MODE_KEY, null) };
+    async function openExportModal() {
+      const payload = { version: 'v_all_1', parties: state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId })), growth: packedGrowth(), owned: state.ownedResonators, modes: storage.get(MODE_KEY, null) };
       document.getElementById('export-modal-title').innerHTML = '데이터 내보내기';
       document.getElementById('export-modal-desc').innerText = '파티 편성, 육성 현황, 보유 공명자 정보를 모두 코드로 복사합니다.';
-      document.getElementById('export-base64-textarea').value = utf8ToBase64(JSON.stringify(payload));
+      const t = document.getElementById('export-base64-textarea');
+      t.value = '';
       openModal('export-modal');
+      t.value = await packCode(payload);
     }
 
     function copyExportCode() {
@@ -5138,11 +5165,11 @@
     }
 
     // 예전 코드(파티만 · 육성만)도 그대로 받음. 코드에 들어 있는 항목만 덮어씀
-    function applyBase64Import() {
+    async function applyBase64Import() {
       const raw = document.getElementById('import-base64-textarea').value.trim();
       if (!raw) return;
       let p;
-      try { p = JSON.parse(base64ToUtf8(raw)); } catch { showToast('코드가 올바르지 않습니다.'); return; }
+      try { p = await unpackCode(raw); } catch { showToast('코드가 올바르지 않습니다.'); return; }
       const v = p?.version || '', all = v.startsWith('v_all');
       const parties = (all || v.startsWith('v_party')) && Array.isArray(p.parties) ? p.parties : null;
       const growth = (all || v.startsWith('v_growth')) && p.growth && typeof p.growth === 'object' ? p.growth : null;
@@ -5263,6 +5290,7 @@
       const fParty = document.getElementById('growth-filter-party')?.dataset.value || 'all';
       const fSearch = document.getElementById('growth-search-input').value.trim().toLowerCase();
       
+      const rates = new Map(), rateOf = r => { if (!rates.has(r.id)) rates.set(r.id, growthRate(r)); return rates.get(r.id); };
       let filtered = RAW_RESONATORS.filter(r => {
         if (fElem !== 'all' && r.element !== fElem) return false;
         if (fRole !== 'all' && r.role !== fRole) return false;
@@ -5274,7 +5302,7 @@
         return true;
       }).sort({
         new: byPickup(-1), old: byPickup(1),
-        built: (a, b) => hasGrowthBuild(b.id) - hasGrowthBuild(a.id) || byName(a, b),
+        rate: (a, b) => rateOf(b) - rateOf(a) || byName(a, b),
         recent: (a, b) => (growthTouched[b.id] || 0) - (growthTouched[a.id] || 0) || byName(a, b),
       }[growthSort] || byName);
       const sb = document.getElementById('growth-sort-box');
