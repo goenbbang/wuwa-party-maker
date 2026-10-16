@@ -67,6 +67,7 @@
     .sk-pick { width: 100%; justify-content: center; position: relative; padding: 4px 16px 4px 4px !important; }
     .sk-pick .pk-label { flex: 0 1 auto; } .sk-pick .pk-chev { position: absolute; right: 4px; }
     .pf-sel.pk-btn { padding-right: 9px !important; min-width: 92px; }
+    .sort-sel.pk-btn { min-width: 120px; }
     .bd-lv.pk-btn .pk-chev { color: #cfcdc8; } .ed-lv.pk-btn { min-width: 88px; }
     .pf-sel { appearance: none; -webkit-appearance: none; padding-right: 28px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8d8a' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 12px; }
     .sk-sel { appearance: none; -webkit-appearance: none; text-align-last: center; padding: 4px 16px 4px 4px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8d8a' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 4px center; background-size: 11px; }
@@ -611,13 +612,13 @@
     html.theme-wuwa .bd-presets, html.theme-wuwa .ed-sets button, html.theme-wuwa .ed-seg, html.theme-wuwa .ed-pick, html.theme-wuwa .bd-edit-hint { border-color: var(--wg-dim); }
     html.theme-wuwa .ed-pick { background: #18181b; }
     html.theme-wuwa .ed-pick:hover { border-color: rgba(255, 255, 255, .3); }
-    html.theme-wuwa .ed-pick.r5 { border-color: rgba(217, 191, 134, .45); } html.theme-wuwa .ed-pick.r4 { border-color: rgba(168, 85, 247, .5); } html.theme-wuwa .ed-pick.r3 { border-color: rgba(96, 165, 250, .45); }
-    html.theme-wuwa .ed-pick.r5:hover { border-color: rgba(217, 191, 134, .8); } html.theme-wuwa .ed-pick.r4:hover { border-color: rgba(168, 85, 247, .85); } html.theme-wuwa .ed-pick.r3:hover { border-color: rgba(96, 165, 250, .8); }
-    html.theme-wuwa .ed-pick.on.r5, html.theme-wuwa .ed-pick.on.r4, html.theme-wuwa .ed-pick.on.r3 { background: rgba(255, 255, 255, .09); box-shadow: none; }
-    html.theme-wuwa .ed-pick.on.r5 { border-color: rgba(217, 191, 134, .9); } html.theme-wuwa .ed-pick.on.r4 { border-color: rgba(168, 85, 247, .95); } html.theme-wuwa .ed-pick.on.r3 { border-color: rgba(96, 165, 250, .9); }
+    html.theme-wuwa .ed-pick.r5 { border-color: rgba(217, 191, 134, .45); } html.theme-wuwa .ed-pick.r4 { border-color: rgba(168, 85, 247, .5); } html.theme-wuwa .ed-pick.r3 { border-color: rgba(96, 165, 250, .45); } html.theme-wuwa .ed-pick.r2 { border-color: rgba(16, 185, 129, .45); }
+    html.theme-wuwa .ed-pick.r5:hover { border-color: rgba(217, 191, 134, .8); } html.theme-wuwa .ed-pick.r4:hover { border-color: rgba(168, 85, 247, .85); } html.theme-wuwa .ed-pick.r3:hover { border-color: rgba(96, 165, 250, .8); } html.theme-wuwa .ed-pick.r2:hover { border-color: rgba(16, 185, 129, .8); }
+    html.theme-wuwa .ed-pick.on.r5, html.theme-wuwa .ed-pick.on.r4, html.theme-wuwa .ed-pick.on.r3, html.theme-wuwa .ed-pick.on.r2 { background: rgba(255, 255, 255, .09); box-shadow: none; }
+    html.theme-wuwa .ed-pick.on.r5 { border-color: rgba(217, 191, 134, .9); } html.theme-wuwa .ed-pick.on.r4 { border-color: rgba(168, 85, 247, .95); } html.theme-wuwa .ed-pick.on.r3 { border-color: rgba(96, 165, 250, .9); } html.theme-wuwa .ed-pick.on.r2 { border-color: rgba(16, 185, 129, .9); }
     .ed-check { position: absolute; z-index: 2; top: 5px; right: 5px; width: 18px; height: 18px; border-radius: 99px; background: var(--wg, #d9bf86); color: #000; display: flex; align-items: center; justify-content: center; }
     .ed-check svg { width: 12px; height: 12px; }
-    html.theme-wuwa .ed-pick.on:not(.r5):not(.r4):not(.r3), html.theme-wuwa .ed-sets button.on { border-color: rgba(217, 191, 134, .7); background: rgba(217, 191, 134, .08); color: #fff; box-shadow: none; }
+    html.theme-wuwa .ed-pick.on:not(.r5):not(.r4):not(.r3):not(.r2), html.theme-wuwa .ed-sets button.on { border-color: rgba(217, 191, 134, .7); background: rgba(217, 191, 134, .08); color: #fff; box-shadow: none; }
     html.theme-wuwa .bd-dots { border-color: rgba(255, 255, 255, .1); }
     html.theme-wuwa .bd-weapon-card.is-empty, html.theme-wuwa .bd-echo.is-empty { border-style: dashed !important; }
     /* 세부 창 스킬 트리 */
@@ -988,6 +989,7 @@
             <input type="text" id="growth-search-input" oninput="renderGrowthTrackerDebounced()" placeholder="이름 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
           </div>
           <button onclick="resetGrowthFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
+          <span id="growth-sort-box" class="flex-shrink-0"></span>
           <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" aria-label="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-slate-400">소속 파티:</span>
@@ -1022,6 +1024,7 @@
           <input type="text" id="codex-search-input" oninput="renderResonatorCodexDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
         </div>
         <button onclick="resetCodexFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
+        <span id="codex-sort-box" class="flex-shrink-0"></span>
       </div>
       <div class="flex flex-wrap items-center gap-2 w-full">
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto sm:min-w-[540px]" id="codex-element-bar"></div>
@@ -1645,6 +1648,7 @@
     const storage = {
       get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; } },
       set: (k, v) => {
+        if (k === 'wuwa_matrix_growth_data' && typeof stampGrowth === 'function') stampGrowth();
         try { localStorage.setItem(k, JSON.stringify(v)); return true; }
         catch (e) { console.error('저장 실패:', k, e); if (typeof showToast === 'function') showToast('저장 공간이 부족합니다. 올린 이미지를 줄여 주세요.'); return false; }
       },
@@ -1789,6 +1793,57 @@
     const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '조화도 파괴', '공명 체인'];
     const BUFF_TARGETS = ['다음 캐릭터', '파티 전체', '등장 캐릭터', '자신', '적'];
     const byName = (a, b) => KO.compare(a.name || '', b.name || '');
+    // 첫 픽업(출시) 날짜. 상시 공명자 · 출시 4성은 서비스 시작일, 4성은 처음 확률 UP 된 날 (game8 배너 기록 기준). 없는 공명자는 가장 최신으로 취급
+    const RES_PICKUP = Object.fromEntries(Object.entries({
+      '2024-05-23': 'jiyan lingyang calcharo encore jianxin verina rover_havoc rover_spectro sanhua baizhi chixia danjin mortefi aalto taoqi yuanwu yangyang',
+      '2024-06-06': 'yinlin',
+      '2024-06-28': 'jinhsi',
+      '2024-07-22': 'changli',
+      '2024-08-15': 'zhezhi',
+      '2024-09-07': 'xiangli_yao',
+      '2024-09-29': 'shorekeeper',
+      '2024-10-24': 'youhu',
+      '2024-11-14': 'camellya',
+      '2024-12-12': 'lumi',
+      '2025-01-02': 'carlotta rover_aero',
+      '2025-01-23': 'roccia',
+      '2025-02-13': 'phoebe',
+      '2025-03-06': 'brant',
+      '2025-03-27': 'cantarella',
+      '2025-04-29': 'zani',
+      '2025-05-22': 'ciaccona',
+      '2025-06-12': 'cartethyia',
+      '2025-07-03': 'lupa',
+      '2025-07-24': 'phrolova',
+      '2025-08-28': 'augusta',
+      '2025-09-17': 'iuno',
+      '2025-10-09': 'galbrena',
+      '2025-10-30': 'qiuyuan',
+      '2025-11-20': 'chisa',
+      '2025-12-11': 'buling',
+      '2025-12-25': 'lynae',
+      '2026-01-15': 'mornye',
+      '2026-02-05': 'aemeath',
+      '2026-02-26': 'luuk_herssen',
+      '2026-03-19': 'sigrika',
+      '2026-04-30': 'hiyuki',
+      '2026-05-21': 'denia',
+      '2026-06-08': 'lucy rebecca',
+      '2026-06-13': 'lucilla',
+      '2026-07-10': 'yangyang_xuanling rover_electro',
+      '2026-07-30': 'suisui',
+      '2026-08-20': 'qingxiao',
+      '2026-09-10': 'jingran',
+      '2026-09-30': 'hsin',
+      '2026-10-22': 'suoming',
+    }).flatMap(([d, ids]) => ids.split(' ').map(id => [id, d])));
+    const pickupOf = r => RES_PICKUP[r.id] || '9999';
+    // 정렬: 공명자 도감 · 육성 현황표 공통 (등록 · 최근 수정은 육성 현황표만)
+    const SORT_OPTS = [['name', '이름순'], ['new', '최신 픽업순'], ['old', '오래된 픽업순']];
+    const GROWTH_SORT_OPTS = [...SORT_OPTS, ['built', '등록된 공명자 먼저'], ['recent', '최근 수정순']];
+    let codexSort = 'name', growthSort = 'name';
+    const byPickup = dir => (a, b) => dir * pickupOf(a).localeCompare(pickupOf(b)) || byName(a, b);
+    const sortBtn = (kind, value, opts) => pickBtn(kind, value, opts, 'sort-sel tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex-shrink-0', 'aria-label="정렬"');
     const findWeapon = (name) => WEAPONS.find(w => w.name === name);
     const NO_IMG = (w, h) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="#181d28"/><text x="50%" y="50%" fill="#94a3b8" font-size="14" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">No Img</text></svg>`)}`;
 
@@ -2149,6 +2204,19 @@
       // 사이트를 열면 항상 첫 번째 프리셋부터 보여줌
       Object.values(GROWTH_DATA).forEach(g => { if (g?.presets?.length) g.activePresetId = g.presets[0].id; });
     }
+    // 최근 수정순 정렬용: 저장할 때마다 공명자별 육성 기록을 직전과 비교해 바뀐 공명자에 수정 시각을 남김 (즐겨찾기 · 보고 있는 프리셋 변경은 제외)
+    let growthSnap = {}, growthBase = new Set(), growthTouched = storage.get('wuwa_growth_touched', {});
+    function growthSnapshot() {
+      return Object.fromEntries(Object.entries(GROWTH_DATA).map(([id, g]) => [id, JSON.stringify(g?.presets || null)]));
+    }
+    function stampGrowth() {
+      const snap = growthSnapshot(), now = Date.now();
+      let changed = false;
+      Object.entries(snap).forEach(([id, v]) => { if (growthSnap[id] !== undefined && growthSnap[id] !== v) { growthTouched[id] = now; changed = true; } });
+      growthSnap = snap;
+      if (changed) { try { localStorage.setItem('wuwa_growth_touched', JSON.stringify(growthTouched)); } catch {} }
+    }
+    const hasGrowthBuild = id => (GROWTH_DATA[id]?.presets || []).some(p => p.build?.weapon?.name || (p.build?.echoes || []).some(Boolean));
     
     function initGrowthDataFor(resId) {
       if (!GROWTH_DATA[resId]) GROWTH_DATA[resId] = { isFavorite: false, activePresetId: '1', presets: [] };
@@ -2164,6 +2232,7 @@
       }));
       const g = GROWTH_DATA[resId];
       if (!g.presets.some(x => x.id === g.activePresetId)) g.activePresetId = g.presets[0].id;
+      if (!growthBase.has(resId)) { growthBase.add(resId); growthSnap[resId] = JSON.stringify(g.presets); } // 처음 불러온 상태를 수정 비교 기준으로
     }
 
     function newGrowthPreset(id) {
@@ -2323,8 +2392,8 @@
 
     function resetGrowthData() {
       openConfirm('초기화', '모든 육성 기록을 초기화합니다.', () => {
-        GROWTH_DATA = {};
-        storage.remove('wuwa_matrix_growth_data');
+        GROWTH_DATA = {}; growthSnap = {}; growthBase.clear(); growthTouched = {};
+        storage.remove('wuwa_matrix_growth_data'); storage.remove('wuwa_growth_touched');
         renderGrowthTracker();
         showToast('초기화했습니다.');
       });
@@ -2537,13 +2606,13 @@
       return { preset: g.presets[pi], pi };
     }
 
-    // 육성 현황표 스탯: 직접 입력한 값이 있으면 그 값, 없으면 세부 육성창 계산값
+    // 육성 현황표 스탯: 직접 입력한 값이 있으면 그 값, 없으면 세부 육성창 계산값 (무기나 에코를 등록했을 때만, 아니면 빈칸)
     const STAT_TOTAL_KEY = { regen: '공명 효율', cr: '크리티컬', cd: '크리티컬 피해' };
     function growthStatValue(res, preset, key, type, computed) {
       const manual = preset.stats.current[key];
       if (manual) return manual;
-      const t = computed?.total;
-      if (!t) return 0;
+      const b = preset.build, t = computed?.total;
+      if (!t || !(b?.weapon?.name || (b?.echoes || []).some(Boolean))) return '';
       if (key === 'base') return Math.round(t[type === 'hp' ? 'HP' : (type === 'def' ? '방어력' : '공격력')] || 0);
       return Math.round((t[STAT_TOTAL_KEY[key]] || 0) * 10) / 10;
     }
@@ -3759,7 +3828,9 @@
         if (codexFilters.weapon !== 'all' && r.weaponType !== codexFilters.weapon) return false;
         if (q && ![(r.name || ''), (r.mainDmg || ''), resonatorKeywords(r, true).join(' ')].some(s => s.toLowerCase().includes(q))) return false;
         return true;
-      }).sort((a, b) => (b.rarity || 5) - (a.rarity || 5) || byName(a, b));
+      }).sort(codexSort === 'name' ? (a, b) => (b.rarity || 5) - (a.rarity || 5) || byName(a, b) : byPickup(codexSort === 'new' ? -1 : 1));
+      const sb = document.getElementById('codex-sort-box');
+      if (sb) sb.innerHTML = sortBtn('codexSort', codexSort, SORT_OPTS);
       if (!list.length) { grid.innerHTML = '<div class="rc-empty">조건에 맞는 공명자가 없습니다.</div>'; return; }
       grid.innerHTML = list.map(r => {
         const rk = r.rarity || 5;
@@ -5101,6 +5172,8 @@
     const PICK = {
       skill: (b, v) => updateGrowthData(b.dataset.res, b.dataset.preset, 'skills', b.dataset.key, v),
       party: () => renderGrowthTracker(),
+      codexSort: (b, v) => { codexSort = v; renderResonatorCodex(); },
+      growthSort: (b, v) => { growthSort = v; renderGrowthTracker(); },
       charlv: (b, v) => setCharLevel(v),
       wlv: (b, v) => { editState.wlv = v; },
       emain: (b, v) => editorSet('main', v),
@@ -5199,7 +5272,13 @@
         initGrowthDataFor(r.id);
         if (currentGrowthFilters.favOnly && !GROWTH_DATA[r.id].isFavorite) return false;
         return true;
-      }).sort(byName);
+      }).sort({
+        new: byPickup(-1), old: byPickup(1),
+        built: (a, b) => hasGrowthBuild(b.id) - hasGrowthBuild(a.id) || byName(a, b),
+        recent: (a, b) => (growthTouched[b.id] || 0) - (growthTouched[a.id] || 0) || byName(a, b),
+      }[growthSort] || byName);
+      const sb = document.getElementById('growth-sort-box');
+      if (sb) sb.innerHTML = sortBtn('growthSort', growthSort, GROWTH_SORT_OPTS);
 
       container.innerHTML = filtered.map(r => {
         const elemIcon = getElementIconHtml(r.element);
@@ -5216,7 +5295,7 @@
           };
 
           const makeStat = (key, label, tgt, isPct) => {
-            const cur = growthStatValue(r, preset, key, targetStats.type, computed), ratio = tgt > 0 ? cur / tgt : 0;
+            const cur = growthStatValue(r, preset, key, targetStats.type, computed), ratio = tgt > 0 && cur !== '' ? cur / tgt : 0;
             const isMet = ratio >= 1;
             const border = isMet ? 'border-slate-700 stat-met' : 'border-slate-700';
             const text = 'text-white';
