@@ -990,11 +990,6 @@
           </div>
           <button onclick="resetGrowthFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
           <span id="growth-sort-box" class="flex-shrink-0"></span>
-          <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" aria-label="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-400">소속 파티:</span>
-            <span id="growth-filter-party-box"></span>
-          </div>
           <button onclick="openModal('owned-modal'); renderOwnershipList();" class="tb-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#131926] hover:bg-[#1c2438] border border-slate-700/80 text-xs text-slate-200 font-bold transition shadow-sm active:scale-95"><span class="text-amber-400">◇</span><span>보유 공명자 설정</span></button>
         </div>
         
@@ -1008,6 +1003,12 @@
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto sm:min-w-[540px]" id="growth-element-bars"></div>
         <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
         <div class="flex items-center gap-1.5 text-xs w-full sm:w-auto" id="growth-role-bars"></div>
+        <div class="w-px h-4 bg-slate-700 flex-shrink-0 mx-1 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleGrowthFavFilter()" id="growth-btn-fav" class="p-2 rounded-xl bg-[#121622] border border-[#212a3d] text-slate-400 hover:text-amber-400 transition flex-shrink-0" aria-label="즐겨찾기 모아보기"><i data-lucide="star" class="w-4 h-4"></i></button>
+          <span class="text-xs font-bold text-slate-400 ml-1">소속 파티:</span>
+          <span id="growth-filter-party-box"></span>
+        </div>
       </div>
     </div>
 
