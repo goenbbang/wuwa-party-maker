@@ -2030,7 +2030,11 @@
       return false;
     }
 
+    // 탭마다 스크롤 위치를 따로 기억했다가 돌아오면 복원 (처음 여는 탭은 맨 위)
+    const viewScroll = {};
     function switchMainView(view) {
+      if (currentMainView !== view) viewScroll[currentMainView] = window.scrollY;
+      const prevView = currentMainView;
       currentMainView = view;
       MAIN_VIEWS.forEach(v => {
         const on = v === view;
@@ -2042,6 +2046,7 @@
       if (view === 'growth') { populateGrowthPartyFilter(); renderGrowthTracker(); renderGrowthFilterBars(); }
       if (view === 'codex') { renderCodexFilterBars(); renderResonatorCodex(); }
       if (view === 'weapon') { renderWeaponFiltersBars(); renderWeaponCodex(); }
+      if (prevView !== view) window.scrollTo(0, viewScroll[view] || 0);
       playEnter({ party: 'roster-grid', growth: 'growth-cards-container', codex: 'resonator-codex-grid', weapon: 'weapon-codex-grid' }[view]);
     }
 
