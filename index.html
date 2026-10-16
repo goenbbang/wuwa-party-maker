@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>공명자 관리기록부</title>
+  <meta name="description" content="명조 파티 편성, 육성 현황 기록, 공명자 · 무기 도감을 한곳에서 관리합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="공명자 관리기록부">
+  <meta property="og:title" content="공명자 관리기록부">
+  <meta property="og:description" content="명조 파티 편성, 육성 현황 기록, 공명자 · 무기 도감을 한곳에서 관리합니다.">
+  <meta property="og:url" content="https://goenbbang.github.io/wuwa-party-maker/">
+  <meta property="og:image" content="https://goenbbang.github.io/wuwa-party-maker/images/logo.png">
+  <meta name="theme-color" content="#d9bf86">
   <link rel="icon" type="image/png" href="images/logo.png">
   <link rel="stylesheet" href="assets/app.css?v=f750437d">
   <script defer src="https://unpkg.com/lucide@latest"></script>
@@ -728,9 +736,11 @@
     .hp-panel { max-height: calc(100vh - 32px); overflow-y: auto; gap: 22px !important; }
     .hp-h { font-size: 14px; font-weight: 800; color: var(--wg, #d9bf86); margin-bottom: 8px; }
     .hp-kinds { display: flex; flex-direction: column; gap: 8px; }
-    .hp-kind { display: grid; grid-template-columns: 240px 1fr; gap: 16px; padding: 12px; border: 1px solid #2a2a2d; background: rgba(255, 255, 255, .02); }
-    .hp-img { position: relative; display: block; width: 100%; align-self: start; padding: 0; border: 1px solid #232325; background: #0b0b0d; overflow: hidden; cursor: zoom-in; }
-    .hp-img img { width: 100%; height: auto; display: block; transition: transform .25s ease; }
+    .hp-kind { display: grid; grid-template-columns: 240px 1fr; align-items: center; gap: 16px; padding: 12px; border: 1px solid #2a2a2d; background: rgba(255, 255, 255, .02); }
+    .hp-img { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 132px; padding: 0; border: 1px solid #232325; background: #0b0b0d; overflow: hidden; cursor: zoom-in; }
+    .hp-img img { width: auto; height: 100%; max-width: 100%; display: block; transition: transform .25s ease; }
+    /* 가로로 긴 이미지(봇 카드)는 칸을 꽉 채우고 아래쪽 빈 띠는 잘라냄 */
+    .hp-img.is-wide img { width: 100%; height: auto; aspect-ratio: 960 / 528; object-fit: cover; object-position: top; }
     .hp-img:hover img { transform: scale(1.04); }
     .hp-img svg { position: absolute; right: 6px; bottom: 6px; width: 22px; height: 22px; padding: 4px; background: rgba(0, 0, 0, .65); color: #fff; opacity: 0; transition: opacity .15s; }
     .hp-img:hover svg { opacity: 1; }
@@ -749,7 +759,7 @@
     .hp-more { margin: 0 0 0 2px; font-weight: 700; color: var(--wg, #d9bf86); white-space: nowrap; }
     .hp-more svg { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; }
     .hp-notes { list-style: disc; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
-    @media (max-width: 639px) { .hp-kind { grid-template-columns: 1fr; } }
+    @media (max-width: 639px) { .hp-kind { grid-template-columns: 1fr; } .hp-img.is-wide { height: auto; } }
     .rc-tags .role-main { border-color: rgba(244, 63, 94, .4); background: rgba(76, 5, 25, .7); color: #fda4af; }
     .rc-tags .role-sub { border-color: rgba(139, 92, 246, .4); background: rgba(46, 16, 101, .7); color: #c4b5fd; }
     .rc-tags .role-support { border-color: rgba(16, 185, 129, .4); background: rgba(2, 44, 34, .7); color: #6ee7b7; }
@@ -1540,7 +1550,7 @@
         <h4 class="hp-h">올릴 수 있는 이미지</h4>
         <div class="hp-kinds">
           <div class="hp-kind">
-            <button type="button" class="hp-img" onclick="zoomGuideImage(this)" aria-label="크게 보기"><img src="images/guide/guide-botcard.webp" alt="wuwa bot 프로필 카드 예시" loading="lazy"><i data-lucide="zoom-in"></i></button>
+            <button type="button" class="hp-img is-wide" onclick="zoomGuideImage(this)" aria-label="크게 보기"><img src="images/guide/guide-botcard.webp" alt="wuwa bot 프로필 카드 예시" loading="lazy"><i data-lucide="zoom-in"></i></button>
             <div>
               <b>wuwa bot 프로필 카드</b>
               <p>레벨, 공명 체인, 스킬, 무기, 에코 정보가 입력됩니다.</p>
