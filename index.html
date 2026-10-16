@@ -508,9 +508,11 @@
     .ua-echo .bd-cost, html.theme-wuwa .ua-echo .bd-cost { position: absolute; left: 4px; bottom: 4px; line-height: 15px; background: rgba(13, 13, 15, .85) !important; color: #d4d4d6 !important; }
     .ua-notes { align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .ua-alert { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 700; color: #fca5a5; line-height: 1.45; }
+    .ua-alert-body { margin-top: -2px; font-size: 13px; font-weight: 600; color: #fca5a5; line-height: 1.5; }
     .ua-alert svg { width: 15px; height: 15px; flex-shrink: 0; color: #fb7185; }
+    .ua-notes .up-stage-note { font-size: 13px; }
     .up-stage-note.ua-calc { color: #e8b45a; }
-    .ua-over { font-size: 12px; color: #fca5a5; line-height: 1.45; }
+    .ua-over { font-size: 13px; color: #fca5a5; line-height: 1.45; }
     .up-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .up-list:empty { display: none; }
     .up-item { position: relative; border: 1px solid #29292b; border-radius: 5px; overflow: hidden; background: #0e0e10; aspect-ratio: 16 / 10; }
@@ -724,12 +726,11 @@
     .rc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
     .rc-tags span { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; padding: 2px 7px; border: 1px solid #414143; color: #bdbcb8; }
     .wt-ico { display: inline-block; flex-shrink: 0; width: 14px; height: 14px; background: currentColor; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
-    .rc-tags .wt-ico { width: 12px; height: 12px; }
+    .rc-tags .wt-ico { width: 14px; height: 14px; }
     .wt-tag .wt-ico { width: 14px; height: 14px; }
     .wt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
-    .wt-btn .wt-ico { width: 12px; height: 12px; }
+    .wt-btn .wt-ico { width: 16px; height: 16px; }
     @media (max-width: 639px) { .wt-btn .wt-ico { display: none; } }
-    #weapon-type-filter-bar .wt-btn .wt-ico { width: 16px; height: 16px; }
     @media (min-width: 640px) { #weapon-type-filter-bar > button { width: 84px; flex: none; } }
     @media (min-width: 640px) { #codex-weapon-bar .wt-btn { padding-left: 8px; padding-right: 8px; } }
     .wt-tag { display: inline-flex; align-items: center; gap: 3px; }
@@ -2434,7 +2435,7 @@
       const preset = g.presets.find(p => p.id === a.presetId), bot = r.kind === 'bot-card';
       const ddPreset = pickBtn('uaPreset', a.presetId, [...g.presets.map((p, i) => [p.id, presetLabel(p, i)]), ['__new', '+ 새 프리셋'], ['__copy', '+ 현재 프리셋 복사']], 'preset-dd-btn ua-dd', 'aria-label="저장할 프리셋"');
       const ddRes = a.cands.length > 1 ? pickBtn('uaRes', a.resId, a.cands.map(x => [x.id, x.name]), 'preset-dd-btn ua-dd', 'aria-label="저장할 공명자"') : '';
-      const notes = (alerts, info, overwrite, extra = '') => alerts.length || overwrite.length || info || extra ? `<div class="ua-notes">${alerts.map(t => `<div class="ua-alert"><i data-lucide="alert-triangle"></i><span>${esc(t)}</span></div>`).join('')}${info ? `<div class="up-stage-note">${esc(info)}</div>` : ''}${overwrite.map(t => `<div class="ua-over">${esc(t)}</div>`).join('')}${extra}</div>` : '';
+      const notes = (alerts, info, overwrite, extra = '') => alerts.length || overwrite.length || info || extra ? `<div class="ua-notes">${alerts.map(t => { const [title, body] = Array.isArray(t) ? t : [t]; return `<div class="ua-alert"><i data-lucide="alert-triangle"></i><span>${esc(title)}</span></div>${body ? `<div class="ua-alert-body">${esc(body)}</div>` : ''}`; }).join('')}${info ? `<div class="up-stage-note">${esc(info)}</div>` : ''}${overwrite.map(t => `<div class="ua-over">${esc(t)}</div>`).join('')}${extra}</div>` : '';
       const foot = `<div class="up-foot"><button class="bm-btn" onclick="answerUpload(false)">취소</button><button class="up-run" onclick="answerUpload(true)">저장</button></div>`;
       if (r.kind === 'echo') {
         const e = r.echo, { slot, full } = uploadEchoSlot(a, preset), es = preset.build?.echoes || [];
@@ -2451,7 +2452,7 @@
             </div>
             <div class="ua-stats">${rows.map(([k, x], i) => `<div${i < 2 ? ' class="ua-main"' : ''}><span>${esc(k)}</span><b>${fmtEchoVal(x)}</b></div>`).join('')}</div>
           </div>
-          ${notes(r.warnings.length ? [`오류 사항 : ${r.warnings.join(' · ')}`] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 사라집니다.`] : [])}
+          ${notes(r.warnings.length ? [['오류 사항', r.warnings.join(' · ')]] : [], info, full ? [`${slot + 1}번 칸의 기존 에코(${es[slot]?.name || ''})는 사라집니다.`] : [])}
           ${foot}`);
         return;
       }
@@ -2462,7 +2463,7 @@
       // 경고: 공명자 불일치 · 인식 오류(아이콘) → 덮어쓰기 안내(항상 마지막)
       const alerts = [], overwrite = [];
       if (a.cands.length > 1) alerts.push(`선택한 공명자(${a.cands[1].name})와 인식된 공명자(${a.cands[0].name})가 다릅니다.`);
-      if (r.warnings.length) alerts.push(`오류 사항 : ${r.warnings.join(' · ')}`);
+      if (r.warnings.length) alerts.push(['오류 사항', r.warnings.join(' · ')]);
       if (bot ? preset.build : Object.values(preset.stats.current).some(v => v)) overwrite.push(bot ? '기존 무기 · 에코 정보는 사라집니다.' : '기존 스탯 수치는 사라집니다.');
       if (bot && Object.values(preset.stats.current).some(v => v)) overwrite.push('직접 입력한 스탯 수치는 계산값으로 바뀝니다.');
       const info = isOwned(res.id) ? '' : '보유 공명자가 아니어서 목록에는 보이지 않습니다.';
@@ -3687,7 +3688,9 @@
     // ---- 공명자 도감: 필터 순서 = 성급 · 속성 · 역할 · 무기 종류 ----
     const codexFilters = { rank: 'all', element: 'all', role: 'all', weapon: 'all' };
     const RC_ROLE = { main: '메인', sub: '서브', support: '서포터' };
-    function setCodexFilter(key, val) { codexFilters[key] = val; renderCodexFilterBars(); renderResonatorCodex(); }
+    // 이미 고른 필터를 한 번 더 누르면 '전체'로 돌아감
+    const toggleFilter = (cur, id) => (cur === id && id !== 'all' ? 'all' : id);
+    function setCodexFilter(key, val) { codexFilters[key] = toggleFilter(codexFilters[key], val); renderCodexFilterBars(); renderResonatorCodex(); }
     function renderCodexFilterBars() {
       const btn = (key, id, label, gold) => {
         const on = codexFilters[key] === id, ico = key === 'weapon' ? wtIco(id) : '';
@@ -3742,13 +3745,13 @@
     }
 
     function setWeaponTypeFilter(wtId) {
-      currentWeaponTypeFilter = wtId;
+      currentWeaponTypeFilter = toggleFilter(currentWeaponTypeFilter, wtId);
       renderWeaponFiltersBars();
       renderWeaponCodex();
     }
 
     function setWeaponRankFilter(wrId) {
-      currentWeaponRankFilter = wrId;
+      currentWeaponRankFilter = toggleFilter(currentWeaponRankFilter, wrId);
       renderWeaponFiltersBars();
       renderWeaponCodex();
     }
@@ -3969,10 +3972,10 @@
       if (rBar) rBar.innerHTML = FILTER_TABS_DEF.roles.map(r => `<button onclick="setGrowthRoleFilter('${r.id}')" class="flex-1 py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center ${currentGrowthFilters.role === r.id ? 'bg-slate-700 text-white border border-slate-500' : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border border-[#232b3b]'}">${r.label}</button>`).join('');
     }
 
-    function setElementFilter(id) { state.selectedElement = id; renderFilterBars(); renderRoster(); }
-    function setRoleFilter(id) { state.selectedRole = id; renderFilterBars(); renderRoster(); }
-    function setGrowthElementFilter(id) { currentGrowthFilters.element = id; renderGrowthFilterBars(); renderGrowthTracker(); }
-    function setGrowthRoleFilter(id) { currentGrowthFilters.role = id; renderGrowthFilterBars(); renderGrowthTracker(); }
+    function setElementFilter(id) { state.selectedElement = toggleFilter(state.selectedElement, id); renderFilterBars(); renderRoster(); }
+    function setRoleFilter(id) { state.selectedRole = toggleFilter(state.selectedRole, id); renderFilterBars(); renderRoster(); }
+    function setGrowthElementFilter(id) { currentGrowthFilters.element = toggleFilter(currentGrowthFilters.element, id); renderGrowthFilterBars(); renderGrowthTracker(); }
+    function setGrowthRoleFilter(id) { currentGrowthFilters.role = toggleFilter(currentGrowthFilters.role, id); renderGrowthFilterBars(); renderGrowthTracker(); }
 
     function renderRoster() {
       const grid = document.getElementById('roster-grid');
