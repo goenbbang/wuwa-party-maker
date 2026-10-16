@@ -2674,26 +2674,65 @@
     const MAIN_DMG_BONUS = { '일반 공격': '일반 공격 피해 보너스', '기본 공격': '일반 공격 피해 보너스', '강공격': '강공격 피해 보너스', '공명 스킬': '공명 스킬 피해 보너스', '공명 해방': '공명 해방 피해 보너스' };
     const subKey = (stat, percent) => stat + (percent ? '%' : '');
 
-    // 에코 가중치 (명조 채널 위키 "이정도면 잘키웠다표"와 대조해 정함). 에코 점수는 에코 자체에 좋은 옵션이 얼마나 붙었는지만 보고,
-    // 현재 스탯 · 무기 · 돌파 · 목표 달성 여부와 상관없이 캐릭터마다 고정
-    //  - 크리티컬 · 크리티컬 피해: 딜러 1, 서포터 0 (크리티컬 관련 효과가 있는 서포터만 0.2)
+    // 에코 가중치. 에코 점수는 에코 자체에 좋은 옵션이 얼마나 붙었는지만 보고, 현재 스탯 · 무기 · 돌파 · 목표 달성 여부와 상관없이 캐릭터마다 고정
+    //  - 크리티컬 · 크리티컬 피해: 딜러 1 (서포터는 아래 SUPPORT_W)
     //  - 계수 스탯%(공격력 / HP / 방어력 중 하나): 딜러 0.7, 서포터 1 · 같은 스탯 고정값: 딜러 0.36 (깡공 40 ≈ 공% 4%), 서포터 0.4
-    //  - 주력 피해 보너스 0.45, 나머지 피해 보너스 0
-    //  - 공명 효율: 캐릭터 목표 공명 효율로 고정 (아래 regenWeight 참고)
-    const SUPPORT_CRIT = ['suisui', 'shorekeeper', 'mornye'];
-    // 공명 효율: 목표 100% 이하는 공효가 필요 없는 공명자라 0, 110% 이하 0.5 · 120% 0.6 ~ 150% 이상 0.9 (서포터 1.0)
-    const regenWeight = target => target <= 100 ? 0 : Math.round(Math.min(0.9, Math.max(0.5, 0.5 + (target - 110) * 0.01)) * 100) / 100;
+    //  - 공격 유형 피해 보너스: ECHO_DMG_W · 공명 효율: regenWeight
+    // 공격 유형 피해 보너스 [일반, 강공격, 스킬, 해방]: Prydwen 단독 1로테이션 데미지 비율 × 0.79 (5% 미만 0). 유호 · 쇄명은 중국(XutheringWavesUID) 가중치
+    // 표에 없는 공명자는 주력 피해(mainDmg) 0.45
+    const ECHO_DMG_W = {
+      sanhua: [0, .27, .21, .22], lingyang: [.27, 0, .25, .06], zhezhi: [.63, 0, .05, 0], youhu: [0, 0, .3, 0], carlotta: [0, 0, .67, 0],
+      hiyuki: [0, 0, .05, .51], lucilla: [.25, 0, .06, 0], chixia: [0, 0, .38, .26], encore: [.37, 0, .12, .12], mortefi: [.06, 0, .14, .53],
+      changli: [0, 0, .49, .19], brant: [.55, 0, 0, .14], lupa: [.04, .05, .09, .57], galbrena: [0, .29, 0, 0], aemeath: [.06, 0, 0, .53],
+      denia: [0, 0, 0, .48], jingran: [0, .66, 0, 0], calcharo: [.2, 0, 0, .43], yinlin: [0, .05, .54, .11], yuanwu: [0, 0, .38, .31],
+      jinhsi: [0, 0, .62, .12], xiangli_yao: [.06, 0, .1, .55], augusta: [0, .7, .08, 0], rebecca: [.45, 0, 0, 0], rover_electro: [.1, 0, .4, .23],
+      hsin: [.07, 0, .66, 0], suoming: [.43, 0, 0, .09], yangyang: [.25, 0, .11, .33], aalto: [.28, 0, .24, .12], jiyan: [0, .65, .07, 0],
+      jianxin: [.24, .1, .06, .29], rover_aero: [.04, 0, .53, .15], ciaccona: [.16, .13, 0, .23], cartethyia: [.34, 0, .06, .22],
+      iuno: [0, 0, 0, .72], qiuyuan: [0, .48, 0, 0], sigrika: [0, 0, 0, 0], qingxiao: [.18, .25, 0, .23], rover_spectro: [0, .07, .25, .28],
+      lumi: [.28, 0, .21, .23], phoebe: [.11, .34, 0, .13], zani: [0, .44, .05, .2], chisa: [0, 0, 0, .67], lynae: [.31, 0, 0, .11],
+      luuk_herssen: [.7, 0, 0, 0], lucy: [0, .61, 0, 0], taoqi: [.34, 0, .08, .29], danjin: [0, .19, .2, .23], camellya: [.54, 0, 0, .12],
+      rover_havoc: [.25, 0, .15, .21], roccia: [0, .55, 0, 0], cantarella: [.55, 0, .06, 0], phrolova: [.05, 0, .35, 0],
+      yangyang_xuanling: [0, .72, 0, 0],
+    };
+    const ECHO_DMG_KEYS = ['일반 공격 피해 보너스%', '강공격 피해 보너스%', '공명 스킬 피해 보너스%', '공명 해방 피해 보너스%'];
+    // 서포터: 계수 스탯% 1 · 고정값 0.4 · 공명 효율 1 에 아래 값을 덮어씀 (크리티컬 관련 효과가 있는 서포터만 크리티컬 피해 위주)
+    const SUPPORT_W = {
+      shorekeeper: { '크리티컬 피해%': 0.5, '크리티컬%': 0.1, '공명 해방 피해 보너스%': 0.3 },
+      suisui: { '크리티컬 피해%': 0.5, '크리티컬%': 0.1 },
+      mornye: { '크리티컬 피해%': 0.35, '크리티컬%': 0.1, '공명 해방 피해 보너스%': 0.3 },
+      verina: { '공격력': 0.5 },
+      buling: { '공격력': 0.5 },
+    };
+    // 공명 효율: 목표 100% 이하 0 · 125% 이하(에코 2~3개로 채움) 0.25 · 150% 0.6 · 200% 이상 1 (서포터 1)
+    const regenWeight = t => t <= 100 ? 0 : Math.round((t <= 125 ? 0.25 : t <= 150 ? 0.25 + (t - 125) * 0.014 : Math.min(1, 0.6 + (t - 150) * 0.008)) * 100) / 100;
     function echoWeights(res) {
       const ts = res.targetStats || defaultTargetStats, sup = res.role === 'support';
       const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
-      const crit = sup ? (SUPPORT_CRIT.includes(res.id) ? 0.2 : 0) : 1;
-      const w = {
-        '크리티컬%': crit, '크리티컬 피해%': crit,
-        [scale + '%']: sup ? 1 : 0.7, [scale]: sup ? 0.4 : 0.36,
-        '공명 효율%': sup ? 1 : regenWeight(ts.regen == null ? 120 : +ts.regen),
-      };
-      const bonus = MAIN_DMG_BONUS[res.mainDmg];
-      if (bonus && !sup) w[bonus + '%'] = 0.45;
+      if (sup) return { [scale + '%']: 1, [scale]: 0.4, '공명 효율%': 1, ...(SUPPORT_W[res.id] || {}) };
+      const w = { '크리티컬%': 1, '크리티컬 피해%': 1, [scale + '%']: 0.7, [scale]: 0.36, '공명 효율%': regenWeight(ts.regen == null ? 120 : +ts.regen) };
+      const dmg = ECHO_DMG_W[res.id];
+      if (dmg) ECHO_DMG_KEYS.forEach((k, i) => { if (dmg[i]) w[k] = dmg[i]; });
+      else if (MAIN_DMG_BONUS[res.mainDmg]) w[MAIN_DMG_BONUS[res.mainDmg] + '%'] = 0.45;
+      return w;
+    }
+    // 메인 옵션 가중치 (중국 XutheringWavesUID 기준, 부옵 최대치 1줄 = 1 로 환산)
+    // [4코 크리티컬, 크리티컬 피해, 계수 스탯%, 치료 효과 / 3코 계수 스탯%, 공명 효율, 자기 속성 피해 / 1코 계수 스탯%]. 표에 없으면 ECHO_MAIN_BASE
+    const ECHO_MAIN_BASE = [0.52, 0.52, 0.43, 0, 0.39, 0, 0.39, 0.34];
+    const ECHO_MAIN_W = {
+      baizhi: [0, 0, .67, .67, .6, .65, 0, .61], youhu: [.52, .52, .43, .47, .39, 0, .39, .34], hiyuki: [.38, .5, .5, 0, .43, 0, .43, .6],
+      lucilla: [.52, .52, .43, 0, .43, 0, .43, .51], suisui: [0, .63, .83, .89, .65, .69, .6, .66], brant: [.52, .52, .17, .59, .16, .39, .39, .34],
+      mornye: [0, .48, .68, .63, .54, .61, .41, .59], denia: [.5, .5, .5, 0, .43, 0, .43, .6], jingran: [.52, .52, .24, 0, .43, 0, .43, .43],
+      yuanwu: [.52, .52, .79, 0, .5, 0, .39, .34], buling: [0, 0, .67, .67, .6, .65, 0, .53], rebecca: [.5, .5, .5, 0, .43, 0, .43, .51],
+      hsin: [.52, .52, .43, 0, .43, 0, .43, .51], suoming: [.52, .52, .43, 0, .43, 0, .43, .51], cartethyia: [.52, .52, .47, 0, .4, 0, .4, .33],
+      iuno: [.35, .52, .43, 0, .39, 0, .39, .34], sigrika: [.42, .42, .39, 0, .39, .34, .39, .43], qingxiao: [.42, .52, .43, 0, .43, 0, .43, .51],
+      verina: [0, 0, .67, .67, .6, .65, 0, .53], shorekeeper: [0, .63, .83, .89, .65, .69, .6, .66], lucy: [.5, .5, .5, 0, .43, 0, .43, .51],
+      taoqi: [.37, .37, .94, .56, .55, 0, .47, .45], yangyang_xuanling: [.42, .52, .43, 0, .43, 0, .43, .51],
+    };
+    function echoMainWeights(res) {
+      const ts = res.targetStats || defaultTargetStats, m = ECHO_MAIN_W[res.id] || ECHO_MAIN_BASE;
+      const scale = ts.type === 'hp' ? 'HP' : (ts.type === 'def' ? '방어력' : '공격력');
+      const w = { 4: { '크리티컬': m[0], '크리티컬 피해': m[1], [scale]: m[2], '치료 효과 보너스': m[3] }, 3: { [scale]: m[4], '공명 효율': m[5] }, 1: { [scale]: m[7] } };
+      if (ELEMENT_DMG[res.element]) w[3][ELEMENT_DMG[res.element]] = m[6];
       return w;
     }
 
@@ -2704,22 +2743,22 @@
       const n = pct <= ref ? pct / ref * 50 : 50 + (pct - ref) / Math.max(1, 100 - ref) * 50;
       return GRADES.find(([min]) => n >= min)[1];
     };
-    // 기준 에코: 가중치 높은 부옵 3개가 보통 수치(크확 7.5 · 크피 15 · 공효 7.6 · 그 외 % 7.1)로 붙은 에코
+    // 기준 에코: 가중치 높은 부옵 3개가 보통 수치(크확 7.5 · 크피 15 · 공효 7.6 · 그 외 % 7.1)로 붙고 메인 옵션은 그 코스트 최고 옵션인 에코
     const ECHO_SUB_TYPICAL = {
       '크리티컬%': 7.5, '크리티컬 피해%': 15, '공명 효율%': 7.6, '방어력%': 9,
       '공격력%': 7.1, 'HP%': 7.1, '일반 공격 피해 보너스%': 7.1, '강공격 피해 보너스%': 7.1, '공명 스킬 피해 보너스%': 7.1, '공명 해방 피해 보너스%': 7.1,
       '공격력': 40, 'HP': 430, '방어력': 50,
     };
-    function refScore(w, ideal) {
+    function refScore(w, ideal, best = 0) {
       const part = Object.entries(w).map(([k, x]) => x * (ECHO_SUB_TYPICAL[k] || 0) / (ECHO_SUB_MAX[k] || 1)).sort((a, b) => b - a).slice(0, 3);
-      return part.reduce((a, b) => a + b, 0) / ideal * 100 || 50;
+      return (part.reduce((a, b) => a + b, 0) + best) / (ideal + best) * 100 || 50;
     }
 
-    // 에코 점수: Σ(부옵 ÷ 최대치 × 가중치) 를 그 캐릭터가 받을 수 있는 최고점(가중치 상위 5개 × 1.0) 대비 % 로 (메인 옵션은 점수에 넣지 않음)
+    // 에코 점수: (Σ(부옵 ÷ 최대치 × 가중치) + 메인 옵션 ÷ 최대치 × 가중치) 를 최고점(부옵 가중치 상위 5개 + 그 코스트 최고 메인 옵션) 대비 % 로
+    // 메인 옵션이 없는(읽지 못한) 에코는 부옵만으로 계산
     function scoreBuild(res, preset) {
-      const w = echoWeights(res, preset);
+      const w = echoWeights(res, preset), mw = echoMainWeights(res);
       const ideal = Object.values(w).sort((a, b) => b - a).slice(0, 5).reduce((a, b) => a + b, 0) || 1;
-      const ref = refScore(w, ideal);
       const echoes = (preset.build?.echoes || []).map(e => {
         if (!e) return null;
         let sum = 0;
@@ -2729,12 +2768,19 @@
           sum += part;
           return { ...sub, weight, part };
         });
-        const pct = sum / ideal * 100;
-        return { ...e, subs, pct, grade: gradeOf(pct, ref) };
+        const cw = mw[e.cost], best = cw && e.main?.stat ? Math.max(0, ...Object.values(cw)) : 0;
+        let mainPart = 0;
+        if (best) {
+          const max = (ECHO_MAIN_OPTIONS[e.cost].find(o => o[0] === e.main.stat) || [])[1];
+          mainPart = max && e.main.value != null ? Math.min(e.main.value / max, 1) * (cw[e.main.stat] || 0) : 0;
+        }
+        const pct = (sum + mainPart) / (ideal + best) * 100, ref = refScore(w, ideal, best);
+        return { ...e, subs, mainPart, pct, ref, grade: gradeOf(pct, ref) };
       });
       const filled = echoes.filter(Boolean);
       const total = filled.length ? filled.reduce((a, e) => a + e.pct, 0) / filled.length : 0;
-      return { weights: w, echoes, total, ref, grade: gradeOf(total, ref) };
+      const ref = filled.length ? filled.reduce((a, e) => a + e.ref, 0) / filled.length : refScore(w, ideal);
+      return { weights: w, mainWeights: mw, echoes, total, ref, grade: gradeOf(total, ref) };
     }
 
     // 메인 옵션이 추천과 맞는지 (데이터의 echoSet.echoes 기준)
@@ -2968,7 +3014,7 @@
     }
 
     // 이 캐릭터에게 유효한 스탯인지 (에코 점수 가중치가 EFF_MIN 이상)
-    const EFF_MIN = 0.4;
+    const EFF_MIN = 0.2;
     function statEffective(stat, w) {
       const keys = FLAT_STATS.includes(stat) ? [stat + '%', stat] : [stat + '%'];
       return keys.some(k => (w[k] || 0) >= EFF_MIN);
