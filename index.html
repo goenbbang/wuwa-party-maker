@@ -48,6 +48,11 @@
     textarea { display: block; }
     /* 스크롤 끝 늘어나는 효과 제거 + 창이 열려 있을 땐 뒤 페이지 고정 */
     html, body { overscroll-behavior: none; }
+    /* 파티 편성: PC 화면에서 왼쪽 공명자 목록을 헤더 아래에 고정 (파티가 많아 스크롤해도 계속 보이게, 화면보다 길면 목록 칸이 줄어듦) */
+    @media (min-width: 1280px) {
+      #view-party > aside { position: sticky; top: calc(var(--hdr-h, 67px) + 20px); max-height: calc(100vh - var(--hdr-h, 67px) - 64px); }
+      #view-party > aside > .overflow-y-auto { min-height: 120px; flex: 0 1 auto; }
+    }
     /* 창 안의 모든 요소에 걸면, 넘침을 숨긴 카드(overflow:hidden) 위에서 휠이 목록으로 전달되지 않음 → 창과 실제 스크롤 영역에만 */
     [id$="-modal"], [id$="-modal"] .overflow-y-auto, [id$="-modal"] .overflow-x-auto { overscroll-behavior: contain; }
     html { scrollbar-gutter: stable; color-scheme: dark; }
@@ -5391,6 +5396,10 @@
       modal.addEventListener('mouseup', e => { if (isBackdrop && e.target === modal) closeModal(modal.id); });
     });
 
+    // 헤더 높이를 CSS 변수로 (파티 편성 왼쪽 목록 고정 위치)
+    const syncHeaderHeight = () => { const h = document.querySelector('header'); if (h) document.documentElement.style.setProperty('--hdr-h', h.offsetHeight + 'px'); };
+    window.addEventListener('resize', syncHeaderHeight);
+    window.addEventListener('DOMContentLoaded', syncHeaderHeight);
     window.addEventListener('DOMContentLoaded', boot);
     async function boot() {
       try {
