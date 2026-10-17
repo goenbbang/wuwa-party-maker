@@ -977,9 +977,9 @@
         <h3 class="font-black text-lg text-white tracking-tight">파티 편성 현황</h3>
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="promptResetParties()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1 whitespace-nowrap">초기화</button>
+          <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지로 저장</span></button>
           <button onclick="openExportModal('party')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
           <button onclick="openImportModal('party')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
-          <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지로 저장</span></button>
         </div>
       </div>
       <div id="parties-capture-area" class="space-y-3.5 p-1 -mx-1 rounded-2xl bg-[#06080d]"><div id="parties-container" class="space-y-3.5"></div></div>
@@ -1002,9 +1002,9 @@
         
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="resetGrowthData()" class="whitespace-nowrap text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
+          <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
           <button onclick="openExportModal('growth')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
           <button onclick="openImportModal('growth')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
-          <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
         </div>
       </div>
       
