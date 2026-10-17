@@ -925,8 +925,8 @@
     </div>
     
     <div class="flex items-center gap-1.5 sm:gap-2.5 justify-end flex-shrink-0">
-      <button aria-label="데이터 내보내기" onclick="openExportModal()" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">내보내기</span></button>
-      <button aria-label="데이터 불러오기" onclick="openImportModal()" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">불러오기</span></button>
+      <button aria-label="전체 데이터 내보내기" onclick="openExportModal('all')" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">전체 내보내기</span></button>
+      <button aria-label="전체 데이터 불러오기" onclick="openImportModal('all')" class="tb-btn p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i><span class="hidden lg:inline">전체 불러오기</span></button>
       <button aria-label="사용 방법" onclick="openModal('help-modal')" class="help-btn rounded-full tb-btn flex-shrink-0 bg-[#131926] hover:bg-[#1c2438] border border-amber-500/40 text-amber-300 text-sm font-black transition shadow-sm active:scale-95">?</button>
       <button aria-label="공명자 편집" onclick="openModal('visual-editor-modal'); initVisualEditorModal();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-amber-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i><span class="hidden lg:inline">공명자 편집</span></button>
       <button aria-label="무기 편집" onclick="openModal('weapon-editor-modal'); renderWeaponEditor();" class="admin-only p-2 lg:px-3.5 lg:py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="sword" class="w-4 h-4 text-rose-400"></i><span class="hidden lg:inline">무기 편집</span></button>
@@ -977,6 +977,8 @@
         <h3 class="font-black text-lg text-white tracking-tight">파티 편성 현황</h3>
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="promptResetParties()" class="text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1 whitespace-nowrap">초기화</button>
+          <button onclick="openExportModal('party')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
+          <button onclick="openImportModal('party')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
           <button onclick="exportPartyDeckAsImage()" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95" id="btn-save-image"><i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지로 저장</span></button>
         </div>
       </div>
@@ -1000,6 +1002,8 @@
         
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="resetGrowthData()" class="whitespace-nowrap text-xs sm:text-sm font-bold text-rose-400 hover:text-rose-300 hover:underline px-2.5 py-1.5 transition mr-1">초기화</button>
+          <button onclick="openExportModal('growth')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="share-2" class="w-3.5 h-3.5 text-slate-400"></i><span>내보내기</span></button>
+          <button onclick="openImportModal('growth')" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-400"></i><span>불러오기</span></button>
           <button onclick="openUploadModal()" id="growth-shot-btn" class="whitespace-nowrap px-2.5 sm:px-3 py-1.5 tb-btn rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-[11px] sm:text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="image-up" class="w-3.5 h-3.5 text-slate-400"></i><span>이미지 업로드</span></button>
         </div>
       </div>
@@ -1630,7 +1634,7 @@
         <h3 id="import-modal-title" class="text-base font-extrabold text-white"></h3>
         <button onclick="closeModal('import-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-rose-600 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <p class="text-[11px] text-slate-400">내보내기로 복사한 코드를 붙여넣어 주세요. 현재 데이터는 사라집니다.</p>
+      <p id="import-modal-desc" class="text-[11px] text-slate-400"></p>
       <textarea id="import-base64-textarea" rows="4" placeholder="코드 붙여넣기" class="w-full bg-[#10141f] border border-[#222938] rounded-xl p-3 text-xs text-amber-300 resize-none"></textarea>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('import-modal')" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">취소</button>
@@ -5145,10 +5149,19 @@
     }
 
     // 내보내기 · 불러오기: 파티 편성 · 육성 현황 · 보유 공명자 · 버프 표시 설정을 한 번에
-    async function openExportModal() {
-      const payload = { version: 'v_all_1', parties: state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId })), growth: packedGrowth(), owned: state.ownedResonators, modes: storage.get(MODE_KEY, null) };
-      document.getElementById('export-modal-title').innerHTML = '데이터 내보내기';
-      document.getElementById('export-modal-desc').innerText = '파티 편성, 육성 현황, 보유 공명자 정보를 모두 코드로 복사합니다.';
+    // 내보내기 · 불러오기 종류: all 전체(상단) · party 파티 편성 · growth 육성 현황 (각 탭)
+    const IO_KIND = {
+      all: { name: '전체', desc: '파티 편성, 육성 현황, 보유 공명자 정보를 모두 코드로 복사합니다.' },
+      party: { name: '파티 편성', desc: '파티 편성(공명자 배치 · 회로)만 코드로 복사합니다. 다른 사람과 공유할 때 사용하세요.' },
+      growth: { name: '육성 현황', desc: '육성 현황(프리셋 · 스탯 · 무기 · 에코)만 코드로 복사합니다.' },
+    };
+    async function openExportModal(kind = 'all') {
+      const parties = state.parties.map(p => ({ slots: p.slots, circuitId: p.circuitId }));
+      const payload = kind === 'party' ? { version: 'v_party_1', parties }
+        : kind === 'growth' ? { version: 'v_growth_1', growth: packedGrowth() }
+        : { version: 'v_all_1', parties, growth: packedGrowth(), owned: state.ownedResonators, modes: storage.get(MODE_KEY, null) };
+      document.getElementById('export-modal-title').textContent = `${IO_KIND[kind].name} 내보내기`;
+      document.getElementById('export-modal-desc').innerText = IO_KIND[kind].desc;
       const t = document.getElementById('export-base64-textarea');
       t.value = '';
       openModal('export-modal');
@@ -5169,9 +5182,10 @@
       openModal('img-zoom-modal');
     }
 
-    function openImportModal() {
+    function openImportModal(kind = 'all') {
       document.getElementById('import-base64-textarea').value = '';
-      document.getElementById('import-modal-title').innerHTML = '데이터 불러오기';
+      document.getElementById('import-modal-title').textContent = `${IO_KIND[kind].name} 불러오기`;
+      document.getElementById('import-modal-desc').innerText = '내보내기로 복사한 코드를 붙여넣어 주세요. 코드에 담긴 항목만 현재 데이터를 덮어씁니다.';
       openModal('import-modal');
     }
 
@@ -5185,6 +5199,10 @@
       const parties = (all || v.startsWith('v_party')) && Array.isArray(p.parties) ? p.parties : null;
       const growth = (all || v.startsWith('v_growth')) && p.growth && typeof p.growth === 'object' ? p.growth : null;
       if (!parties && !growth) { showToast('올바른 데이터 형식이 아닙니다.'); return; }
+      const what = all ? '전체 데이터(파티 편성 · 육성 현황 · 보유 공명자)를' : parties ? '파티 편성을' : '육성 현황을';
+      openConfirm('불러오기', `현재 ${what} 코드 내용으로 덮어씁니다.`, () => applyImported(p, all, parties, growth));
+    }
+    function applyImported(p, all, parties, growth) {
       if (parties) {
         state.parties = parties.map((x, idx) => ({ id: 'p_' + Date.now() + '_' + idx, slots: [x.slots?.[0] || null, x.slots?.[1] || null, x.slots?.[2] || null], circuitId: x.circuitId || null }));
         saveParties();
@@ -5194,9 +5212,9 @@
       if (all && p.modes) storage.set(MODE_KEY, p.modes);
       closeModal('import-modal');
       if (all) { showToast('데이터를 불러왔습니다.'); setTimeout(() => location.reload(), 600); return; }
-      renderParties(); renderRoster();
+      renderParties(); renderRoster(); populateGrowthPartyFilter();
       if (currentMainView === 'growth') renderGrowthTracker();
-      showToast(parties ? '파티 데이터를 불러왔습니다.' : '육성 데이터를 불러왔습니다.');
+      showToast(parties ? '파티 편성을 불러왔습니다.' : '육성 현황을 불러왔습니다.');
     }
 
     function populateGrowthPartyFilter() {
