@@ -1803,9 +1803,11 @@
     const BUFF_SOURCES = ['반주 스킬', '변주 스킬', '공명 해방', '공명 스킬', '공명 회로', '고유 스킬', '기본 공격', '조화도 파괴', '공명 체인'];
     const BUFF_TARGETS = ['다음 캐릭터', '파티 전체', '등장 캐릭터', '자신', '적'];
     const byName = (a, b) => KO.compare(a.name || '', b.name || '');
-    // 첫 픽업(출시) 날짜 (game8 배너 기록 기준). 상시 5성 · 출시 4성 · 방랑자는 가장 오래된 것으로 취급('0000'), 나중에 나온 4성은 출시일. 없는 공명자는 가장 최신으로 취급
+    // 첫 픽업(출시) 날짜 (game8 배너 기록 기준). 상시 캐릭터는 오래된 순서로 상시 4성(0000-1) → 방랑자(0000-2) → 상시 5성(0000-3), 나중에 나온 4성은 출시일. 없는 공명자는 가장 최신으로 취급
     const RES_PICKUP = Object.fromEntries(Object.entries({
-      '0000': 'lingyang calcharo encore jianxin verina rover_havoc rover_spectro rover_aero rover_electro sanhua baizhi chixia danjin mortefi aalto taoqi yuanwu yangyang',
+      '0000-1': 'sanhua baizhi chixia danjin mortefi aalto taoqi yuanwu yangyang',
+      '0000-2': 'rover_havoc rover_spectro rover_aero rover_electro',
+      '0000-3': 'lingyang calcharo encore jianxin verina',
       '2024-05-23': 'jiyan',
       '2024-06-06': 'yinlin',
       '2024-06-28': 'jinhsi',
@@ -1933,7 +1935,7 @@
     let RAW_RESONATORS = [], CIRCUITS = [], ECHO_SETS = [], WEAPONS = [];
     let GROWTH_DATA = {};
     let activeEditorResonatorId = null, activeCircuitEditorId = null;
-    let currentSkillPriority = [], currentEditEchoSets = [], currentEditWeapons = [], currentEditTeammates = [], currentEditBuffs = [];
+    let currentSkillPriority = [], currentSkillTies = [], currentEditEchoSets = [], currentEditWeapons = [], currentEditTeammates = [], currentEditBuffs = [];
     let skillSortable = null, weaponsSortable = null, teammatesSortable = null;
     
     let state = { 
@@ -2162,7 +2164,7 @@
           customElementIcons: Object.fromEntries(Object.entries(adminConfig.customElementIcons || {}).map(([k, v]) => [k, g(v)])),
           customWeaponStatIcons: Object.fromEntries(Object.entries(adminConfig.customWeaponStatIcons || {}).map(([k, v]) => [k, g(v)]))
         },
-        resonators: RAW_RESONATORS.map(r => ({ ...r, buffs: (r.buffs || []).map(({ duration, ...b }) => b), avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), card: s(r.card, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
+        resonators: RAW_RESONATORS.map(r => ({ ...r, skillTies: r.skillTies?.some(Boolean) ? r.skillTies : undefined, buffs: (r.buffs || []).map(({ duration, ...b }) => b), avatar: s(r.avatar, 'character'), sprite: s(r.sprite, 'character'), card: s(r.card, 'character'), echoSet: { ...r.echoSet, image: s(r.echoSet?.image, 'echo') }, ...(r.echoAlts?.length ? { echoAlts: r.echoAlts.map(a => ({ ...a, image: s(a.image, 'echo') })) } : { echoAlts: undefined }) })),
         weapons: WEAPONS.map(w => ({ ...w, image: s(w.image, 'weapon') })),
         echoSets: ECHO_SETS.map(e => ({ ...e, iconUrl: s(e.iconUrl, 'set') })),
         circuits: CIRCUITS.map(c => ({ ...c, iconImage: s(c.iconImage, 'icon') }))
@@ -4465,7 +4467,7 @@
 
       const priority = char.skillPriority || SKILL_NAMES;
       const spEl = document.getElementById('detail-modal-skill-priority');
-      spEl.innerHTML = priority.map((skill, sIdx) => `<div class="flex items-center gap-0.5 flex-shrink-0"><span class="px-2.5 py-1.5 rounded-lg bg-[#182030] border border-[#28354e] text-slate-200 font-bold text-xs shadow-sm whitespace-nowrap">${skill}</span>${sIdx < priority.length - 1 ? '<i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 flex-shrink-0 mx-0.5"></i>' : ''}</div>`).join('');
+      spEl.innerHTML = priority.map((skill, sIdx) => `<div class="flex items-center gap-0.5 flex-shrink-0"><span class="px-2.5 py-1.5 rounded-lg bg-[#182030] border border-[#28354e] text-slate-200 font-bold text-xs shadow-sm whitespace-nowrap">${skill}</span>${sIdx < priority.length - 1 ? `<i data-lucide="${char.skillTies?.[sIdx] ? 'equal' : 'chevron-right'}" class="w-4 h-4 text-slate-500 flex-shrink-0 mx-0.5"></i>` : ''}</div>`).join('');
       spEl.scrollLeft = 0;
 
       const weaponsList = (char.weapons || []).filter(w => w?.name?.trim());
@@ -4719,6 +4721,8 @@
       let sp = Array.isArray(r.skillPriority) ? r.skillPriority.map(s => s === '일반 공격' ? '기본 공격' : s) : [];
       sp = [...new Set(sp)].filter(s => SKILL_NAMES.includes(s));
       SKILL_NAMES.forEach(s => { if (!sp.includes(s)) sp.push(s); });
+      // 스킬 사이 기호: skillTies[i]가 true면 i번째와 i+1번째 스킬 사이를 '=' 로 표시 (없으면 '>')
+      const ties = SKILL_NAMES.slice(1).map((_, i) => !!r.skillTies?.[i]);
 
       const echoSet = normalizeEchoBuild(r.echoSet || {});
       const echoAlts = (r.echoAlts || []).map(normalizeEchoBuild);
@@ -4729,6 +4733,7 @@
         rarity: r.rarity || 5,
         targetStats: r.targetStats || { ...defaultTargetStats },
         skillPriority: sp,
+        skillTies: ties,
         echoSet,
         echoAlts,
         buffs: Array.isArray(r.buffs) ? r.buffs : [],
@@ -4743,7 +4748,8 @@
     function renderSkillPriorityEditor() {
       const list = document.getElementById('edit-skill-priority-list');
       skillSortable?.destroy();
-      list.innerHTML = currentSkillPriority.map(skill => `
+      list.innerHTML = currentSkillPriority.map((skill, i) => `${i ? `
+        <button type="button" onclick="toggleSkillTie(${i - 1})" class="skill-tie flex-shrink-0 p-1 rounded-md text-slate-500 hover:text-amber-400 hover:bg-slate-800 transition" title="눌러서 &gt; / = 전환" aria-label="스킬 사이 기호 전환"><i data-lucide="${currentSkillTies[i - 1] ? 'equal' : 'chevron-right'}" class="w-4 h-4"></i></button>` : ''}
         <div class="skill-item flex items-center gap-1.5 px-3 py-1.5 bg-[#171d2b] border border-slate-700 rounded-lg text-xs text-white shadow-sm flex-shrink-0 cursor-default" data-skill="${skill}">
           <i data-lucide="grip-vertical" class="w-4 h-4 text-slate-500 cursor-grab active:cursor-grabbing hover:text-amber-400 skill-drag-handle"></i>
           <span class="font-bold whitespace-nowrap select-none pointer-events-none">${skill}</span>
@@ -4752,9 +4758,12 @@
       skillSortable = new Sortable(list, {
         animation: 150,
         handle: '.skill-drag-handle',
-        onEnd: () => { currentSkillPriority = Array.from(list.querySelectorAll('.skill-item')).map(el => el.dataset.skill); }
+        draggable: '.skill-item',
+        // 기호는 자리(칸 사이)에 고정: 순서만 읽고 다시 그림
+        onEnd: () => { currentSkillPriority = Array.from(list.querySelectorAll('.skill-item')).map(el => el.dataset.skill); renderSkillPriorityEditor(); }
       });
     }
+    function toggleSkillTie(i) { currentSkillTies[i] = !currentSkillTies[i]; renderSkillPriorityEditor(); }
 
     function initVisualEditorModal() {
       renderEditorCharList();
@@ -4968,6 +4977,7 @@
       updatePreviewImage('preview-sprite', char.sprite, true, 'character');
 
       currentSkillPriority = [...char.skillPriority];
+      currentSkillTies = [...(char.skillTies || [])];
       renderSkillPriorityEditor();
       
       currentEditWeapons = (char.weapons || []).map(w => ({ name: w.name || '', ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null ? { pct: w.pct } : {}) }));
@@ -5090,6 +5100,7 @@
         echoSet: currentEchoBuilds[0],
         echoAlts: currentEchoBuilds.slice(1),
         skillPriority: currentSkillPriority,
+        skillTies: SKILL_NAMES.slice(1).map((_, i) => !!currentSkillTies[i]),
         weapons: currentEditWeapons.filter(w => w?.name?.trim()).map(w => ({ name: w.name, ...(w.tag ? { tag: w.tag } : {}), ...(w.pct != null && w.pct !== '' ? { pct: Number(w.pct) } : {}) })),
         teammates: currentEditTeammates.filter(t => t?.id?.trim()).map(t => ({ id: t.id.trim() })),
         buffs: currentEditBuffs.filter(b => b.stat?.trim()).map(b => ({ source: b.source, target: b.target, stat: b.stat.trim(), value: (b.value || '').trim(), verb: b.verb, ...(b.mode?.trim() ? { mode: b.mode.trim() } : {}), ...(b.note?.trim() ? { note: b.note.trim() } : {}) })),
