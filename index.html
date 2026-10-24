@@ -3830,7 +3830,7 @@
     function renderCodexFilterBars() {
       const btn = (key, id, label, gold) => {
         const on = codexFilters[key] === id, ico = key === 'weapon' ? wtIco(id) : '';
-        return `<button onclick="setCodexFilter('${key}', '${id}')" class="${ico ? 'wt-btn ' : ''}flex-1 sm:flex-none py-1.5 px-1 sm:px-2.5 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${on ? (gold ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-slate-700 text-white border-slate-500 shadow-md') : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}">${ico}${label}</button>`;
+        return `<button onclick="setCodexFilter('${key}', '${id}')" class="${ico ? 'wt-btn ' : ''}flex-1 sm:flex-none py-1.5 px-1 sm:px-3 rounded-lg font-bold text-xs whitespace-nowrap text-center transition border ${on ? (gold ? 'bg-[#f5a623] border-amber-500 text-black shadow-md' : 'bg-slate-700 text-white border-slate-500 shadow-md') : 'bg-[#121622] text-slate-400 hover:bg-[#1a202d] border-[#232b3b]'}">${ico}${label}</button>`;
       };
       document.getElementById('codex-rank-bar').innerHTML = [['all', '전체'], ['5', '5★'], ['4', '4★']].map(([id, l]) => btn('rank', id, l, false)).join('');
       document.getElementById('codex-element-bar').innerHTML = FILTER_TABS_DEF.elements.map(t => elementFilterBtn(t, codexFilters.element === t.id, 'setCodexElement')).join('');
