@@ -414,6 +414,15 @@
     .ed-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .ed-search { flex: 1; min-width: 0; width: 100%; background: #101012; border: 1px solid #323234; border-radius: 5px; padding: 8px 12px; font-size: 14px; color: #fff; outline: none; }
     .ed-search:focus { border-color: rgba(255, 255, 255, .35); }
+    /* 검색창 지우기(X) 버튼: 입력이 있을 때만 보임 */
+    .sc-wrap { position: relative; display: block; flex: 1; min-width: 0; }
+    .sc-wrap > input { padding-right: 32px !important; }
+    .sc-x { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: #64748b; transition: color .15s; }
+    .sc-x:hover { color: #e2e8f0; }
+    .sc-x svg { width: 14px; height: 14px; }
+    .sc-wrap > input:placeholder-shown + .sc-x { display: none; }
+    html.theme-wuwa .sc-x { color: var(--wmuted); }
+    html.theme-wuwa .sc-x:hover { color: var(--wtext); }
     .ed-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .ed-row label { font-size: 12px; color: #a3a3a5; font-weight: 700; }
     .ed-seg { display: flex; border: 1px solid #323234; border-radius: 5px; overflow: hidden; }
@@ -841,7 +850,7 @@
         <div><div class="font-black text-white text-sm">공명자 선택</div><div id="slot-picker-label" class="text-[11px] text-slate-500"></div></div>
         <button onclick="closeModal('slot-picker-modal')" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="닫기"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <div class="px-4 pb-2"><input id="slot-picker-search" type="text" oninput="renderSlotPicker()" placeholder="이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400"></div>
+      <div class="px-4 pb-2"><input id="slot-picker-search" data-clear type="text" oninput="renderSlotPicker()" placeholder="이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400"></div>
       <div id="slot-picker-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2 px-4 pb-4 overflow-y-auto"></div>
     </div>
   </div>
@@ -964,7 +973,7 @@
       <div class="flex items-center gap-2.5 pt-0.5">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
-          <input type="text" id="roster-search-input" oninput="renderRosterDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+          <input type="text" id="roster-search-input" data-clear oninput="renderRosterDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
         </div>
         <div class="flex items-center gap-3 flex-shrink-0">
           <label class="flex items-center gap-1.5 cursor-pointer hover:text-white select-none text-xs text-slate-300">
@@ -997,7 +1006,7 @@
         <div class="flex flex-wrap items-center gap-3">
           <div class="relative w-full sm:w-64 xl:w-[280px]">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
-            <input type="text" id="growth-search-input" oninput="renderGrowthTrackerDebounced()" placeholder="이름 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
+            <input type="text" id="growth-search-input" data-clear oninput="renderGrowthTrackerDebounced()" placeholder="이름 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
           </div>
           <button onclick="resetGrowthFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
           <span id="growth-sort-box" class="flex-shrink-0"></span>
@@ -1035,7 +1044,7 @@
       <div class="flex flex-wrap items-center gap-3 w-full">
         <div class="relative w-full sm:w-64 xl:w-[280px]">
           <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
-          <input type="text" id="codex-search-input" oninput="renderResonatorCodexDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
+          <input type="text" id="codex-search-input" data-clear oninput="renderResonatorCodexDebounced()" placeholder="공명자 이름 또는 버프 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
         </div>
         <button onclick="resetCodexFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
         <span id="codex-sort-box" class="flex-shrink-0"></span>
@@ -1058,7 +1067,7 @@
       <div class="flex flex-wrap items-center gap-3 w-full">
         <div class="relative w-full sm:w-64 xl:w-[280px]">
           <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500 pointer-events-none"></i>
-          <input type="text" id="weapon-search-input" oninput="renderWeaponCodexDebounced()" placeholder="무기 이름 또는 효과 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
+          <input type="text" id="weapon-search-input" data-clear oninput="renderWeaponCodexDebounced()" placeholder="무기 이름 또는 효과 검색..." class="w-full bg-[#10141f] border border-[#212a3d] rounded-xl px-3 py-2 pl-9 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition">
         </div>
         <button onclick="resetWeaponFilters()" class="tb-btn whitespace-nowrap px-3 py-2 rounded-xl bg-[#121724] hover:bg-[#1a2236] border border-slate-700/80 text-xs font-bold text-slate-300 transition flex items-center gap-1.5 flex-shrink-0"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>필터 초기화</button>
       </div>
@@ -1361,7 +1370,7 @@
             <span class="text-xs font-bold text-slate-300">공명자 선택</span>
             <button onclick="addNewCustomResonator()" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold"><i data-lucide="plus" class="w-3 h-3"></i><span>추가</span></button>
           </div>
-          <input type="text" id="editor-char-search" oninput="renderEditorCharListDebounced()" placeholder="이름 검색..." class="w-full bg-[#121620] border border-[#232c3f] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-500 mb-2">
+          <div class="mb-2"><input type="text" id="editor-char-search" data-clear oninput="renderEditorCharListDebounced()" placeholder="이름 검색..." class="w-full bg-[#121620] border border-[#232c3f] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-500"></div>
           <div id="editor-char-list" class="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[160px] md:max-h-none"></div>
         </div>
         <div class="flex-1 flex flex-col bg-[#0e1118] min-w-0">
@@ -3307,7 +3316,7 @@
         const q = s.q.trim();
         const list = WEAPONS.filter(w => w.weaponType === res.weaponType && (!q || w.name.includes(q))).sort((a, b) => (b.rank || 0) - (a.rank || 0));
         box.innerHTML = `${head('무기 설정')}
-          <input class="ed-search" placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
+          <input class="ed-search" data-clear placeholder="무기 이름 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
           <div class="ed-row"><label>레벨</label>${pickBtn('wlv', s.wlv, levelOpts((([lv, br]) => ({ lv, br }))(s.wlv.split('-').map(Number))), 'ed-lv', 'aria-label="무기 레벨"')}<label>재련</label><div class="ed-seg">${[1, 2, 3, 4, 5].map(n => `<button class="${+s.refine === n ? 'on' : ''}" onclick="editState.refine=${n}; renderEditor()">R${n}</button>`).join('')}</div></div>
           <div class="ed-grid">${list.map(w => `<button class="ed-pick ${s.pick === w.name ? 'on' : ''} r${w.rank || 5}" onclick="editState.pick='${esc(w.name)}'; renderEditor()">${s.pick === w.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<img src="${w.image}" alt="" loading="lazy"><span>${esc(w.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없습니다</div>'}</div>
           <div class="up-foot"><button class="bm-btn" onclick="closeModal('edit-modal')">취소</button><button class="up-run" onclick="saveEditor()">저장</button></div>`;
@@ -3315,7 +3324,7 @@
         const q = s.q.trim();
         const list = BUILD_DATA.echoes.map((e, i) => ({ e, i })).filter(({ e }) => (!s.costFilter || e.cost === s.costFilter) && (!q || e.name.includes(q) || e.sets.some(x => x.includes(q))));
         box.innerHTML = `${head(`${s.slot + 1}번 에코 고르기`)}
-          <div class="ed-row"><input class="ed-search" placeholder="에코 이름 · 세트 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
+          <div class="ed-row"><input class="ed-search" data-clear placeholder="에코 이름 · 세트 검색" value="${esc(s.q)}" oninput="editState.q=this.value; renderEditor(true)">
             <div class="ed-seg">${[[0, '전체'], [4, 'COST 4'], [3, 'COST 3'], [1, 'COST 1']].map(([c, l]) => `<button class="${s.costFilter === c ? 'on' : ''}" onclick="editState.costFilter=${c}; renderEditor()">${l}</button>`).join('')}</div></div>
           <div class="ed-grid echo">${list.map(({ e, i }) => `<button class="ed-pick ep ${s.echo.name === e.name ? 'on' : ''}" onclick="editorPickEcho(${i})" title="${esc(e.sets.join(', '))}">${s.echo.name === e.name ? '<i class="ed-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></i>' : ''}<div class="ep-img"><img src="${echoImgUrl(e.img)}" alt="" loading="lazy"><div class="ep-sets">${e.sets.map(x => setIconHtml(x, 'ep-set')).join('')}</div><span class="ep-cost">COST ${e.cost}</span></div><span class="ep-name">${esc(e.name)}</span></button>`).join('') || '<div class="ed-empty">검색 결과가 없습니다</div>'}</div>
           ${s.echo.name ? `<div class="up-foot"><button class="bm-btn" onclick="editState.step='stats'; renderEditor()">돌아가기</button></div>` : ''}`;
@@ -3339,6 +3348,7 @@
           </div>
           <div class="up-foot"><button class="bm-btn ed-del" onclick="removeEchoFromSlot()">삭제</button><button class="up-run" onclick="saveEditor()">저장</button></div>`;
       }
+      addSearchClear(panel);
       lucide.createIcons();
     }
 
@@ -5513,6 +5523,27 @@
     window.addEventListener('resize', syncHeaderHeight);
     window.addEventListener('DOMContentLoaded', syncHeaderHeight);
     window.addEventListener('DOMContentLoaded', boot);
+
+    // 검색창 우측 X 버튼: data-clear 가 붙은 입력칸에 한 번만 달아 줌 (보이기 · 숨기기는 CSS가 처리)
+    function addSearchClear(root = document) {
+      root.querySelectorAll('input[data-clear]').forEach(input => {
+        if (input.parentElement.classList.contains('sc-wrap')) return;
+        const wrap = document.createElement('span');
+        wrap.className = 'sc-wrap';
+        input.before(wrap); wrap.append(input);
+        wrap.insertAdjacentHTML('beforeend', '<button type="button" class="sc-x" aria-label="검색어 지우기" title="지우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>');
+      });
+    }
+    document.addEventListener('mousedown', e => { if (e.target.closest('.sc-x')) e.preventDefault(); });   // 누를 때 입력칸 포커스 유지
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.sc-x');
+      if (!btn) return;
+      const input = btn.previousElementSibling;
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.focus();
+    });
+    window.addEventListener('DOMContentLoaded', () => addSearchClear());
     async function boot() {
       // 아이콘은 새로 생긴 것만 그림 (이미 그린 아이콘까지 매번 다시 만들면 관련 없는 버튼이 깜빡임)
       const drawIcons = lucide.createIcons;
