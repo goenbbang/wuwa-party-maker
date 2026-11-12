@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-11-12",
   "settings": {"seasonBuffResonatorId": "lynae"},
   "theme": {
     "colorPoint": "#f5a623",
@@ -2815,6 +2815,59 @@
       ],
       "teammates": [{"id": "chisa"}, {"id": "suisui"}, {"id": "rebecca"}],
       "targetStats": {"type": "atk", "base": 2300, "regen": 125, "cr": 70, "cd": 260}
+    },
+    {
+      "id": "lily",
+      "name": "릴리",
+      "element": "spectro",
+      "role": "support",
+      "weaponType": "권총",
+      "rarity": 5,
+      "mainDmg": "강공격",
+      "buffSummary": "합일",
+      "buffs": [
+        {"source": "반주 스킬", "target": "파티 전체", "stat": "전체 피해", "value": "25%", "verb": "부스트"},
+        {"source": "공명 해방", "target": "파티 전체", "stat": "공격력", "value": "최대 28%", "verb": "증가"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "공격력", "value": "최대 28%", "verb": "증가"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "에코 어빌리티 크리티컬", "value": "최대 10%", "verb": "증가"},
+        {"source": "공명 회로", "target": "등장 캐릭터", "stat": "에코 어빌리티 크리티컬 피해", "value": "최대 20%", "verb": "증가"}
+      ],
+      "avatar": "Lily/T_IconRoleHead256_77_UI",
+      "sprite": "Lily/T_IconRole_Pile_Lili_UI",
+      "card": "Lily/T_Luckdraw_LiLi_UI",
+      "focus": [0.51, 0.335],
+      "echoSet": {
+        "label": "추천",
+        "sets": [{"name": "찬란한 광휘", "count": 5}],
+        "mainEcho": "돌아갈 곳이 없는 오류",
+        "image": "T_IconMonsterHead_350_UI",
+        "echoes": [
+          {"cost": "4", "stat": "HP%"},
+          {"cost": "3", "stat": "공명 효율"},
+          {"cost": "3", "stat": "공명 효율 / 회절 피해 보너스"},
+          {"cost": "1", "stat": "HP%"},
+          {"cost": "1", "stat": "HP%"}
+        ]
+      },
+      "skillPriority": ["공명 회로", "변주 스킬", "기본 공격", "공명 스킬", "공명 해방"],
+      "weapons": [{"name": "럴러바이"}, {"name": "화려한 악곡"}],
+      "teammates": [{"id": "hsin"}, {"id": "suoming"}, {"id": "sigrika"}],
+      "targetStats": {"type": "hp", "base": 40000, "regen": 260, "cr": 20, "cd": 150},
+      "echoAlts": [
+        {
+          "label": "합일 파티",
+          "sets": [{"name": "추억에 붉게 물든 꽃", "count": 5}],
+          "mainEcho": "해형살",
+          "image": "T_IconMonsterHead_32070_UI",
+          "echoes": [
+            {"cost": "3", "stat": "공명 효율"},
+            {"cost": "3", "stat": "공명 효율 / 회절 피해 보너스"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"},
+            {"cost": "1", "stat": "HP%"}
+          ]
+        }
+      ]
     }
   ],
   "weapons": [
@@ -4708,6 +4761,19 @@
       "effect": "공격력 **4%** 증가",
       "refine": [["4%", "5%", "6%", "7%", "8%"]],
       "buffSummary": "공격력 증가"
+    },
+    {
+      "id": "wp_21030076",
+      "name": "럴러바이",
+      "rank": 5,
+      "weaponType": "권총",
+      "image": "T_IconWeapon21030076_UI",
+      "atk": "412",
+      "mainStat": "공명 효율 77%",
+      "effect": "HP가 **12%** 증가된다. 공명 해방 발동 시, **8**pt의 협주 에너지를 회복하고 20초마다 1회 발생할 수 있다. 강공격이 치료 효과 발동 시, 파티 내 캐릭터가 「꿈으로 돌아간 영혼」 상태를 획득하고, 30초간 지속된다. 「꿈으로 돌아간 영혼」 지속 기간 동안, 해당 캐릭터가 합일을 획득하거나 혹은 합일 대응하면, 해당 캐릭터의 공격력이 **16%** 증가되고, 30초간 지속된다. 「꿈으로 돌아간 영혼」 지속 시간 종료 시, 해당 효과가 제거된다. 강공격이 치료 효과 발동 시, 파티 내 등장 캐릭터는 **24%**의 에코 어빌리티 피해 보너스를 획득하고, 30초간 지속된다. 같은 이름의 효과는 중첩이 불가하다",
+      "refine": [["12%", "15%", "18%", "21%", "24%"], ["8", "10", "12", "14", "16"], ["16%", "20%", "24%", "28%", "32%"], ["24%", "30%", "36%", "42%", "48%"]],
+      "buffSummary": "HP 증가, 파티 공격력 증가, 에코 어빌리티 피해 증가",
+      "signatureOf": "lily"
     }
   ],
   "echoSets": [

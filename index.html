@@ -39,8 +39,8 @@
     .drag-party-active { border: 2px dashed var(--color-point) !important; background-color: rgba(245, 166, 35, 0.08) !important; } .drag-slot-active { border: 2px dashed #38bdf8 !important; background-color: rgba(56, 189, 248, 0.12) !important; }
     .party-handle { cursor: grab; } .party-handle:active { cursor: grabbing; }
     .party-grip { cursor: grab; } .party-grip:active { cursor: grabbing; }
-    .party-row.drop-before::before, .party-row.drop-after::after { content: ''; position: absolute; left: 0; right: 0; height: 3px; border-radius: 2px; background: var(--color-point); pointer-events: none; }
-    .party-row.drop-before::before { top: -8.5px; } .party-row.drop-after::after { bottom: -8.5px; }
+    .party-row.drop-before::before, .party-row.drop-after::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; border-radius: 1px; background: var(--color-point); pointer-events: none; }
+    .party-row.drop-before::before { top: -8px; } .party-row.drop-after::after { bottom: -8px; }
     .drag-ghost-frame { position: absolute; top: -9999px; left: -9999px; width: 84px; height: 84px; border-radius: 8px; overflow: hidden; border: 2.5px solid var(--color-point); box-shadow: 0 0 18px rgba(217, 191, 134, 0.7), 0 8px 20px rgba(0, 0, 0, 0.85); background-color: #0e0e10; pointer-events: none; z-index: 99999; }
     .drag-ghost-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
     
