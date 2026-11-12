@@ -39,6 +39,7 @@
     .drag-party-active { border: 2px dashed var(--color-point) !important; background-color: rgba(245, 166, 35, 0.08) !important; } .drag-slot-active { border: 2px dashed #38bdf8 !important; background-color: rgba(56, 189, 248, 0.12) !important; }
     .party-handle { cursor: grab; } .party-handle:active { cursor: grabbing; }
     .party-grip { cursor: grab; } .party-grip:active { cursor: grabbing; }
+    .party-grip:hover .party-handle { color: rgb(251 191 36); } html.theme-wuwa .party-grip:hover .party-handle { color: var(--wg) !important; }
     .party-row.drop-before::before, .party-row.drop-after::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; border-radius: 1px; background: var(--color-point); pointer-events: none; }
     .party-row.drop-before::before { top: -8px; } .party-row.drop-after::after { bottom: -8px; }
     .drag-ghost-frame { position: absolute; top: -9999px; left: -9999px; width: 84px; height: 84px; border-radius: 8px; overflow: hidden; border: 2.5px solid var(--color-point); box-shadow: 0 0 18px rgba(217, 191, 134, 0.7), 0 8px 20px rgba(0, 0, 0, 0.85); background-color: #0e0e10; pointer-events: none; z-index: 99999; }
@@ -4070,7 +4071,7 @@
     }
 
     // 끌기 중 화면 위·아래 가장자리에 가까이 가면 자동 스크롤 (가까울수록 빠르게)
-    (() => {
+    const edgeScroll = (() => {
       const EDGE = 80, MAX_SPEED = 22;
       let dragging = false, lastY = -1, raf = 0;
       const tick = () => {
@@ -4087,7 +4088,79 @@
       document.addEventListener('dragover', (e) => { lastY = e.clientY; });
       document.addEventListener('dragend', stop);
       document.addEventListener('drop', stop);
+      return {
+        start() { dragging = true; if (!raf) raf = requestAnimationFrame(tick); },
+        move(y) { lastY = y; },
+        stop
+      };
     })();
+
+    // 파티 순서 이동: 브라우저 기본 끌기 대신 직접 구현 → 끄는 중에도 마우스 휠 스크롤이 됨
+    function startPartyDrag(e, row) {
+      if (e.button !== 0 || e.pointerType === 'touch') return;
+      e.preventDefault();
+      const from = parseInt(row.dataset.pidx);
+      const sx = e.clientX, sy = e.clientY;
+      let ghost = null, offX = 0, offY = 0, lx = sx, ly = sy;
+      const mark = () => {
+        const el = document.elementFromPoint(lx, ly);
+        const target = el && el.closest('#parties-container .party-row');
+        if (!target) return;
+        const r = target.getBoundingClientRect();
+        const cls = ly > r.top + r.height / 2 ? 'drop-after' : 'drop-before';
+        if (!target.classList.contains(cls)) { clearPartyDropMarks(); target.classList.add(cls); }
+      };
+      const begin = () => {
+        const r = row.getBoundingClientRect();
+        offX = sx - r.left; offY = sy - r.top;
+        ghost = row.cloneNode(true);
+        ghost.classList.remove('drop-before', 'drop-after');
+        Object.assign(ghost.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', margin: '0', zIndex: '9999', pointerEvents: 'none', opacity: '0.85', boxShadow: '0 12px 32px rgba(0,0,0,.6)' });
+        document.body.appendChild(ghost);
+        row.classList.add('opacity-40');
+        document.body.style.cursor = 'grabbing';
+        edgeScroll.start();
+      };
+      const onMove = (ev) => {
+        lx = ev.clientX; ly = ev.clientY;
+        if (!ghost) { if (Math.hypot(lx - sx, ly - sy) < 4) return; begin(); }
+        ghost.style.left = (lx - offX) + 'px'; ghost.style.top = (ly - offY) + 'px';
+        edgeScroll.move(ly);
+        mark();
+      };
+      const onScroll = () => { if (ghost) mark(); };
+      const finish = (drop) => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+        window.removeEventListener('keydown', onKey);
+        window.removeEventListener('scroll', onScroll, true);
+        if (!ghost) return;
+        edgeScroll.stop();
+        ghost.remove();
+        row.classList.remove('opacity-40');
+        document.body.style.cursor = '';
+        const target = document.querySelector('#parties-container .party-row.drop-before, #parties-container .party-row.drop-after');
+        const after = target && target.classList.contains('drop-after');
+        clearPartyDropMarks();
+        if (!drop || !target) return;
+        let to = parseInt(target.dataset.pidx) + (after ? 1 : 0);
+        if (from < to) to--;
+        if (to !== from) {
+          const [moved] = state.parties.splice(from, 1);
+          state.parties.splice(to, 0, moved);
+          renderParties(); renderRoster();
+        }
+      };
+      const onUp = () => finish(true);
+      const onCancel = () => finish(false);
+      const onKey = (ev) => { if (ev.key === 'Escape') finish(false); };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onCancel);
+      window.addEventListener('keydown', onKey);
+      window.addEventListener('scroll', onScroll, true);
+    }
 
     function createCustomDragGhost(imgSrc) {
       document.getElementById('active-drag-ghost')?.remove();
@@ -4242,8 +4315,8 @@
 
         return `
           <div class="party-row bg-[#0d1017] border border-[#1a2130] rounded-2xl p-2 sm:p-3.5 flex flex-nowrap items-center gap-1.5 sm:gap-3.5 shadow-lg transition-all relative" data-pidx="${pIdx}">
-            <div class="party-grip group flex items-center gap-3 sm:gap-3.5 flex-shrink-0 select-none" draggable="true" aria-label="파티 순서 이동">
-              <div class="party-handle hidden md:flex w-8 h-12 items-center justify-center text-slate-400 group-hover:text-amber-400 transition">
+            <div class="party-grip group flex items-center gap-3 sm:gap-3.5 flex-shrink-0 select-none" aria-label="파티 순서 이동">
+              <div class="party-handle hidden md:flex w-8 h-12 items-center justify-center text-slate-400 hover:text-amber-400 transition">
                 <svg viewBox="0 0 24 24" class="w-5 h-5 stroke-current fill-none stroke-[2.2] stroke-linecap-round stroke-linejoin-round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
               </div>
               <span class="text-base sm:text-3xl font-black text-slate-200 tracking-tight w-6 sm:w-auto text-center">${String(pIdx + 1).padStart(2, '0')}</span>
@@ -4254,50 +4327,8 @@
           </div>`;
       }).join('');
 
-      // 파티 끼워 넣기: 줄 사이 틈에서도 놓을 수 있도록 목록 전체에서 받음 (한 번만 연결)
-      if (!container.dataset.partyDnd) {
-        container.dataset.partyDnd = '1';
-        container.addEventListener('dragover', (e) => {
-          if (draggedPartyIndex === null) return;
-          e.preventDefault();
-          const row = e.target.closest('.party-row');
-          if (!row) return;
-          const rect = row.getBoundingClientRect();
-          const cls = e.clientY > rect.top + rect.height / 2 ? 'drop-after' : 'drop-before';
-          if (!row.classList.contains(cls)) { clearPartyDropMarks(); row.classList.add(cls); }
-        });
-        container.addEventListener('drop', (e) => {
-          if (draggedPartyIndex === null) return;
-          e.preventDefault();
-          const row = container.querySelector('.party-row.drop-before, .party-row.drop-after');
-          const from = draggedPartyIndex;
-          draggedPartyIndex = null;
-          if (!row) return;
-          const after = row.classList.contains('drop-after');
-          clearPartyDropMarks();
-          let to = parseInt(row.dataset.pidx) + (after ? 1 : 0);
-          if (from < to) to--;
-          if (to !== from) {
-            const [moved] = state.parties.splice(from, 1);
-            state.parties.splice(to, 0, moved);
-            renderParties(); renderRoster();
-          }
-        });
-      }
-
-      container.querySelectorAll('.party-row').forEach(row => {
-        const pIdx = parseInt(row.dataset.pidx);
-        const grip = row.querySelector('.party-grip');
-        grip.addEventListener('dragstart', (e) => {
-          draggedPartyIndex = pIdx;
-          e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'party-reorder', index: pIdx }));
-          // 파티 줄 전체를 끌기 이미지로 사용 (잡은 위치 그대로)
-          const rect = row.getBoundingClientRect();
-          if (e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(row, e.clientX - rect.left, e.clientY - rect.top);
-          setTimeout(() => row.classList.add('opacity-40'), 0);
-        });
-        grip.addEventListener('dragend', () => { draggedPartyIndex = null; row.classList.remove('opacity-40'); clearPartyDropMarks(); });
+      container.querySelectorAll('.party-grip').forEach(grip => {
+        grip.addEventListener('pointerdown', (e) => startPartyDrag(e, grip.closest('.party-row')));
       });
 
       container.querySelectorAll('.party-slot').forEach(slot => {
